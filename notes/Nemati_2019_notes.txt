@@ -1,0 +1,7 @@
+<Cp_Cb_Csp> is the method that computes the quantities which go into the CGI spreadsheet. 
+
+Its arguments are straightforward execpt for TL (a `TargetList` object).  
+
+Searching for 'TL' in the method's code shows only  `TL.PostProcessing.ppFact(WA)` and `TL.Vmag`. 
+
+Therefore, should be able to revise the code replacing `TL` with its two attributes.  
