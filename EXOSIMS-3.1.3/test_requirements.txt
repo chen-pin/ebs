@@ -1,6 +1,0 @@
--r requirements.txt
-
-cython
-black<23
-flake8
-coveralls
