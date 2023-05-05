@@ -1,0 +1,286 @@
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:614: UserWarning: Input focal length (0.26 m) does not match value from pixelScale (134.07 m) for instrument CONS_Amici_Spec. This feels like a mistkae.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:614: UserWarning: Input focal length (0.26 m) does not match value from pixelScale (134.07 m) for instrument OPTI_Amici_Spec. This feels like a mistkae.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1403: UserWarning: core_mean_intensity has larger IWA than current system value for CONS_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1403: UserWarning: core_mean_intensity has larger IWA than current system value for OPTI_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_SPEC_B3. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_IMG_B4. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati_2019.py:959: UserWarning: Failed to load detector values from tables/DET_CBE_210127.csv. Headers likely changed names.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:240: UserWarning: 
+The following input keywords were not used in any module init:
+	WAint
+	staticOptTimes
+	dMagLim
+	Izod
+	dMag0
+	cacheOptTimes
+	dMagint
+	ftol
+	WA0
+  warnings.warn(warnstr)
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:250: UserWarning: 
+Unknown key(s): dark_derate, ppFact_NF_Imager, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument CONS_NF_Imager
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument OPTI_NF_Imager
+Unknown key(s): Fnum, dark_derate, kRN, DET, THPUT, refl_derate, pupilDiam, CTE_derate for science instrument CONS_Amici_Spec
+Unknown key(s): Fnum, dark_derate, kRN, DET, THPUT, refl_derate, pupilDiam, CTE_derate for science instrument OPTI_Amici_Spec
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument CONS_WF_Imager
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument OPTI_WF_Imager
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system CONS_HLC-565
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system OPTI_HLC-565
+Unknown key(s): core_stability, lenslSamp, Nlensl, core_stability_setting for system CONS_SPEC_B3
+Unknown key(s): core_stability, lenslSamp, Nlensl, core_stability_setting for system OPTI_SPEC_B3
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system CONS_IMG_B4
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system OPTI_IMG_B4
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #0
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #1
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #2
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #3
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #4
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #5
+
+  warnings.warn(f"\n{out}")
+/bin/sh: 1: svn: not found
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:267: UserWarning: 
+The following outspec keywords were not used in any module init:
+	 default_vals_extra2 (Nemati_2019)
+	  default_vals_extra (Nemati_2019)
+
+  warnings.warn(warnstr)
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:278: UserWarning: 
+The following init keywords were not found in any outspec:
+	         catalogpath (HIPfromSimbad)
+	       haloStartTime (WFIRSTObservatoryL2)
+
+  warnings.warn(warnstr)
+/home/pinchen/anaconda3/envs/exosims/lib/python3.11/site-packages/erfa/core.py:154: ErfaWarning: ERFA function "utctai" yielded 426 of "dubious year (Note 3)"
+  warnings.warn('ERFA function "{}" yielded {}'.format(func_name, wmsg),
+
+>> You are considering reflected light observations
+
+Imported SurveySimulation (prototype) from EXOSIMS.Prototypes.SurveySimulation
+Numpy random seed is: 279972895
+Imported KeplerLikeUniverse (implementation) from EXOSIMS.SimulatedUniverse.KeplerLikeUniverse
+Imported TargetList (prototype) from EXOSIMS.Prototypes.TargetList
+Imported HIPfromSimbad (implementation) from EXOSIMS.StarCatalog.HIPfromSimbad
+['HIP 522', 'HIP 1134', 'HIP 7513', 'HIP 8102', 'HIP 16537', 'HIP 21547', 'HIP 26394', 'HIP 27321', 'HIP 32775', 'HIP 53524', 'HIP 53721', 'HIP 61498', 'HIP 64408', 'HIP 65426', 'HIP 74500', 'HIP 76829', 'HIP 79248', 'HIP 83389', 'HIP 86796', 'HIP 98767', 'HIP 99825', 'HIP 114189', 'HIP 107412', 'HIP 113368', 'HIP 113421', 'HIP 114622', 'HIP 116805']
+Imported Nemati_2019 (implementation) from EXOSIMS.OpticalSystem.Nemati_2019
+Imported Stark (implementation) from EXOSIMS.ZodiacalLight.Stark
+Imported PostProcessing (prototype) from EXOSIMS.Prototypes.PostProcessing
+Imported GalaxiesFaintStars (implementation) from EXOSIMS.BackgroundSources.GalaxiesFaintStars
+Imported Completeness (prototype) from EXOSIMS.Prototypes.Completeness
+Imported KeplerLike1 (implementation) from EXOSIMS.PlanetPopulation.KeplerLike1
+Imported FortneyMarleyCahoyMix1 (implementation) from EXOSIMS.PlanetP[...]el.FortneyMarleyCahoyMix1
+27 targets imported from star catalog.
+27 targets remain after removing those where spectral class cannot be established.
+27 targets remain after removing white dwarfs and subdwarfs
+27 targets remain after nan filtering.
+27 targets remain after removing zero luminosity targets.
+Loaded star fluxes values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_nStars_27_mode_9c011ac8b19efc8a6d0103cd74de0dee.star_fluxes
+Loaded saturation_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Nemati_2019_Stark_vals_6acc33cc054363f20593c06bbecf0c27_mode_9c011ac8b19efc8a6d0103cd74de0dee.sat_dMag
+Loaded saturation_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Completeness_vals_b9f5c2784aff32e300855f1a2a679988.sat_comp
+Loaded intCutoff_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Nemati_2019_Stark_vals_b7e5126c8f07b339ab709ba644c51d55_mode_9c011ac8b19efc8a6d0103cd74de0dee.intCutoff_dMag
+Loaded intCutoff_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Completeness_vals_63fd8cddc331895ec67f8b0d267b107f.intCutoff_comp
+27 targets remain after binary filter.
+27 targets remain after IWA filter.
+27 targets remain after completeness filter.
+Imported WFIRSTObservatoryL2 (implementation) from EXOSIMS.Observatory.WFIRSTObservatoryL2
+    orbitdatapath is none
+    orbitdatapath (/home/pinchen/.EXOSIMS/cache/L2_halo_orbit_six_month.p) exists
+Imported TimeKeeping (prototype) from EXOSIMS.Prototypes.TimeKeeping
+OBendTimes is: [ 50.    100.    150.    200.    250.    300.    350.    400.    450.
+ 500.    547.875] d
+Loading cached keepout map file from /home/pinchen/.EXOSIMS/cache/koMap_32545b57b7499f47294401b990c1549f.komap
+Keepout Map loaded from cache.
+CONS_HLC-565
+CONS_IMG_B4
+CONS_SPEC_B3
+OPTI_HLC-565
+OPTI_IMG_B4
+OPTI_SPEC_B3
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_HLC-565.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_HLC-565.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_HLC-565.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_HLC-565.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_SPEC_B3.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_SPEC_B3.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_SPEC_B3.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_SPEC_B3.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_IMG_B4.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_IMG_B4.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_IMG_B4.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_IMG_B4.fZmin
+Imported SurveyEnsemble (prototype) from EXOSIMS.Prototypes.SurveyEnsemble
+
+The following keywords are used in multiple inits (this is ok):
+	Rprange
+	cachedir
+	magEZ
+	magZ
+	missionStart
+	prange
+	varEZ
+
+127 keywords were set to their default values.
+koAngles_Sun=[36.00,180.00]
+koAngles_Moon=[11.00,180.00]
+koAngles_Earth=[22.00,180.00]
+koAngles_Small=[1.00,180.00]
+Starlight Suppression System:   0%|          | 0/1 [00:00<?, ?it/s]
+Star Keepout:   0%|          | 0/1 [00:00<?, ?it/s][A
+                                                   [AStarlight Suppression System: 100%|██████████| 1/1 [00:00<00:00, 23.64it/s]
+/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/Roman_Coronagraph_ETC-main/scripts/store_csv_file.py:48: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  df[f'{starNameCommon[star]:s} (average, %)'][1:] = np.nan
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:614: UserWarning: Input focal length (0.26 m) does not match value from pixelScale (134.07 m) for instrument CONS_Amici_Spec. This feels like a mistkae.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:614: UserWarning: Input focal length (0.26 m) does not match value from pixelScale (134.07 m) for instrument OPTI_Amici_Spec. This feels like a mistkae.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1403: UserWarning: core_mean_intensity has larger IWA than current system value for CONS_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1403: UserWarning: core_mean_intensity has larger IWA than current system value for OPTI_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_HLC-565. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_SPEC_B3. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:1414: UserWarning: core_mean_intensity has smaller OWA than current system value for OPTI_IMG_B4. Updating to match table, but you should check your inputs.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati_2019.py:959: UserWarning: Failed to load detector values from tables/DET_CBE_210127.csv. Headers likely changed names.
+  warnings.warn(
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:240: UserWarning: 
+The following input keywords were not used in any module init:
+	WAint
+	staticOptTimes
+	dMagLim
+	Izod
+	dMag0
+	cacheOptTimes
+	dMagint
+	ftol
+	WA0
+  warnings.warn(warnstr)
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:250: UserWarning: 
+Unknown key(s): dark_derate, ppFact_NF_Imager, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument CONS_NF_Imager
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument OPTI_NF_Imager
+Unknown key(s): Fnum, dark_derate, kRN, DET, THPUT, refl_derate, pupilDiam, CTE_derate for science instrument CONS_Amici_Spec
+Unknown key(s): Fnum, dark_derate, kRN, DET, THPUT, refl_derate, pupilDiam, CTE_derate for science instrument OPTI_Amici_Spec
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument CONS_WF_Imager
+Unknown key(s): dark_derate, kRN, DET, THPUT, refl_derate, CTE_derate for science instrument OPTI_WF_Imager
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system CONS_HLC-565
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system OPTI_HLC-565
+Unknown key(s): core_stability, lenslSamp, Nlensl, core_stability_setting for system CONS_SPEC_B3
+Unknown key(s): core_stability, lenslSamp, Nlensl, core_stability_setting for system OPTI_SPEC_B3
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system CONS_IMG_B4
+Unknown key(s): Nlensl, lenslSamp, Rs, core_stability, core_stability_setting for system OPTI_IMG_B4
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #0
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #1
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #2
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #3
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #4
+Unknown key(s): tau_pol, OpticalThickness, s_baffling, luminescingOpticalArea, luminescingOpticalDistance, photons_per_relativistic_event, GCRFlux for observing mode #5
+
+  warnings.warn(f"\n{out}")
+/bin/sh: 1: svn: not found
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:267: UserWarning: 
+The following outspec keywords were not used in any module init:
+	 default_vals_extra2 (Nemati_2019)
+	  default_vals_extra (Nemati_2019)
+
+  warnings.warn(warnstr)
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:278: UserWarning: 
+The following init keywords were not found in any outspec:
+	         catalogpath (HIPfromSimbad)
+	       haloStartTime (WFIRSTObservatoryL2)
+
+  warnings.warn(warnstr)
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati_2019.py:959: UserWarning: Failed to load detector values from tables/DET_CBE_210127.csv. Headers likely changed names.
+  warnings.warn(
+Accessibility:
+>> HD 219134 (HIP 114622): 82.8% accessible
+Imported SurveySimulation (prototype) from EXOSIMS.Prototypes.SurveySimulation
+Numpy random seed is: 777429238
+Imported KeplerLikeUniverse (implementation) from EXOSIMS.SimulatedUniverse.KeplerLikeUniverse
+Imported TargetList (prototype) from EXOSIMS.Prototypes.TargetList
+Imported HIPfromSimbad (implementation) from EXOSIMS.StarCatalog.HIPfromSimbad
+['HIP 522', 'HIP 1134', 'HIP 7513', 'HIP 8102', 'HIP 16537', 'HIP 21547', 'HIP 26394', 'HIP 27321', 'HIP 32775', 'HIP 53524', 'HIP 53721', 'HIP 61498', 'HIP 64408', 'HIP 65426', 'HIP 74500', 'HIP 76829', 'HIP 79248', 'HIP 83389', 'HIP 86796', 'HIP 98767', 'HIP 99825', 'HIP 114189', 'HIP 107412', 'HIP 113368', 'HIP 113421', 'HIP 114622', 'HIP 116805']
+Imported Nemati_2019 (implementation) from EXOSIMS.OpticalSystem.Nemati_2019
+Imported Stark (implementation) from EXOSIMS.ZodiacalLight.Stark
+Imported PostProcessing (prototype) from EXOSIMS.Prototypes.PostProcessing
+Imported GalaxiesFaintStars (implementation) from EXOSIMS.BackgroundSources.GalaxiesFaintStars
+Imported Completeness (prototype) from EXOSIMS.Prototypes.Completeness
+Imported KeplerLike1 (implementation) from EXOSIMS.PlanetPopulation.KeplerLike1
+Imported FortneyMarleyCahoyMix1 (implementation) from EXOSIMS.PlanetP[...]el.FortneyMarleyCahoyMix1
+27 targets imported from star catalog.
+27 targets remain after removing those where spectral class cannot be established.
+27 targets remain after removing white dwarfs and subdwarfs
+27 targets remain after nan filtering.
+27 targets remain after removing zero luminosity targets.
+Loaded star fluxes values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_nStars_27_mode_9c011ac8b19efc8a6d0103cd74de0dee.star_fluxes
+Loaded saturation_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Nemati_2019_Stark_vals_6acc33cc054363f20593c06bbecf0c27_mode_9c011ac8b19efc8a6d0103cd74de0dee.sat_dMag
+Loaded saturation_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Completeness_vals_b9f5c2784aff32e300855f1a2a679988.sat_comp
+Loaded intCutoff_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Nemati_2019_Stark_vals_b7e5126c8f07b339ab709ba644c51d55_mode_9c011ac8b19efc8a6d0103cd74de0dee.intCutoff_dMag
+Loaded intCutoff_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HIPfromSimbad_Completeness_vals_63fd8cddc331895ec67f8b0d267b107f.intCutoff_comp
+27 targets remain after binary filter.
+27 targets remain after IWA filter.
+27 targets remain after completeness filter.
+Imported WFIRSTObservatoryL2 (implementation) from EXOSIMS.Observatory.WFIRSTObservatoryL2
+    orbitdatapath is none
+    orbitdatapath (/home/pinchen/.EXOSIMS/cache/L2_halo_orbit_six_month.p) exists
+Imported TimeKeeping (prototype) from EXOSIMS.Prototypes.TimeKeeping
+OBendTimes is: [ 50.    100.    150.    200.    250.    300.    350.    400.    450.
+ 500.    547.875] d
+Loading cached keepout map file from /home/pinchen/.EXOSIMS/cache/koMap_32545b57b7499f47294401b990c1549f.komap
+Keepout Map loaded from cache.
+CONS_HLC-565
+CONS_IMG_B4
+CONS_SPEC_B3
+OPTI_HLC-565
+OPTI_IMG_B4
+OPTI_SPEC_B3
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_HLC-565.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_HLC-565.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_HLC-565.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_HLC-565.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_SPEC_B3.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_SPEC_B3.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_SPEC_B3.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_SPEC_B3.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_IMG_B4.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_CONS_IMG_B4.fZmin
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_IMG_B4.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati_20194089d4607d837b0fd3ba6fb8b3043ef_OPTI_IMG_B4.fZmin
+Imported SurveyEnsemble (prototype) from EXOSIMS.Prototypes.SurveyEnsemble
+
+The following keywords are used in multiple inits (this is ok):
+	Rprange
+	cachedir
+	magEZ
+	magZ
+	missionStart
+	prange
+	varEZ
+
+127 keywords were set to their default values.
+Traceback (most recent call last):
+  File "/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/Roman_Coronagraph_ETC-main/roman_coronagraph_etc.py", line 86, in <module>
+    cgi_etc_rv_shortest_integration_time(CGI_epoch0, CGI_epoch1, \
+  File "/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/Roman_Coronagraph_ETC-main/scripts/cgi_etc_rv_shortest_integration_time.py", line 187, in cgi_etc_rv_shortest_integration_time
+    intTimeTmp = OSTmp.calc_intTime(TLTmp, np.array([sInds[i_pl]]), fZ, fEZ, dMags, waArcsec, mode, TK=TKTmp).to('hour').value
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati.py", line 242, in calc_intTime
+    C_p, C_b, C_sp = self.Cp_Cb_Csp(TL, sInds, fZ, fEZ, dMag, WA, mode, TK=TK)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati_2019.py", line 1025, in Cp_Cb_Csp
+    deta_QE = mode["inst"]["dQE"]
+              ~~~~~~~~~~~~^^^^^^^
+KeyError: 'dQE'
