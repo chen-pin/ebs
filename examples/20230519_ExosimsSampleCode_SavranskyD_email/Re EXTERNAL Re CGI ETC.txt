@@ -1,0 +1,192 @@
+From:	Dmitry Savransky <ds264@cornell.edu>
+Sent:	Friday, May 19, 2023 3:48 PM
+To:	Chen, Pin (US 3222); Laurent Pueyo
+Cc:	Morgan, Rhonda M (US 7000)
+Subject:	Re: [EXTERNAL] Re: CGI ETC
+Attachments:	sample_exosims_intTime_calculation.txt; sample_exosims_inputspec.json; 
+sample_exosims_intTime_calculation_output.png
+
+Whoops.  I forgot various mail servers would strip out or flat out reject python code. Sending again with 
+the offending file getting a txt extension. 
+
+On Fri, May 19, 2023 at 3:45?PM Dmitry Savransky <ds264@cornell.edu> wrote:
+Hey Pin & Laurent, 
+
+I had a bit of spare time this afternoon, so I threw together the attached.  This is demonstrating some 
+very basic integration time calculations for the five targets you identified in a previous email.  The setup 
+is of a 20% coronagraphic band at 700 nm (center of your VIS band) that achieves constant 1e-10 
+contrast  and constant 0.1 throughput throughout the band.  These can, of course, be replaced with 
+other values, or full performance curves. The coronagraph is set up to have an IWA of 2.5 l/D and an 
+OWA of 10 l/D. 
+
+The script computes the integration time, using the photon-counting model and parameters from 
+Bijan's 2014&2017 papers, to reach a given deltaMag halfway between the IWA/OWA for each 
+target.  Note that two pairs of targets have nearly the same flux values in this band, which is why only 3 
+lines are clearly distinguishable (the other two are under there as well if you zoom way in). 
+
+You'll notice a slight curvature as you approach 25 dMag - that's because the saturation deltaMag 
+(where you hit the instrument noise floor) is at approximately 25.5.
+
+This is a fairly small subset of all user-settable parameters. As you describe what you wish to simulate 
+in more detail, we can suggest additional inputs. 
+
+cheers,
+Dmitry
+
+On Thu, May 18, 2023 at 5:05?PM Dmitry Savransky <ds264@cornell.edu> wrote:
+Hi Pin,
+
+Short answer: EXOSIMS is set up to take as inputs pretty much all of your identified inputs *except* 
+for the stuff upstream of the coronagraph description (WFE and sensitivity coefficients and WFS 
+stuff).  If you would like to use EXOSIMS as an ETC, you will need to generate a variety of coronagraph 
+performance inputs to model that part of your workflow.  
+
+A full description of the EXOSIMS OpticalSystem setup is available 
+here: https://exosims.readthedocs.io/en/latest/opticalsystem.html
+
+We are able to directly process Stark&Krist-style input packages - how we treat them is described 
+here: https://exosims.readthedocs.io/en/latest/opticalsystem.html#standardized-coronagraph-
+parameters
+
+In terms of modeling Target star and planet information, we have that covered.  We've recently 
+implemented a new methodology for computing stellar fluxes in arbitrary bands. It is described, at 
+length, here: https://exosims.readthedocs.io/en/latest/concepts.html#template-spectra
+This has been well-validated in Johnson-Cousins bands. I am currently working on a validation in the 
+NUV (which is proving a bit harder than expected). 
+
+I would like to clarify one thing about the ETC and EXOSIMS.  Sergi's ETC is a wrapper around EXOSIMS 
+that uses a particular OpticalSystem implementation that was specifically designed to reproduce the 
+results of Bijan Nematic's CGI spreadsheet.  As such, it bypasses a lot of EXOSIMS's generalized 
+machinery in order to get the CGI-specific results.  For your study, you probably do not want to use it 
+(and I apologize for causing any confusion in our earlier conversations - I had misunderstood your 
+ultimate goals).  
+
+Next week, I should have some time to generate a sample input script and workflow that computes 
+integration times for the targets you identified in your previous email - if you don't hear from me 
+soonish, please feel free to poke again.  After I get that set up, we can absolutely have a meeting to go 
+over things. 
+
+All the best,
+Dmitry
+
+
+On Thu, May 18, 2023 at 4:08?PM Chen, Pin (US 3222) <pin.chen@jpl.nasa.gov> wrote:
+Hi Sergi, Dmitry,
+ 
+If I may, I’d like to ask your advice on a higher level  (than debugging).  Laurent and 
+I are trying to develop a software tool to help the Coronagraph Technology Roadmap 
+Working Group to explore error allocationa for three notional HWO scenarios 
+(assuming a CGI-like observing scenario):  Vis only (400 – 1000 nm), Vis+IR (400 – 
+1800 nm), and Vis+UV (~ 250 – 1000 nm).  We are hoping to leverage ETC/EXOSIMS 
+in creating this tool.  I drew up a flowchart to describe what we envision this tool to 
+do.  Please see the attachments:
+*	A .png image of the flowchart
+*	An html version of the flowchart that you should be able to open and edit via 
+the free online tool ‘draw.io’ (https://app.diagrams.net/).  
+ 
+The lavender boxes show the types of data that should be user specified.  I would 
+like to know whether or not ETC/EXOSIMS have hooks for the user to set these 
+values.  My impression is that one can set many of these values by editing ETC’s 
+JSON and CSV files.  *Your advice on the pitfalls of modifying these files and 
+which parameters can/cannot be user modified will be much appreciated.*  
+ 
+Another issue that Rhonda pointed out is that ETC does not go out to UV and IR.  I 
+wonder if we could fake it by make limited modifications (e.g. by editing stellar 
+magnitude, center wavelength).  
+ 
+If you would like me to schedule a virtual meeting, please let me know.  
+ 
+Thank you so much in advance!
+ 
+--
+Pin Chen, Ph.D. 
+Scientist, Planetary & Exoplanetary Atmospheres (3222)
+Deputy Technology Manager, NASA Exoplanet Exploration Program 
+Virtual Office:  https://jpl.webex.com/meet/pinchen  
+ 
+JPL   |  pin.chen@jpl.nasa.gov 
+4800 Oak Grove Dr, Mail Stop 183-301 
+Pasadena, California 91109 
+O 818-393-0412   |   M 818-268-6851
+https://science.jpl.nasa.gov/people/PChen/ 
+ 
+From: Chen, Pin (US 3222)  
+Sent: Monday, May 15, 2023 5:08 PM 
+To: EXTERNAL-Savransky, Dmitry (US 7310-Affiliate) <ds264@cornell.edu> 
+Cc: Morgan, Rhonda M (US 7000) <rhonda.m.morgan@jpl.nasa.gov>; Laurent Pueyo 
+<pueyo@stsci.edu> 
+Subject: RE: [EXTERNAL] Re: CGI ETC
+ 
+Hi Dmitry,
+ 
+Thank you for offering your help!  We have a list of 5 fiducial stars (HIP 32439, 77052, 
+79672, 26779, and 113283).  For each star, we would like to input assumed values for 
+error-budget terms (wavefront instability, detector noise, residual speckle, etc) and 
+compute required exposure time for an Earthlike planet in that star’s HZ.  Our blue 
+end will probably go out to 0.25 um, while our red end will go out to ~ 1.8 um.
+ 
+Your advice on how to go about this will be much appreciated! 
+ 
+--
+Pin Chen, Ph.D. 
+Scientist, Planetary & Exoplanetary Atmospheres (3222)
+Deputy Technology Manager, NASA Exoplanet Exploration Program 
+Virtual Office:  https://jpl.webex.com/meet/pinchen  
+ 
+JPL   |  pin.chen@jpl.nasa.gov 
+4800 Oak Grove Dr, Mail Stop 183-301 
+Pasadena, California 91109 
+O 818-393-0412   |   M 818-268-6851
+https://science.jpl.nasa.gov/people/PChen/ 
+ 
+From: Morgan, Rhonda M (US 7000) <rhonda.m.morgan@jpl.nasa.gov>  
+Sent: Friday, May 12, 2023 3:34 PM 
+To: EXTERNAL-Savransky, Dmitry (US 7310-Affiliate) <ds264@cornell.edu>; Chen, Pin (US 3222) 
+<pin.chen@jpl.nasa.gov> 
+Subject: Re: [EXTERNAL] Re: CGI ETC
+ 
+Hi Pin, I noticed from your presentation to CTR yesterday that you are planning to use the CGI ETC for 
+the UV, Vis, and NIR coronagraphs. I checked with Dmitry that the CGI ETC is only valid from 400-
+1000 nm (below). Dmitry has offered to help you set up some scripts to use the new EXOSIMS 
+capabilities in the UV and NIR.
+ 
+Rhonda
+Sent from my iPhone
+ 
+On May 12, 2023, at 2:00 PM, Dmitry Savransky <ds264@cornell.edu> wrote:
+
+Hi Rhonda,
+ 
+The ETC developed by Sergi (with help from Corey) is explicitly intended for 
+predictions of CGI integration times.  It is basically a set of scripts and inputs for using 
+Nemati_2019.  As CGI has no NUV or NIR bands, the ETC repo has nothing defining 
+such bands.  In particular, the e2v QE curve is explicitly zero below 400 nm and above 
+1000nm, making it unsuitable for NUV and NIR work 
+(see: https://github.com/hsergi/Roman_Coronagraph_ETC/blob/main/tables/QE_e2
+v_Spec.csv)
+ 
+Because Nemati_2019 was designed to reproduce the results from Bijan's 
+spreadsheet, it bypasses all of the TargetList flux computation machinery and just 
+uses V-band magnitudes.  This also makes it unsuitable for the kind of exploration 
+you're describing. 
+ 
+If you could describe specifically what sort of calculations the working group wants 
+to do, we can tell them exactly how to do it, and probably provide basic worked 
+reference solutions using Nemati (instead of Nemati2019). 
+ 
+cheers,
+Dmitry
+ 
+On Fri, May 12, 2023 at 12:25?PM Morgan, Rhonda M (US 7000) 
+<rhonda.m.morgan@jpl.nasa.gov> wrote:
+Hi Corey and Dmitry,
+The coronagraph roadmapping WG is planning to use the ETC for UV, VIS, and NIR. I 
+know that you’ve been helping Pin get up to speed on the ETC.
+ 
+I have a question: how does the ETC handle UV and NIR, in light of the recent 
+photometry Updates to use spectral atlases?
+Is the ETC using the photometry update or is it badly extrapolating Traub and 
+Oppenheimer?
+ 
+Thank you,
+Rhonda

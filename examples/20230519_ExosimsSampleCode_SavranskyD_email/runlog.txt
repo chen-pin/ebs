@@ -1,0 +1,41 @@
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/OpticalSystem.py:614: UserWarning: Input focal length (150.00 m) does not match value from pixelScale (103.13 m) for instrument imager. This feels like a mistkae.
+  warnings.warn(
+/bin/sh: 1: svn: not found
+/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py:267: UserWarning: 
+The following outspec keywords were not used in any module init:
+	  default_vals_extra (Nemati)
+
+  warnings.warn(warnstr)
+Imported SurveySimulation (prototype) from EXOSIMS.Prototypes.SurveySimulation
+Numpy random seed is: 574406371
+Imported SimulatedUniverse (prototype) from EXOSIMS.Prototypes.SimulatedUniverse
+Imported TargetList (prototype) from EXOSIMS.Prototypes.TargetList
+Imported HWOMissionStars (implementation) from EXOSIMS.StarCatalog.HWOMissionStars
+Loaded data from /home/pinchen/.EXOSIMS/downloads/HWOStarList_20230523183444.pkl
+Imported Nemati (implementation) from EXOSIMS.OpticalSystem.Nemati
+Imported ZodiacalLight (prototype) from EXOSIMS.Prototypes.ZodiacalLight
+Imported PostProcessing (prototype) from EXOSIMS.Prototypes.PostProcessing
+Imported BackgroundSources (prototype) from EXOSIMS.Prototypes.BackgroundSources
+Imported Completeness (prototype) from EXOSIMS.Prototypes.Completeness
+Imported PlanetPopulation (prototype) from EXOSIMS.Prototypes.PlanetPopulation
+Imported PlanetPhysicalModel (prototype) from EXOSIMS.Prototypes.PlanetPhysicalModel
+Loaded star fluxes values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_nStars_164_mode_a0873e156923e6106ddb7147a3ddf566.star_fluxes
+Loaded saturation_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_Nemati_ZodiacalLight_vals_ffae6bb855f2307b4df6f416a33891f2_mode_a0873e156923e6106ddb7147a3ddf566.sat_dMag
+Loaded saturation_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_Completeness_vals_65ad49ff24017afc9d1d69afe69ed4c2.sat_comp
+Loaded intCutoff_dMag values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_Nemati_ZodiacalLight_vals_c61e0f29318900af83e5c560aef781b5_mode_a0873e156923e6106ddb7147a3ddf566.intCutoff_dMag
+Loaded intCutoff_comp values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_Completeness_vals_1117c870987d846090bffb731dcd45d6.intCutoff_comp
+Imported Observatory (prototype) from EXOSIMS.Prototypes.Observatory
+Imported TimeKeeping (prototype) from EXOSIMS.Prototypes.TimeKeeping
+OBendTimes is: [36.525] d
+Loading cached keepout map file from /home/pinchen/.EXOSIMS/cache/koMap_c934e8655507a3f001b090f58d0057cc.komap
+Keepout Map loaded from cache.
+coronagraph
+Loading cached fZ from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati0a69a85653392058a42df3626f2973b_coronagraph.starkfZ
+Loading cached fZmins from /home/pinchen/.EXOSIMS/cache/CompletenessTargetListNemati0a69a85653392058a42df3626f2973b_coronagraph.fZmin
+Imported SurveyEnsemble (prototype) from EXOSIMS.Prototypes.SurveyEnsemble
+
+The following keywords are used in multiple inits (this is ok):
+	cachedir
+	missionStart
+
+134 keywords were set to their default values.
