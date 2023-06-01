@@ -1,10 +1,16 @@
 {
-    "ppFact": 0.1,
-    "minComp": 0,
-    "filterBinaries": false,
-    "keepStarCatalog": true,
+    "ppFact": 0.1,  
+	# Post-processing factor
+    "minComp": 0,  
+	# Minimum completeness value for inclusion in target list
+    "filterBinaries": false,  
+	# Remove all binary stars or stars with known close companions from 
+	# target list.
+    "keepStarCatalog": true,  
+	# Keep star catalog object as attribute after TargetList is built
     "pupilDiam": 6.0, 
     "obscurFac": 0.1,
+	# Fraction of primary mirror area obscured by secondary and spiders
     "modules": {
         "PlanetPopulation": " ",
         "StarCatalog": "HWOMissionStars",
@@ -25,11 +31,28 @@
         {
             "name": "imager",
             "FoV": 10.0,
+		# Angular half-field of view (i.e., field of view radius). 
+		# Input values are assumed to have units of arcseconds. 
+		# The FoV value is used only for determining the maximum outer 
+		# working angle in observing modes where the starlight 
+		# suppression system has an infinite OWA (or an OWA larger 
+		# than the science instrument FoV). The top-level default 
+		# defaults to 10.
             "QE": 0.9,
-            "Rs": 100.0,
+            "Rs": 1.0,
+		# Spectral resolving power: lambda/Delta_lambda. Only applies 
+		# to spectrometers 
+		# The top level defaults to 50.
             "fnumber": 25,
+		# Instrument effect focal ratio (determining pixel scale)
             "idark": 0.0001,
+		# Detector dark-current per pixel in units of 1/time. 
+		# Input values are assumed to have units of 1/second. 
+		# The top-level default defaults to 1e-4.
             "lenslSamp": 1.0,
+		# Default spectral resolving power. Only used when not set in 
+		# science instrument definition. Only applies to spetrometers. 
+		# Defaults to 50.
             "optics": 0.5,
             "pixelNumber": 1000.0,
             "pixelScale": 0.02,
