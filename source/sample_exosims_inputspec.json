@@ -23,7 +23,7 @@
     },
     "scienceInstruments": [
         {
-            "name": "imager",
+            "name": "spectro_1",
             "FoV": 10.0,
             "QE": 0.9,
             "Rs": 100.0,
@@ -57,7 +57,7 @@
         {
             "SNR": 5.0,
             "detectionMode": true,
-            "instName": "imager",
+            "instName": "spectro_1",
             "systName": "coronagraph",
             "timeMultiplier": 1.0
         }
