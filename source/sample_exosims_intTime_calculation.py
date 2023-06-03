@@ -57,4 +57,4 @@ for j in range(len(targnames)):
 plt.xlabel(rf"Achievable Planet $\Delta$mag @ {WA :.2f}")
 plt.ylabel(f"Integration Time ({intTimes.unit})")
 plt.legend()
-plt.savefig('plot.png')
+plt.savefig('../../ctr_out/plot.png')
