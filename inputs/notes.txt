@@ -1,0 +1,2 @@
+Good reference for detailed CGI hardware parameters:  
+https://roman.ipac.caltech.edu/sims/Param_db.html#coronagraph_mode
