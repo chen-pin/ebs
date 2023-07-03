@@ -47,14 +47,14 @@
 	    "optics": 1.0,
 	    "lam":  940,
             "BW": 0.2,
-	    ohTime: 1.0, 
+	    "ohTime": 1.0, 
 	    "occulter": false,
             "IWA": 0.06,
             "OWA": 0.5,
             "occ_trans": 0.2,
-            "core_thruput": "thruput.csv",
+            "core_thruput": "../inputs/thruput.csv",
 	    "core_area": 0.0013,
-	    "core_contrast": "contrast.csv"
+	    "core_contrast": "../inputs/contrast.csv"
         }
     ],
     "observingModes": [

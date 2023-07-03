@@ -1,4 +1,5 @@
 {
+	    'flag': true
     "ppFact": 0.1,
     "minComp": 0,
     "filterBinaries": false,
@@ -47,7 +48,6 @@
             "input_angle_units": "LAMBDA/D",
             "lam": 700.0,
             "occ_trans": 0.2,
-            "occulter": false,
             "optics": 1.0,
             "IWA": 2.5,
             "OWA": 10
