@@ -51,12 +51,10 @@
 	    "occulter": false,
             "IWA": 0.06,
             "OWA": 0.5,
-	    "core_plate_scale_units": "arcsec",
-	    "core_plate_scale": 0.0218,
             "occ_trans": 0.2,
-            "core_thruput": "throughput.csv",
+            "core_thruput": "thruput.csv",
 	    "core_area": 0.0013,
-	    "core_mean_intensity": "contrast.csv"
+	    "core_contrast": "contrast.csv"
         }
     ],
     "observingModes": [
