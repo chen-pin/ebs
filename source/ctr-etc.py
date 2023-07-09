@@ -15,9 +15,21 @@ import EXOSIMS.MissionSim as ems
 class ErrorBudget(ems.MissionSim):
     """Sub-class of `EXOSIMS.MissionSim.MissionSim` to compute exposure time"""
 
-    def __init__(self, input_filename="test2.json"):
+    def __init__(self, json_filename="test2.json"
+                 , contrast_filename="contrast.csv"):
         self.input_dir = os.path.join("..", "inputs")
-        self.input_path = os.path.join(self.input_dir, input_filename)
+
+        self.input_dict = None
+        self.json_filename = json_filename
+        self.contrast_filename = contrast_filename
+        self.wfe = None
+        self.wfsc_factor = None
+        self.sensitivity = None
+        self.post_wfsc_wfe = None
+        self.delta_contrast = None
+        self.angles = None
+        self.contrast = None
+        self.ppFact = None
 
 #    def xlsx2json(self):
 #        """
@@ -31,10 +43,12 @@ class ErrorBudget(ems.MissionSim):
 #            for key in input_dict.keys():
 #                json_str = input_dict[key].to_json(f)
 
-    def load_json(self, print_keys=False):
-        with open(os.path.join(self.input_path)) as input_json:
+    def load_json(self, verbose=False):
+        input_path = os.path.join(self.input_dir, self.json_filename)
+        with open(os.path.join(input_path)) as input_json:
             input_dict = js.load(input_json)
-            if print_keys:
+            if verbose:
+                print("Top two level dictionary keys\n")
                 for key in input_dict.keys():
                     print(key)
                     try:
@@ -42,24 +56,34 @@ class ErrorBudget(ems.MissionSim):
                             print("\t{}".format(subkey))
                     except:
                         pass
-        return input_dict
+                print("\nStarlightSuppressionSystems:")
+                print(input_dict['starlightSuppressionSystems'])
+        self.input_dict = input_dict
 
-    def delta_contrast(self):
-        pars_dict = self.load_json()
-        wfe = np.array(pars_dict['wfe'])
-        print("wfe shape {}".format(wfe.shape))
-        wfsc_factor = np.array(pars_dict['wfsc_factor'])
-        print("wfsc_factor shape {}".format(wfsc_factor.shape))
-        sensitivity = np.array(pars_dict['sensitivity'])
-        print("sensitivity shape {}".format(sensitivity.shape))
-        post_wfsc_wfe = np.multiply(wfe, wfsc_factor)
-        print(post_wfsc_wfe)
-        delta_contrast = np.empty(sensitivity.shape[0])
+    def load_csv_contrast(self):
+        path = os.path.join(self.input_dir, self.contrast_filename)
+        self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
+        self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
+
+    def compute_ppFact(self):
+        if self.input_dict == None:
+            pars_dict = self.load_json()
+        self.wfe = np.array(self.input_dict['wfe'])
+        self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
+        self.sensitivity = np.array(self.input_dict['sensitivity'])
+        self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+        delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
             delta_contrast[n] = np.sqrt(
-                        (np.multiply(sensitivity[n], post_wfsc_wfe)**2).sum()
+                        (np.multiply(self.sensitivity[n]
+                                     , self.post_wfsc_wfe)**2).sum()
                                        )
-        print(delta_contrast)
+        self.delta_contrast = delta_contrast
+        if self.contrast == None:
+            self.load_csv_contrast()
+        ppFact = self.delta_contrast*1E-12/self.contrast
+        self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
+        print(self.ppFact)
 
     def test_json(self):
         # build sim object:
@@ -125,4 +149,5 @@ if __name__ == '__main__':
     x = ErrorBudget()
 #    x = x.test_json()
 #    x = x.load_json()
-    x = x.delta_contrast()
+#    x = x.load_csv_contrast()
+    x = x.compute_ppFact()
