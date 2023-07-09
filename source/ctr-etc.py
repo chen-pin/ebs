@@ -15,7 +15,7 @@ import EXOSIMS.MissionSim as ems
 class ErrorBudget(ems.MissionSim):
     """Sub-class of `EXOSIMS.MissionSim.MissionSim` to compute exposure time"""
 
-    def __init__(self, input_filename="test.json"):
+    def __init__(self, input_filename="test2.json"):
         self.input_dir = os.path.join("..", "inputs")
         self.input_path = os.path.join(self.input_dir, input_filename)
 
@@ -31,11 +31,35 @@ class ErrorBudget(ems.MissionSim):
 #            for key in input_dict.keys():
 #                json_str = input_dict[key].to_json(f)
 
-    def load_json(self):
+    def load_json(self, print_keys=False):
         with open(os.path.join(self.input_path)) as input_json:
             input_dict = js.load(input_json)
-           # print(input_dict)
-            print(input_dict['modules'].keys())
+            if print_keys:
+                for key in input_dict.keys():
+                    print(key)
+                    try:
+                        for subkey in input_dict[key].keys():
+                            print("\t{}".format(subkey))
+                    except:
+                        pass
+        return input_dict
+
+    def delta_contrast(self):
+        pars_dict = self.load_json()
+        wfe = np.array(pars_dict['wfe'])
+        print("wfe shape {}".format(wfe.shape))
+        wfsc_factor = np.array(pars_dict['wfsc_factor'])
+        print("wfsc_factor shape {}".format(wfsc_factor.shape))
+        sensitivity = np.array(pars_dict['sensitivity'])
+        print("sensitivity shape {}".format(sensitivity.shape))
+        post_wfsc_wfe = np.multiply(wfe, wfsc_factor)
+        print(post_wfsc_wfe)
+        delta_contrast = np.empty(sensitivity.shape[0])
+        for n in range(len(delta_contrast)):
+            delta_contrast[n] = np.sqrt(
+                        (np.multiply(sensitivity[n], post_wfsc_wfe)**2).sum()
+                                       )
+        print(delta_contrast)
 
     def test_json(self):
         # build sim object:
@@ -99,4 +123,6 @@ class ErrorBudget(ems.MissionSim):
 
 if __name__ == '__main__':
     x = ErrorBudget()
-    x = x.test_json()
+#    x = x.test_json()
+#    x = x.load_json()
+    x = x.delta_contrast()
