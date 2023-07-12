@@ -71,7 +71,9 @@ class ErrorBudget(ems.MissionSim):
         self.wfe = np.array(self.input_dict['wfe'])
         self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
         self.sensitivity = np.array(self.input_dict['sensitivity'])
+        print(self.sensitivity.shape)
         self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+        print(self.post_wfsc_wfe.shape)
         delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
             delta_contrast[n] = np.sqrt(
@@ -87,7 +89,8 @@ class ErrorBudget(ems.MissionSim):
 
     def test_json(self):
         # build sim object:
-        sim = ems.MissionSim(str(self.input_path))
+        input_path = os.path.join(self.input_dir, self.json_filename)
+        sim = ems.MissionSim(str(input_path))
         
         # identify targets of interest
         hipnums = [32439, 77052, 79672, 26779, 113283]
@@ -147,7 +150,7 @@ class ErrorBudget(ems.MissionSim):
 
 if __name__ == '__main__':
     x = ErrorBudget()
-#    x = x.test_json()
+    x = x.test_json()
 #    x = x.load_json()
 #    x = x.load_csv_contrast()
-    x = x.compute_ppFact()
+#    x = x.compute_ppFact()
