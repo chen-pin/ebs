@@ -13,15 +13,59 @@ import EXOSIMS.MissionSim as ems
 
 
 class ErrorBudget(ems.MissionSim):
-    """Sub-class of `EXOSIMS.MissionSim.MissionSim` to compute exposure time"""
+    """
+    Exposure time calculator incorporating dynamical wavefront errors and 
+    WFS&C
+    
+    Parameters
+    ----------
+    json_filename : str
+        Name of input JSON file
+    contrast_filename : str
+        Name of CSV file specifying contrast of reference dark hole
+
+    Attributes
+    ----------
+    input_dir : `os.path`
+        Directory path where the above-listed input files reside
+    input_dict : dict
+        Dictionary of parameters loaded from the input JSON file
+    wfe : array 
+        Wavefront error specified in spatio-temporal bins, loaded from the 
+        input JSON file, in pm units.  
+        Dimensions:  (num_temporal_modes, num_spatial_modes).
+    wfsc_factor : array
+        Wavefront-error-mitigation factors, loaded from the input JSON file.  
+        Values should be between 0 and 1.  
+        Dimensions:  same as `wfe`
+    sensitivity : array
+        Coefficients of contrast sensitivity w.r.t. wavefront changes, 
+        in ppt/pm units.  
+        Dimensions:  (num_angles, num_temporal_modes, num_spatial_modes)
+    post_wfsc_wfe : array
+        Element-by-element product of `wfe` and `wfsc_factor`.  
+        Dimensions:  same as `wfe`
+    delta_contrast : array
+        Change in contrast due to residual wavefront error after WFS&C. 
+        Dimensions:  (num_angles)
+    angles : array
+        Angular-separation values, loaded from the input JSON file, 
+        in mas units.  
+        Dimension:  num_angles
+    contrast : array
+        Reference contrast values at each angular separation
+        Dimension:  num_angles
+    ppFact : array
+        Post-processing factor at each angular separation
+        Dimension:  num_angles
+    """
 
     def __init__(self, json_filename="test2.json"
                  , contrast_filename="contrast.csv"):
-        self.input_dir = os.path.join("..", "inputs")
-
-        self.input_dict = None
         self.json_filename = json_filename
         self.contrast_filename = contrast_filename
+        self.input_dir = os.path.join("..", "inputs")
+        self.input_dict = None
         self.wfe = None
         self.wfsc_factor = None
         self.sensitivity = None
@@ -66,14 +110,15 @@ class ErrorBudget(ems.MissionSim):
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
     def compute_ppFact(self):
-        if self.input_dict == None:
-            pars_dict = self.load_json()
+        try:
+            if self.input_dict == None:
+                pars_dict = self.load_json()
+        except:
+            pass
         self.wfe = np.array(self.input_dict['wfe'])
         self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
         self.sensitivity = np.array(self.input_dict['sensitivity'])
-        print(self.sensitivity.shape)
         self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
-        print(self.post_wfsc_wfe.shape)
         delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
             delta_contrast[n] = np.sqrt(
@@ -81,11 +126,23 @@ class ErrorBudget(ems.MissionSim):
                                      , self.post_wfsc_wfe)**2).sum()
                                        )
         self.delta_contrast = delta_contrast
-        if self.contrast == None:
-            self.load_csv_contrast()
+        try:
+            if self.contrast == None:
+                self.load_csv_contrast()
+        except:
+            pass
         ppFact = self.delta_contrast*1E-12/self.contrast
         self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
-        print(self.ppFact)
+
+    def write_json(self):
+        try:
+            if self.ppFact == None:
+                self.compute_ppFact()
+        except:
+            pass
+        self.input_dict["ppFact"] = self.ppFact.tolist()
+        with open(os.path.join(self.input_dir, "temp.json"), 'w') as f:
+            js.dump(self.input_dict, f)
 
     def test_json(self):
         # build sim object:
@@ -150,7 +207,4 @@ class ErrorBudget(ems.MissionSim):
 
 if __name__ == '__main__':
     x = ErrorBudget()
-    x = x.test_json()
-#    x = x.load_json()
-#    x = x.load_csv_contrast()
-#    x = x.compute_ppFact()
+    x.write_json()
