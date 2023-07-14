@@ -6,6 +6,7 @@
 import os 
 import numpy as np
 import json as js
+from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
 #import pandas as pd
@@ -26,6 +27,8 @@ class ErrorBudget(ems.MissionSim):
 
     Attributes
     ----------
+    target_list : list
+        List of target-star HIP IDs
     input_dir : `os.path`
         Directory path where the above-listed input files reside
     input_dict : dict
@@ -61,7 +64,9 @@ class ErrorBudget(ems.MissionSim):
     """
 
     def __init__(self, json_filename="test2.json"
-                 , contrast_filename="contrast.csv"):
+                 , contrast_filename="contrast.csv"
+                 , target_list=[32439, 77052, 79672, 26779, 113283]):
+        self.target_list = target_list
         self.json_filename = json_filename
         self.contrast_filename = contrast_filename
         self.input_dir = os.path.join("..", "inputs")
@@ -133,6 +138,10 @@ class ErrorBudget(ems.MissionSim):
             pass
         ppFact = self.delta_contrast*1E-12/self.contrast
         self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
+        path = os.path.join(self.input_dir, "ppFact.fits")
+        with open(path, 'wb') as f:
+            arr = np.vstack((self.angles, self.ppFact)).T
+            fits.writeto(f, arr, overwrite=True)
 
     def write_json(self):
         try:
@@ -140,18 +149,18 @@ class ErrorBudget(ems.MissionSim):
                 self.compute_ppFact()
         except:
             pass
-        self.input_dict["ppFact"] = self.ppFact.tolist()
-        with open(os.path.join(self.input_dir, "temp.json"), 'w') as f:
+        self.input_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
+        path = os.path.join(self.input_dir, "temp.json")
+        with open(path, 'w') as f:
             js.dump(self.input_dict, f)
 
-    def test_json(self):
+    def run_exosims(self):
         # build sim object:
-        input_path = os.path.join(self.input_dir, self.json_filename)
+        input_path = os.path.join(self.input_dir, 'temp.json')
         sim = ems.MissionSim(str(input_path))
         
         # identify targets of interest
-        hipnums = [32439, 77052, 79672, 26779, 113283]
-        targnames = [f"HIP {n}" for n in hipnums]
+        targnames = [f"HIP {n}" for n in self.target_list]
         for j, t in enumerate(targnames):
             if t not in sim.TargetList.Name:
                 targnames[j] += " A"
@@ -208,3 +217,4 @@ class ErrorBudget(ems.MissionSim):
 if __name__ == '__main__':
     x = ErrorBudget()
     x.write_json()
+    x.run_exosims()

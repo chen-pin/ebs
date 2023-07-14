@@ -1,0 +1,51 @@
+Imported SurveySimulation (prototype) from EXOSIMS.Prototypes.SurveySimulation
+Numpy random seed is: 265096450
+Imported SimulatedUniverse (prototype) from EXOSIMS.Prototypes.SimulatedUniverse
+Imported TargetList (prototype) from EXOSIMS.Prototypes.TargetList
+Imported HWOMissionStars (implementation) from EXOSIMS.StarCatalog.HWOMissionStars
+Loaded data from /home/pinchen/.EXOSIMS/downloads/HWOStarList_20230523183444.pkl
+Imported Nemati (implementation) from EXOSIMS.OpticalSystem.Nemati
+Imported ZodiacalLight (prototype) from EXOSIMS.Prototypes.ZodiacalLight
+Imported PostProcessing (prototype) from EXOSIMS.Prototypes.PostProcessing
+Imported BackgroundSources (prototype) from EXOSIMS.Prototypes.BackgroundSources
+Imported Completeness (prototype) from EXOSIMS.Prototypes.Completeness
+Imported PlanetPopulation (prototype) from EXOSIMS.Prototypes.PlanetPopulation
+Imported PlanetPhysicalModel (prototype) from EXOSIMS.Prototypes.PlanetPhysicalModel
+Loaded star fluxes values from /home/pinchen/.EXOSIMS/cache/TargetList_HWOMissionStars_nStars_164_mode_622e8dce6c74f6c0d73ccc22a505d96b.star_fluxes
+Calculating saturation_dMag:   0%|          | 0/164 [00:00<?, ?it/s]Calculating saturation_dMag:   0%|          | 0/164 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/source/ctr-etc.py", line 218, in <module>
+    x.run_exosims()
+  File "/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/source/ctr-etc.py", line 159, in run_exosims
+    sim = ems.MissionSim(str(input_path))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py", line 167, in __init__
+    self.SurveySimulation = get_module(
+                            ^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/SurveySimulation.py", line 245, in __init__
+    self.SimulatedUniverse = get_module(
+                             ^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/SimulatedUniverse.py", line 205, in __init__
+    self.TargetList = get_module(specs["modules"]["TargetList"], "TargetList")(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/TargetList.py", line 459, in __init__
+    self.calc_saturation_and_intCutoff_vals()
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/Prototypes/TargetList.py", line 867, in calc_saturation_and_intCutoff_vals
+    self.saturation_dMag = OS.calc_saturation_dMag(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati.py", line 523, in calc_saturation_dMag
+    singularity_res = root_scalar(
+                      ^^^^^^^^^^^^
+  File "/home/pinchen/anaconda3/envs/exosims/lib/python3.11/site-packages/scipy/optimize/_root_scalar.py", line 275, in root_scalar
+    r, sol = methodc(f, a, b, args=args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/anaconda3/envs/exosims/lib/python3.11/site-packages/scipy/optimize/_zeros_py.py", line 784, in brentq
+    r = _zeros._brentq(f, a, b, xtol, rtol, maxiter, args, full_output, disp)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati.py", line 551, in int_time_denom_obj
+    C_p, C_b, C_sp = self.Cp_Cb_Csp(TL, sInds, fZ, fEZ, dMag, WA, mode, TK=TK)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/OpticalSystem/Nemati.py", line 193, in Cp_Cb_Csp
+    C_sp = C_sr * TL.PostProcessing.ppFact(WA) * self.stabilityFact
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'PostProcessing' object has no attribute 'ppFact'
