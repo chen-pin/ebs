@@ -64,8 +64,13 @@ class ErrorBudget(ems.MissionSim):
 
     def __init__(self, json_filename="test2.json"
                  , contrast_filename="contrast.csv"
-                 , target_list=[32439, 77052, 79672, 26779, 113283]):
+                 , target_list=[32439, 77052, 79672, 26779, 113283]
+                 , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
+                 , eeid=[74.23, 61.74, 73.99, 56.33, 58.29]
+                 , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
+                 , exo_zodi=5*[1.0]):
         self.target_list = target_list
+        self.exo_zodi = exo_zodi
         self.json_filename = json_filename
         self.contrast_filename = contrast_filename
         self.input_dir = os.path.join("..", "inputs")
@@ -186,7 +191,7 @@ class ErrorBudget(ems.MissionSim):
         
         # use the nominal local zodi and exozodi values
         fZ = sim.ZodiacalLight.fZ0
-        fEZ = sim.ZodiacalLight.fEZ0
+        fEZ = exo_zodi*(sim.ZodiacalLight.fEZ0)
         
         # target planet deltaMag (evaluate for a range):
         npoints = 100
@@ -214,15 +219,15 @@ class ErrorBudget(ems.MissionSim):
                 mode,
             )
         
-        plt.figure(1)
-        plt.clf()
-        for j in range(len(targnames)):
-            plt.semilogy(dMags, intTimes[j], label=targnames[j])
-        
-        plt.xlabel(rf"Achievable Planet $\Delta$mag @ {WA :.2f}")
-        plt.ylabel(f"Integration Time ({intTimes.unit})")
-        plt.legend()
-        plt.savefig('../../ctr_out/plot.png')
+#        plt.figure(1)
+#        plt.clf()
+#        for j in range(len(targnames)):
+#            plt.semilogy(dMags, intTimes[j], label=targnames[j])
+#        
+#        plt.xlabel(rf"Achievable Planet $\Delta$mag @ {WA :.2f}")
+#        plt.ylabel(f"Integration Time ({intTimes.unit})")
+#        plt.legend()
+#        plt.savefig('../../ctr_out/plot.png')
 
 
 if __name__ == '__main__':
