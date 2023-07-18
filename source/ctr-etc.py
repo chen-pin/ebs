@@ -9,7 +9,6 @@ import json as js
 from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
-#import pandas as pd
 import EXOSIMS.MissionSim as ems
 
 
@@ -154,6 +153,18 @@ class ErrorBudget(ems.MissionSim):
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
 
+    def create_json(self, wfe, wfsc_factor, sensitivity
+                           , num_spatial_modes=14, num_temporal_modes=6
+                           , num_angles=27):
+        path = os.path.join(self.input_dir, self.json_filename)
+        with open(path) as f:
+            input_dict = json.load(f)
+        input_dict['wfe'] = wfe.tolist()
+        input_dict['wfsc_factor'] = wfsc_factor.tolist()
+        input_dict['sensitivity'] = sensitivity.tolist()
+        with open(path, 'w') as f:
+            json.dump(pars_dict, f, indent=4)
+        
     def run_exosims(self):
         # build sim object:
         input_path = os.path.join(self.input_dir, 'temp.json')
@@ -167,7 +178,6 @@ class ErrorBudget(ems.MissionSim):
                 assert targnames[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in targnames])
-        
         
         # assemble information needed for integration time calculation:
         
@@ -186,7 +196,8 @@ class ErrorBudget(ems.MissionSim):
         # this doesn't matter for a flat contrast/throughput, but
         # matters a lot when you have real performane curves
         # we'll use the default values, which is halfway between IWA/OWA
-        WA = (mode["OWA"] + mode["IWA"]) / 2
+#        WA = (mode["OWA"] + mode["IWA"]) / 2
+        WA = self.angles[13]*u.arcsec
         
         
         # now we loop through the targets of interest and compute intTimes for 
@@ -216,5 +227,6 @@ class ErrorBudget(ems.MissionSim):
 
 if __name__ == '__main__':
     x = ErrorBudget()
+    x.create_json()
     x.write_json()
     x.run_exosims()
