@@ -52,7 +52,7 @@ class ErrorBudget(ems.MissionSim):
         Dimensions:  (num_angles)
     angles : array
         Angular-separation values, loaded from the input JSON file, 
-        in mas units.  
+        in arcsec units.  
         Dimension:  num_angles
     contrast : array
         Reference contrast values at each angular separation
@@ -66,10 +66,11 @@ class ErrorBudget(ems.MissionSim):
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
                  , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
-                 , eeid=[74.23, 61.74, 73.99, 56.33, 58.29]
+                 , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
                  , exo_zodi=5*[1.0]):
         self.target_list = target_list
+        self.luminosity = luminosity
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
@@ -185,7 +186,6 @@ class ErrorBudget(ems.MissionSim):
                 assert targnames[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in targnames])
-        print("sInds {}".format(sInds))
         
         # assemble information needed for integration time calculation:
         
@@ -194,7 +194,7 @@ class ErrorBudget(ems.MissionSim):
         
         # use the nominal local zodi and exozodi values
         fZ = sim.ZodiacalLight.fZ0
-        fEZ = self.exo_zodi*(sim.ZodiacalLight.fEZ0)
+#        fEZ = self.exo_zodi*(sim.ZodiacalLight.fEZ0)
         
         # target planet deltaMag (evaluate for a range):
 #        npoints = 100
@@ -213,15 +213,27 @@ class ErrorBudget(ems.MissionSim):
         npoints = 3
         intTimes = np.zeros((len(targnames), npoints)) * u.d
         for j, sInd in enumerate(sInds):
+            WA_inner = 0.95*self.eeid[j]*10**(self.luminosity[j]/2.0)
+            WA_outer = 1.67*self.eeid[j]*10**(self.luminosity[j]/2.0)
+            WA = [WA_inner, self.eeid[j], WA_outer]
+            print("Working Angles:  {} ".format(WA*u.arcsec))
+            dMag0 = -2.5*np.log10(self.eepsr[j])
+            dMags = np.array([(dMag0-2.5*np.log10(self.eeid[j]/WA_inner))
+                     , dMag0, (dMag0-2.5*np.log10(self.eeid[j]/WA_outer))]) 
+            print("dMags:  {} ".format(dMags))
             intTimes[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * npoints,
                 [fZ.value] * npoints * fZ.unit,
-                [fEZ.value] * npoints * fEZ.unit,
+#                [fEZ.value] * npoints * fEZ.unit,
+                [self.exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * npoints 
+                    * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
-                [WA.value] * npoints * WA.unit,
+#                [WA.value] * npoints * WA.unit,
+                WA * u.arcsec,
                 mode,
             )
+        print("Integration Times:\n{}".format(intTimes))
         
 #        plt.figure(1)
 #        plt.clf()
@@ -239,7 +251,7 @@ if __name__ == '__main__':
     num_spatial_modes = 14
     num_temporal_modes = 6
     num_angles = 27
-    wfe = (10.0*np.ones((num_temporal_modes, num_spatial_modes)))
+    wfe = (1e-6*np.ones((num_temporal_modes, num_spatial_modes)))
     wfsc_factor = 0.5*np.ones_like(wfe)
     sensitivity = 5.0*np.ones((num_angles, num_spatial_modes))
     x.create_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
