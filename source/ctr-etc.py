@@ -71,6 +71,8 @@ class ErrorBudget(ems.MissionSim):
                  , exo_zodi=5*[1.0]):
         self.target_list = target_list
         self.exo_zodi = exo_zodi
+        self.eeid = eeid
+        self.eepsr = eepsr
         self.json_filename = json_filename
         self.contrast_filename = contrast_filename
         self.input_dir = os.path.join("..", "inputs")
@@ -163,12 +165,12 @@ class ErrorBudget(ems.MissionSim):
                            , num_angles=27):
         path = os.path.join(self.input_dir, self.json_filename)
         with open(path) as f:
-            input_dict = json.load(f)
+            input_dict = js.load(f)
         input_dict['wfe'] = wfe.tolist()
         input_dict['wfsc_factor'] = wfsc_factor.tolist()
         input_dict['sensitivity'] = sensitivity.tolist()
         with open(path, 'w') as f:
-            json.dump(pars_dict, f, indent=4)
+            js.dump(input_dict, f, indent=4)
         
     def run_exosims(self):
         # build sim object:
@@ -183,6 +185,7 @@ class ErrorBudget(ems.MissionSim):
                 assert targnames[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in targnames])
+        print("sInds {}".format(sInds))
         
         # assemble information needed for integration time calculation:
         
@@ -191,22 +194,23 @@ class ErrorBudget(ems.MissionSim):
         
         # use the nominal local zodi and exozodi values
         fZ = sim.ZodiacalLight.fZ0
-        fEZ = exo_zodi*(sim.ZodiacalLight.fEZ0)
+        fEZ = self.exo_zodi*(sim.ZodiacalLight.fEZ0)
         
         # target planet deltaMag (evaluate for a range):
-        npoints = 100
-        dMags = np.linspace(20, 25, npoints)
+#        npoints = 100
+#        dMags = np.linspace(20, 25, npoints)
         
         # choose angular separation for coronagraph performance
         # this doesn't matter for a flat contrast/throughput, but
         # matters a lot when you have real performane curves
         # we'll use the default values, which is halfway between IWA/OWA
 #        WA = (mode["OWA"] + mode["IWA"]) / 2
-        WA = self.angles[13]*u.arcsec
+#        WA = self.angles[13]*u.arcsec
         
         
         # now we loop through the targets of interest and compute intTimes for 
         # each:
+        npoints = 3
         intTimes = np.zeros((len(targnames), npoints)) * u.d
         for j, sInd in enumerate(sInds):
             intTimes[j] = sim.OpticalSystem.calc_intTime(
@@ -232,6 +236,12 @@ class ErrorBudget(ems.MissionSim):
 
 if __name__ == '__main__':
     x = ErrorBudget()
-    x.create_json()
+    num_spatial_modes = 14
+    num_temporal_modes = 6
+    num_angles = 27
+    wfe = (10.0*np.ones((num_temporal_modes, num_spatial_modes)))
+    wfsc_factor = 0.5*np.ones_like(wfe)
+    sensitivity = 5.0*np.ones((num_angles, num_spatial_modes))
+    x.create_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
     x.write_json()
     x.run_exosims()
