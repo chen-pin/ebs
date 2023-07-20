@@ -25,7 +25,7 @@
         {
             "name": "spectro_1",
             "QE": 0.9,
-            "optics": 0.632,
+            "optics": 0.5,
             "sread": 1e-06,
             "idark": 0.0001,
             "texp": 100.0,
@@ -44,8 +44,8 @@
     "starlightSuppressionSystems": [
         {
             "name": "coronagraph",
-            "optics": 0.932,
-            "lam": 760,
+            "optics": 1.0,
+            "lam": 940,
             "BW": 0.2,
             "ohTime": 1.0,
             "occulter": false,
@@ -63,7 +63,7 @@
             "detectionMode": false,
             "instName": "spectro_1",
             "systName": "coronagraph",
-            "timeMultiplier": 1.0
+            "timeMultiplier": 2.0
         }
     ]
 }

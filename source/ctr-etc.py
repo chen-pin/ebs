@@ -70,7 +70,7 @@ class ErrorBudget(object):
                  , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
                  , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
-                 , exo_zodi=5*[1.0]):
+                 , exo_zodi=5*[0.0]):
         self.target_list = target_list
         self.luminosity = luminosity
         self.exo_zodi = exo_zodi
@@ -90,6 +90,7 @@ class ErrorBudget(object):
         self.angles = None
         self.contrast = None
         self.ppFact = None
+        self.working_angles = None
         self.C_p = None
         self.C_b = None
         self.C_sp = None
@@ -223,13 +224,15 @@ class ErrorBudget(object):
         self.C_dc = []
         self.C_rn = []
         self.C_star = []
+        self.working_angles = []
         for j, sInd in enumerate(sInds):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
             # matters a lot when you have real performane curves
-            WA_inner = 0.95*self.eeid[j]*10**(self.luminosity[j]/2.0)
-            WA_outer = 1.67*self.eeid[j]*10**(self.luminosity[j]/2.0)
+            WA_inner = 0.95*self.eeid[j]
+            WA_outer = 1.67*self.eeid[j]
             WA = [WA_inner, self.eeid[j], WA_outer]
+            self.working_angles.append(WA)
             # target planet deltaMag (evaluate for a range):
             dMag0 = -2.5*np.log10(self.eepsr[j])
             dMags = np.array([(dMag0-2.5*np.log10(self.eeid[j]/WA_inner))
@@ -265,11 +268,12 @@ class ErrorBudget(object):
             self.C_rn.append(counts[3]["C_rn"])
             self.C_star.append(counts[3]["C_star"])
 
-    def write_output(self):
+    def output_to_json(self):
         path = os.path.join("..", "..", "ctr_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
-                "ppFact": self.ppFact.tolist(), 
+                "ppFact": self.ppFact.tolist(),
+                "working_angles": self.working_angles,
                 "C_p": [x.value.tolist() for x in self.C_p], 
                 "C_b": [x.value.tolist() for x in self.C_b], 
                 "C_sp": [x.value.tolist() for x in self.C_sp], 
@@ -290,15 +294,15 @@ class ErrorBudget(object):
         self.compute_ppFact()
         self.write_temp_json()
         self.run_exosims()
-        self.write_output()
+        self.output_to_json()
 
 
 def _demo():
     num_spatial_modes = 14
     num_temporal_modes = 6
     num_angles = 27
-    wfe = (1e-6*np.ones((num_temporal_modes, num_spatial_modes)))
-    wfsc_factor = 0.5*np.ones_like(wfe)
+    wfe = (15.0*np.ones((num_temporal_modes, num_spatial_modes)))
+    wfsc_factor = 0.01*np.ones_like(wfe)
     sensitivity = 5.0*np.ones((num_angles, num_spatial_modes))
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
