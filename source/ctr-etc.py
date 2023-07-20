@@ -62,7 +62,9 @@ class ErrorBudget(ems.MissionSim):
         Dimension:  num_angles
     """
 
-    def __init__(self, json_filename="test2.json"
+    def __init__(self, ref_json_filename="test_ref.json"
+                 , pp_json_filename="test_pp.json"
+                 , output_json_filename="test_output.json"
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
                  , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
@@ -74,7 +76,9 @@ class ErrorBudget(ems.MissionSim):
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
-        self.json_filename = json_filename
+        self.ref_json_filename = ref_json_filename
+        self.pp_json_filename = pp_json_filename
+        self.output_json_filename = output_json_filename
         self.contrast_filename = contrast_filename
         self.input_dir = os.path.join("..", "inputs")
         self.input_dict = None
@@ -100,7 +104,7 @@ class ErrorBudget(ems.MissionSim):
 #                json_str = input_dict[key].to_json(f)
 
     def load_json(self, verbose=False):
-        input_path = os.path.join(self.input_dir, self.json_filename)
+        input_path = os.path.join(self.input_dir, self.ref_json_filename)
         with open(os.path.join(input_path)) as input_json:
             input_dict = js.load(input_json)
             if verbose:
@@ -161,10 +165,10 @@ class ErrorBudget(ems.MissionSim):
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
 
-    def create_json(self, wfe, wfsc_factor, sensitivity
+    def create_pp_json(self, wfe, wfsc_factor, sensitivity
                            , num_spatial_modes=14, num_temporal_modes=6
                            , num_angles=27):
-        path = os.path.join(self.input_dir, self.json_filename)
+        path = os.path.join(self.input_dir, self.pp_json_filename)
         with open(path) as f:
             input_dict = js.load(f)
         input_dict['wfe'] = wfe.tolist()
@@ -254,6 +258,6 @@ if __name__ == '__main__':
     wfe = (1e-6*np.ones((num_temporal_modes, num_spatial_modes)))
     wfsc_factor = 0.5*np.ones_like(wfe)
     sensitivity = 5.0*np.ones((num_angles, num_spatial_modes))
-    x.create_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
+    x.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
     x.write_json()
     x.run_exosims()
