@@ -29,7 +29,7 @@
             "sread": 1e-06,
             "idark": 0.0001,
             "texp": 100.0,
-            "Rs": 100.0,
+            "Rs": 5.0,
             "lenslSamp": 1.0,
             "pixelNumber": 1037.0,
             "pixelSize": 1.3e-05,
@@ -59,7 +59,7 @@
     ],
     "observingModes": [
         {
-            "SNR": 8.5,
+            "SNR": 5.0,
             "detectionMode": false,
             "instName": "spectro_1",
             "systName": "coronagraph",

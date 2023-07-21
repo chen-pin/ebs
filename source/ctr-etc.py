@@ -148,8 +148,7 @@ class ErrorBudget(object):
         self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
         delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
-            delta_contrast[n] = np.sqrt(
-                        (np.multiply(self.sensitivity[n]
+            delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
                                      , self.post_wfsc_wfe)**2).sum()
                                        )
         self.delta_contrast = delta_contrast
@@ -301,9 +300,9 @@ def _demo():
     num_spatial_modes = 14
     num_temporal_modes = 6
     num_angles = 27
-    wfe = (15.0*np.ones((num_temporal_modes, num_spatial_modes)))
-    wfsc_factor = 0.01*np.ones_like(wfe)
-    sensitivity = 5.0*np.ones((num_angles, num_spatial_modes))
+    wfe = (0.65*np.ones((num_temporal_modes, num_spatial_modes)))
+    wfsc_factor = 0.5*np.ones_like(wfe)
+    sensitivity = 1.69*np.ones((num_angles, num_spatial_modes))
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
 
