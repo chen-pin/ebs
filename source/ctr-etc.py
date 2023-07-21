@@ -1,7 +1,10 @@
 """Exposure time calculator module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
-- Use the `_demo()` function in this module to see the sequence of methods 
+- Also need 2 CSV files and a JSON file.  These files need to be in the path 
+"../inputs".  See doc strings for arugments `contrast_filename` and 
+`ref_json_filename` below.  
+- See the `_demo()` function in this module for the sequence of methods 
 one needs to execute to generate the results.
 """
 
