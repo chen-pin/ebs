@@ -1,4 +1,9 @@
-"""Exposure time calculator module"""
+"""Exposure time calculator module
+
+- Need to first install EXOSIMS, see Refs 2 & 3 below
+- Use the `_demo()` function in this module to see the sequence of methods 
+one needs to execute to generate the results.
+"""
 
 # Contributors:
 #    Pin Chen
@@ -19,47 +24,98 @@ class ErrorBudget(object):
     
     Parameters
     ----------
-    json_filename : str
-        Name of input JSON file
+    ref_json_filename : str
+        Name of JSON file specifying the initial EXOSIMS parameters, without 
+        considering any wavefront drifts. 
+    pp_json_filename : str
+        Name of JSON file that with WFE, WFS&C factors, and sensitivity 
+        coefficients appended to the initial EXOSIMS parameters.
+    output_json_filename : str
+        Name of JSON file containing select attributes, with values, of the
+        instantiated `ErrorBudget` object
     contrast_filename : str
-        Name of CSV file specifying contrast of reference dark hole
+        Name of CSV file specifying contrast of th reference dark hole 
+        (i.e. contrast obtained on the reference star)
+    target_list : list
+        List of target-star HIP IDs
+    luminosity : list
+        Luminosity values of the target stars [log10(L*/L_sun)]
+    eeid : list
+        Earth-equivalent insolation distance values of the target stars 
+        [mas]
+    eepsr : list
+        Earth-equivalent planet-star flux ratio of the target stars
+    exo_zodi : list
+        Exozodi brightness of the target stars in units of EXOSIMS nominal 
+        exo-zodi brightness `fEZ0` 
 
     Attributes
     ----------
-    target_list : list
-        List of target-star HIP IDs
     input_dir : `os.path`
         Directory path where the above-listed input files reside
     input_dict : dict
-        Dictionary of parameters loaded from the input JSON file
+        Dictionary of parameters loaded from `pp_json_filename` file
     wfe : array 
-        Wavefront error specified in spatio-temporal bins, loaded from the 
+        Wavefront changes specified in spatio-temporal bins, loaded from the 
         input JSON file, in pm units.  
         Dimensions:  (num_temporal_modes, num_spatial_modes).
     wfsc_factor : array
-        Wavefront-error-mitigation factors, loaded from the input JSON file.  
-        Values should be between 0 and 1.  
+        Wavefront-change-mitigation factors, loaded from the input JSON file.  
+        Values should be between 0 and 1.    
+        Dimensions:  same as `wfe`
+    post_wfsc_wfe : array
+        Element-by-element product of `wfe` and `wfsc_factor`.  
         Dimensions:  same as `wfe`
     sensitivity : array
         Coefficients of contrast sensitivity w.r.t. wavefront changes, 
         in ppt/pm units.  
-        Dimensions:  (num_angles, num_temporal_modes, num_spatial_modes)
-    post_wfsc_wfe : array
-        Element-by-element product of `wfe` and `wfsc_factor`.  
-        Dimensions:  same as `wfe`
+        Dimensions:  (num_angles, num_spatial_modes)
     delta_contrast : array
         Change in contrast due to residual wavefront error after WFS&C. 
         Dimensions:  (num_angles)
     angles : array
-        Angular-separation values, loaded from the input JSON file, 
-        in arcsec units.  
+        Angular-separation values, loaded from the `contrast_filename' file
+        [arcsec].  
         Dimension:  num_angles
     contrast : array
-        Reference contrast values at each angular separation
+        Reference contrast values at each angular separation, loaded from the 
+        `contrast_filename` file
         Dimension:  num_angles
     ppFact : array
-        Post-processing factor at each angular separation
+        Post-processing factor at each angular separation.  WARNING:  all 
+        values capped at 1.0
         Dimension:  num_angles
+    working_angles : list
+        For each target star, a list of 3 angular values corresponding to 
+        the inner HZ edge (equiv. 0.96 AU), EEID, and the outer HZ edge 
+        (equiv. 1.67 AU)
+    C_p : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Planet signal electron count rate [1/s]
+    C_b : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Background noise electron count rate [1/s]
+    C_sp : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Residual speckle spatial structure (systematic error) [1/s]
+    C_star : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Non-coronagraphic stellar count rate [1/s]
+    C_sr : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Starlight residual count rate [1/s]
+    C_z : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Local zodi  count rate [1/s]
+    C_ez : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Exo-zodi count rate [1/s]
+    C_dc : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Dark current  count rate [1/s]
+    C_rn : (~astropy.units.Quantity(~numpy.ndarray(float)))
+        Read noise count rate [1/s]
+    int_time : list
+        Required integration times associated with the targets
+
+    References
+    ----------
+    1. Nemati et al. (2020) JATIS
+    2. EXOSIMS documentation:  https://exosims.readthedocs.io/en/latest/
+    3. EXOSIMS Github code repository
+
     """
 
     def __init__(self, ref_json_filename="test_ref.json"
@@ -297,15 +353,18 @@ class ErrorBudget(object):
 
 
 def _demo():
+    # Generate bogus wfe, wfsc_factor, and sensitivity arrays so we can 
+    # instantiate the `ErrorBudget` object.
     num_spatial_modes = 14
     num_temporal_modes = 6
     num_angles = 27
     wfe = (0.65*np.ones((num_temporal_modes, num_spatial_modes)))
     wfsc_factor = 0.5*np.ones_like(wfe)
     sensitivity = 1.69*np.ones((num_angles, num_spatial_modes))
+    # Now instantiate and run the calculation
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
-
+    # View the results in "../../ctr_output/`self.outupt_json_filename`
 
 
 
