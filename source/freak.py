@@ -1,4 +1,4 @@
-"""Exposure time calculator module
+"""<Flux-Ratio Error Allocation Kit (FREAK)> module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
 - Also need 2 CSV files and a JSON file.  These files need to be in the path 
