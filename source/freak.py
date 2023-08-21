@@ -1,9 +1,13 @@
 """<Flux-Ratio Error Allocation Kit (FREAK)> module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
-- Also need 2 CSV files and a JSON file.  These files need to be in the path 
-"../inputs".  See doc strings for arugments `contrast_filename` and 
-`ref_json_filename` below.  
+- Also need 2 CSV files and 2 JSON input files.  The CSV files specify 
+reference contrast and throughput values as functions of angular separation.  
+One JSON files specifies instrument and observational parameters, and the 
+other JSON file specifies WFE, contrast sensitivity, and post-processing 
+factors.  These files need to reside in the path "../inputs".  See doc strings 
+for arugments `contrast_filename`, `ref_json_filename`, and 
+`pp_json_filename` below.  
 - See the `_demo()` function in this module for the sequence of methods 
 one needs to execute to generate the results.
 """
@@ -174,6 +178,11 @@ class ErrorBudget(object):
 #                json_str = input_dict[key].to_json(f)
 
     def load_json(self, verbose=False):
+        """
+        Load the JSON input file, which contains instrument and observational 
+        parameters.  Assign parameter dictionary to `self.input_dict`. 
+
+        """
         input_path = os.path.join(self.input_dir, self.pp_json_filename)
         with open(os.path.join(input_path)) as input_json:
             input_dict = js.load(input_json)
@@ -191,16 +200,25 @@ class ErrorBudget(object):
         self.input_dict = input_dict
 
     def load_csv_contrast(self):
+        """
+        Load CSV file containing contrast vs. angular separation values into 
+        ndarray and assign to `self.contrast`.  
+
+        """
         path = os.path.join(self.input_dir, self.contrast_filename)
         self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
     def compute_ppFact(self):
-#        try:
-#            if self.input_dict == None:
-#                self.input_dict = self.load_json()
-#        except:
-#            pass
+        """
+        Compute the post-processing factor and assign the array to 
+        `self.ppFact`.  
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
         self.wfe = np.array(self.input_dict['wfe'])
         self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
         self.sensitivity = np.array(self.input_dict['sensitivity'])
@@ -209,14 +227,9 @@ class ErrorBudget(object):
         for n in range(len(delta_contrast)):
             delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
                                      , self.post_wfsc_wfe)**2).sum()
-                                       )
-        self.delta_contrast = delta_contrast
-#        try:
-#            if self.contrast == None:
-#                self.load_csv_contrast()
-#        except:
-#            pass
-        ppFact = self.delta_contrast*1E-12/self.contrast
+                                       ) 
+        self.delta_contrast = 1E-12*delta_contrast
+        ppFact = self.delta_contrast/self.contrast
         self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
         path = os.path.join(self.input_dir, "ppFact.fits")
         with open(path, 'wb') as f:
@@ -224,11 +237,10 @@ class ErrorBudget(object):
             fits.writeto(f, arr, overwrite=True)
 
     def write_temp_json(self):
-#        try:
-#            if (self.ppFact is None):
-#                self.compute_ppFact()
-#        except:
-#            pass
+        """
+        Write `self.input_dict` to temporary JSON file for running EXOSIMS.
+
+        """
         self.input_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
         path = os.path.join(self.input_dir, "temp.json")
         with open(path, 'w') as f:
@@ -237,6 +249,11 @@ class ErrorBudget(object):
     def create_pp_json(self, wfe, wfsc_factor, sensitivity
                            , num_spatial_modes=14, num_temporal_modes=6
                            , num_angles=27):
+        """
+        Utility to create an input JSON file (named by `self.pp_json_filename`)
+        with WFE, sensitivity, and post-processing parameters.  
+
+        """
         path_ref = os.path.join(self.input_dir, self.ref_json_filename)
         with open(path_ref) as f:
             input_dict = js.load(f)
@@ -248,6 +265,11 @@ class ErrorBudget(object):
             js.dump(input_dict, f, indent=4)
         
     def run_exosims(self):
+        """
+        Run EXOSIMS to generate results, including exposure times 
+        required for reaching specified SNR.  
+
+        """
         # build sim object:
         input_path = os.path.join(self.input_dir, 'temp.json')
         sim = ems.MissionSim(str(input_path))
@@ -327,6 +349,10 @@ class ErrorBudget(object):
             self.C_star.append(counts[3]["C_star"])
 
     def output_to_json(self):
+        """
+        Write EXOSIMS results to a JSON file.  
+
+        """
         path = os.path.join("..", "..", "ctr_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
@@ -345,6 +371,11 @@ class ErrorBudget(object):
             js.dump(output_dict, f, indent=4)
 
     def run_etc(self, wfe, wfsc_factor, sensitivity):
+        """
+        Run end-to-end sequence of methods to produce results written to 
+        output JSON file.  
+
+        """
         self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor
                             , sensitivity=sensitivity)
         self.load_json()
