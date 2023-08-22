@@ -52,9 +52,9 @@
             "IWA": 0.06,
             "OWA": 0.5,
             "occ_trans": 0.2,
-            "core_thruput": "../inputs/thruput.csv",
+            "core_thruput": "./inputs/thruput.csv",
             "core_area": 0.0013,
-            "core_contrast": "../inputs/contrast.csv"
+            "core_contrast": "./inputs/contrast.csv"
         }
     ],
     "observingModes": [

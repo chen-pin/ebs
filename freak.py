@@ -5,7 +5,7 @@
 reference contrast and throughput values as functions of angular separation.  
 One JSON files specifies instrument and observational parameters, and the 
 other JSON file specifies WFE, contrast sensitivity, and post-processing 
-factors.  These files need to reside in the path "../inputs".  See doc strings 
+factors.  These files need to reside in the path "./inputs".  See doc strings 
 for arugments `contrast_filename`, `ref_json_filename`, and 
 `pp_json_filename` below.  
 - See the `_demo()` function in this module for the sequence of methods 
@@ -143,7 +143,7 @@ class ErrorBudget(object):
         self.pp_json_filename = pp_json_filename
         self.output_json_filename = output_json_filename
         self.contrast_filename = contrast_filename
-        self.input_dir = os.path.join("..", "inputs")
+        self.input_dir = os.path.join(".", "inputs")
         self.input_dict = None
         self.wfe = None
         self.wfsc_factor = None
@@ -353,7 +353,7 @@ class ErrorBudget(object):
         Write EXOSIMS results to a JSON file.  
 
         """
-        path = os.path.join("..", "..", "ctr_out", self.output_json_filename)
+        path = os.path.join(".", "..", "ctr_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
@@ -398,7 +398,7 @@ def _demo():
     # Now instantiate and run the calculation
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
-    # View the results in "../../ctr_output/`self.outupt_json_filename`
+    # View the results in "./../ctr_output/`self.outupt_json_filename`
     return x
 
 

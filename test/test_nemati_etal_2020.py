@@ -1,5 +1,5 @@
 import math
-from source import freak
+from freak import freak
 
 def test_math():
     num = 25
