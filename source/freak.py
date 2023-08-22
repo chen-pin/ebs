@@ -399,6 +399,7 @@ def _demo():
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
     # View the results in "../../ctr_output/`self.outupt_json_filename`
+    return x
 
 
 
