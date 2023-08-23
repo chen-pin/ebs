@@ -1,4 +1,5 @@
 import math
+import astropy.units as u
 from freak import freak
 
 def test_math():
@@ -7,6 +8,6 @@ def test_math():
 
 def test_bogus():
     t = freak._demo()
-    assert t.int_time[0][0] == 0.505681554577927
+    assert t.int_time[0][0] == 0.505681554577927*u.d
 
 

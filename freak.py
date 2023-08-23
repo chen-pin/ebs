@@ -1,13 +1,15 @@
 """<Flux-Ratio Error Allocation Kit (FREAK)> module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
-- Also need 2 CSV files and 2 JSON input files.  The CSV files specify 
+- Also need 2 CSV files and 1 JSON input file.  The CSV files specify 
 reference contrast and throughput values as functions of angular separation.  
-One JSON files specifies instrument and observational parameters, and the 
-other JSON file specifies WFE, contrast sensitivity, and post-processing 
-factors.  These files need to reside in the path "./inputs".  See doc strings 
+The JSON file specifies instrument and observational parameter for the 
+reference exposure, followed by  WFE, contrast sensitivity, and WFS&C factors.  
+These files need to reside in the path "./inputs".  See doc strings 
 for arugments `contrast_filename`, `ref_json_filename`, and 
-`pp_json_filename` below.  
+`pp_json_filename` below.  One can create arrays of WFE, sensitivity, and 
+WFS&C values, and then use the `create_pp_json()` method to create the JSON 
+file.  
 - See the `_demo()` function in this module for the sequence of methods 
 one needs to execute to generate the results.
 """
@@ -35,8 +37,8 @@ class ErrorBudget(object):
         Name of JSON file specifying the initial EXOSIMS parameters, without 
         considering any wavefront drifts. 
     pp_json_filename : str
-        Name of JSON file that with WFE, WFS&C factors, and sensitivity 
-        coefficients appended to the initial EXOSIMS parameters.
+        Name of JSON file that has WFE, WFS&C factors, and sensitivity 
+        coefficients appended to the reference EXOSIMS parameters.
     output_json_filename : str
         Name of JSON file containing select attributes, with values, of the
         instantiated `ErrorBudget` object
@@ -179,8 +181,9 @@ class ErrorBudget(object):
 
     def load_json(self, verbose=False):
         """
-        Load the JSON input file, which contains instrument and observational 
-        parameters.  Assign parameter dictionary to `self.input_dict`. 
+        Load the JSON input file, which contains reference EXOSIMS parameters 
+        as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter 
+        dictionary to `self.input_dict`. 
 
         """
         input_path = os.path.join(self.input_dir, self.pp_json_filename)
@@ -251,7 +254,7 @@ class ErrorBudget(object):
                            , num_angles=27):
         """
         Utility to create an input JSON file (named by `self.pp_json_filename`)
-        with WFE, sensitivity, and post-processing parameters.  
+        with user-created WFE, sensitivity, and post-processing parameters.  
 
         """
         path_ref = os.path.join(self.input_dir, self.ref_json_filename)
