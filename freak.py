@@ -33,6 +33,8 @@ class ErrorBudget(object):
     
     Parameters
     ----------
+    input_dir : `os.path`
+        Directory path where the above-listed input files reside
     ref_json_filename : str
         Name of JSON file specifying the initial EXOSIMS parameters, without 
         considering any wavefront drifts. 
@@ -51,7 +53,7 @@ class ErrorBudget(object):
         Luminosity values of the target stars [log10(L*/L_sun)]
     eeid : list
         Earth-equivalent insolation distance values of the target stars 
-        [mas]
+        [as]
     eepsr : list
         Earth-equivalent planet-star flux ratio of the target stars
     exo_zodi : list
@@ -60,8 +62,6 @@ class ErrorBudget(object):
 
     Attributes
     ----------
-    input_dir : `os.path`
-        Directory path where the above-listed input files reside
     input_dict : dict
         Dictionary of parameters loaded from `pp_json_filename` file
     wfe : array 
@@ -127,7 +127,9 @@ class ErrorBudget(object):
 
     """
 
-    def __init__(self, ref_json_filename="test_ref.json"
+    def __init__(self
+                 , input_dir=os.path.join(".", "inputs")
+                 , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
                  , output_json_filename="test_output.json"
                  , contrast_filename="contrast.csv"
@@ -136,6 +138,7 @@ class ErrorBudget(object):
                  , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
                  , exo_zodi=5*[0.0]):
+        self.input_dir = input_dir
         self.target_list = target_list
         self.luminosity = luminosity
         self.exo_zodi = exo_zodi
@@ -145,7 +148,6 @@ class ErrorBudget(object):
         self.pp_json_filename = pp_json_filename
         self.output_json_filename = output_json_filename
         self.contrast_filename = contrast_filename
-        self.input_dir = os.path.join(".", "inputs")
         self.input_dict = None
         self.wfe = None
         self.wfsc_factor = None
