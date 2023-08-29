@@ -358,7 +358,7 @@ class ErrorBudget(object):
         Write EXOSIMS results to a JSON file.  
 
         """
-        path = os.path.join(".", "..", "ctr_out", self.output_json_filename)
+        path = os.path.join(".", "..", "freak_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
@@ -403,7 +403,7 @@ def _demo():
     # Now instantiate and run the calculation
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
-    # View the results in "./../ctr_output/`self.outupt_json_filename`
+    # View the results in "./../freak_out/`self.outupt_json_filename`
     return x
 
 
