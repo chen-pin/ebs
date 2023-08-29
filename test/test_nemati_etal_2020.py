@@ -1,5 +1,6 @@
 import os
 import math
+import pytest as pt
 import numpy as np
 import astropy.units as u
 from freak import freak
@@ -37,7 +38,7 @@ def test_nemati2020():
     print("int_time: {}".format(t.int_time))
     print("ppFact: {}".format(t.ppFact))
     print("working_angles:  {}".format(t.working_angles))
-    assert t.int_time[1][1] == approx(25*u.hour, 0.5)
+    assert t.int_time[1][1] == pt.approx(25*u.hour, 0.5)
 
 
 
