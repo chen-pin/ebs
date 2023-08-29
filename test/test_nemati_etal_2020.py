@@ -27,7 +27,7 @@ def test_nemati2020():
     num_spatial_modes = 13
     num_temporal_modes = 1
     num_angles = 27
-    wfe = (1.72*np.ones((num_temporal_modes, num_spatial_modes)))
+    wfe = (0.96*np.ones((num_temporal_modes, num_spatial_modes)))
     wfsc_factor = 0.5*np.ones_like(wfe)
     sensitivity = (
         np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84
@@ -38,7 +38,7 @@ def test_nemati2020():
     print("int_time: {}".format(t.int_time))
     print("ppFact: {}".format(t.ppFact))
     print("working_angles:  {}".format(t.working_angles))
-    assert t.int_time[1][1] == pt.approx(25*u.hour, 0.5)
+    assert t.int_time[1][1].value*24 == pt.approx(25, 0.5)
 
 
 
