@@ -358,7 +358,7 @@ class ErrorBudget(object):
         Write EXOSIMS results to a JSON file.  
 
         """
-        path = os.path.join(".", "..", "freak_out", self.output_json_filename)
+        path = os.path.join("..", "freak_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
