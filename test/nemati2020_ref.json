@@ -49,7 +49,7 @@
             "occulter": false,
             "IWA": 0.02,
             "OWA": 0.5,
-            "occ_trans": 0.3,
+            "occ_trans": 1.0,
             "core_thruput": "./test/nemati2020_throughput.csv",
             "core_area": 0.0005,
             "core_contrast": "./test/nemati2020_contrast.csv"
