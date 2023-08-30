@@ -57,7 +57,7 @@
     ],
     "observingModes": [
         {
-            "SNR": 7.0,
+            "SNR": 3.0,
             "detectionMode": true,
             "instName": "CONF_NF_Imager",
             "systName": "coronagraph",

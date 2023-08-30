@@ -8,6 +8,10 @@ from freak import freak
 
 @pt.fixture
 def obs():
+    """
+    Instantiate EXOSIMS object.
+
+    """
     t = freak.ErrorBudget(input_dir=os.path.join(".", "test")
                           , ref_json_filename="nemati2020_ref.json"
                           , pp_json_filename="nemati2020_pp.json"
@@ -21,8 +25,8 @@ def obs():
     num_spatial_modes = 13
     num_temporal_modes = 1
     num_angles = 27
-    wfe = (0.96*np.ones((num_temporal_modes, num_spatial_modes)))
-    wfsc_factor = 0.5*np.ones_like(wfe)
+    wfe = 1.72*np.random.rand(num_temporal_modes, num_spatial_modes)
+    wfsc_factor = 0.5*np.random.rand(wfe.shape[0], wfe.shape[1])
     sensitivity = (
         np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84
                             , 9.09, 3.68, 9.33, 15.0, 0.745])
@@ -32,7 +36,7 @@ def obs():
     return t
 
 
-def test_Stark_2014(obs):
+def test_count_rates(obs):
     """
     Test count rates against values computed using formulas in Stark et al. (2014) ApJ.  
     Stark et al. assumed that `r_sp` was negligible.
@@ -43,6 +47,25 @@ def test_Stark_2014(obs):
     assert obs.C_sr[1][1].value == pt.approx(0.0879, 0.2)
     assert obs.C_z[1][1].value == pt.approx(0.022, 0.1)
     assert obs.C_ez[1][1].value == pt.approx(0.166, 0.1)
+
+
+def test_ppFact(obs):
+    num_temporal_modes = obs.wfe.shape[0]
+    num_spatial_modes = obs.wfe.shape[1]
+    num_angles = obs.sensitivity.shape[0]
+    rss_wfe_residual = np.empty(num_spatial_modes)
+    speckle_intensity = np.empty(num_angles)
+    for s_mode in range(num_spatial_modes):
+        rss_wfe_residual[s_mode] = np.sqrt(
+                (obs.post_wfsc_wfe[:,s_mode]**2).sum()
+                                          )
+    print(rss_wfe_residual.shape)
+    for angle in range(num_angles):
+        speckle_intensity[angle] = 1e-12*np.sqrt(
+                (np.multiply(rss_wfe_residual, obs.sensitivity[angle,:])**2)
+                .sum())
+    assert (obs.delta_contrast == speckle_intensity).all()
+
 
 
 
