@@ -38,8 +38,8 @@ def obs():
 
 def test_count_rates(obs):
     """
-    Test count rates against values computed using formulas in Stark et al. (2014) ApJ.  
-    Stark et al. assumed that `r_sp` was negligible.
+    Test count rates against values computed using formulas in Stark et al. 
+    (2014) ApJ.  Stark et al. assumed that `r_sp` was negligible.
 
     """
     assert obs.C_p[1][1].value == pt.approx(0.0673, 0.2)
@@ -50,6 +50,10 @@ def test_count_rates(obs):
 
 
 def test_ppFact(obs):
+    """
+    Check self-consistency in array computations of ppFact.
+
+    """
     num_temporal_modes = obs.wfe.shape[0]
     num_spatial_modes = obs.wfe.shape[1]
     num_angles = obs.sensitivity.shape[0]
@@ -67,6 +71,11 @@ def test_ppFact(obs):
 
 
 def test_exposure_time(obs):
+    """
+    Check exposure-time calculations against values computed using Eq. 28 in 
+    Nemati et al. (2020) JATIS.  
+
+    """
     snr = obs.input_dict["observingModes"][0]["SNR"]
     print("snr = {}".format(snr))
     C_b = np.array(obs.C_b)
