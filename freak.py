@@ -277,7 +277,7 @@ class ErrorBudget(object):
         """
         # build sim object:
         input_path = os.path.join(self.input_dir, 'temp.json')
-        sim = ems.MissionSim(str(input_path))
+        sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False)
         
         # identify targets of interest
         targnames = [f"HIP {n}" for n in self.target_list]

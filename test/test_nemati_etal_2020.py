@@ -5,15 +5,13 @@ import numpy as np
 import astropy.units as u
 from freak import freak
 
-def test_math():
-    num = 25
-    assert math.sqrt(num) == 5
 
-def test_default():
-    t = freak._demo()
-    assert t.int_time[0][0] == 0.505681554577927*u.d
+def test_Stark_2014():
+    """
+    Test count rates against values computed using formulas in Stark et al. (2014) ApJ.  
+    Stark et al. assumed that `r_sp` was negligible.
 
-def test_nemati2020():
+    """
     t = freak.ErrorBudget(input_dir=os.path.join(".", "test")
                           , ref_json_filename="nemati2020_ref.json"
                           , pp_json_filename="nemati2020_pp.json"
@@ -35,10 +33,11 @@ def test_nemati2020():
                  .reshape(num_angles, num_spatial_modes)
                   )
     t.run_etc(wfe, wfsc_factor, sensitivity)
-    print("int_time: {}".format(t.int_time))
-    print("ppFact: {}".format(t.ppFact))
-    print("working_angles:  {}".format(t.working_angles))
-    assert t.int_time[1][1].value*24 == pt.approx(25, 0.5)
+    assert t.C_p[1][1].value == pt.approx(0.0673, 0.2)
+    assert t.C_b[1][1].value == pt.approx(0.275, 0.2)
+    assert t.C_sr[1][1].value == pt.approx(0.0879, 0.2)
+    assert t.C_z[1][1].value == pt.approx(0.022, 0.1)
+    assert t.C_ez[1][1].value == pt.approx(0.166, 0.1)
 
 
 
