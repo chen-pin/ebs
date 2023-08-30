@@ -6,12 +6,8 @@ import astropy.units as u
 from freak import freak
 
 
-def test_Stark_2014():
-    """
-    Test count rates against values computed using formulas in Stark et al. (2014) ApJ.  
-    Stark et al. assumed that `r_sp` was negligible.
-
-    """
+@pt.fixture
+def obs():
     t = freak.ErrorBudget(input_dir=os.path.join(".", "test")
                           , ref_json_filename="nemati2020_ref.json"
                           , pp_json_filename="nemati2020_pp.json"
@@ -33,11 +29,20 @@ def test_Stark_2014():
                  .reshape(num_angles, num_spatial_modes)
                   )
     t.run_etc(wfe, wfsc_factor, sensitivity)
-    assert t.C_p[1][1].value == pt.approx(0.0673, 0.2)
-    assert t.C_b[1][1].value == pt.approx(0.275, 0.2)
-    assert t.C_sr[1][1].value == pt.approx(0.0879, 0.2)
-    assert t.C_z[1][1].value == pt.approx(0.022, 0.1)
-    assert t.C_ez[1][1].value == pt.approx(0.166, 0.1)
+    return t
+
+
+def test_Stark_2014(obs):
+    """
+    Test count rates against values computed using formulas in Stark et al. (2014) ApJ.  
+    Stark et al. assumed that `r_sp` was negligible.
+
+    """
+    assert obs.C_p[1][1].value == pt.approx(0.0673, 0.2)
+    assert obs.C_b[1][1].value == pt.approx(0.275, 0.2)
+    assert obs.C_sr[1][1].value == pt.approx(0.0879, 0.2)
+    assert obs.C_z[1][1].value == pt.approx(0.022, 0.1)
+    assert obs.C_ez[1][1].value == pt.approx(0.166, 0.1)
 
 
 
