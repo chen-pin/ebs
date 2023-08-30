@@ -13,10 +13,10 @@ def obs():
 
     """
     t = freak.ErrorBudget(input_dir=os.path.join(".", "test")
-                          , ref_json_filename="nemati2020_ref.json"
-                          , pp_json_filename="nemati2020_pp.json"
-                          , output_json_filename="nemati2020_test_output.json"
-                          , contrast_filename="nemati2020_contrast.csv"
+                          , ref_json_filename="test_ref.json"
+                          , pp_json_filename="test_pp.json"
+                          , output_json_filename="test_output.json"
+                          , contrast_filename="test_contrast.csv"
                           , target_list=[57443, 15457, 72659]
                           , luminosity=[-0.0737, -0.0669, -0.2572]
                           , eeid=[0.09858, 0.09981, 0.11012]
@@ -59,12 +59,23 @@ def test_ppFact(obs):
         rss_wfe_residual[s_mode] = np.sqrt(
                 (obs.post_wfsc_wfe[:,s_mode]**2).sum()
                                           )
-    print(rss_wfe_residual.shape)
     for angle in range(num_angles):
         speckle_intensity[angle] = 1e-12*np.sqrt(
                 (np.multiply(rss_wfe_residual, obs.sensitivity[angle,:])**2)
                 .sum())
     assert (obs.delta_contrast == speckle_intensity).all()
+
+
+def test_exposure_time(obs):
+    snr = obs.input_dict["observingModes"][0]["SNR"]
+    print("snr = {}".format(snr))
+    C_b = np.array(obs.C_b)
+    C_p = np.array(obs.C_p)
+    C_sp = np.array(obs.C_sp)
+    int_time = np.array(obs.int_time)
+    tau = (np.true_divide(snr**2 * C_b , C_p**2 - snr**2 * C_sp**2))/(24*3600)
+    assert tau == pt.approx(int_time, 0.001)
+
 
 
 
