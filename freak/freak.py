@@ -391,10 +391,17 @@ class ErrorBudget(object):
         self.output_to_json()
 
 
-def _demo():
-    # Generate bogus wfe, wfsc_factor, and sensitivity arrays so we can 
-    # instantiate the `ErrorBudget` object.
-    num_spatial_modes = 14
+def example_nemati2020():
+    """
+    An example of how to run <freak> using sensitivities for the 
+    "6-m off-axis segmented with VVC-6" case in the reference.
+
+    Reference
+    ---------
+    Nemati et al. (2020) JATIS, Fig 26
+
+    """
+    num_spatial_modes = 13
     num_temporal_modes = 6
     num_angles = 27
     wfe = (0.65*np.ones((num_temporal_modes, num_spatial_modes)))

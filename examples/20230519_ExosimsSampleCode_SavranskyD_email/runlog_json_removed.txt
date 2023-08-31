@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/media/sf_C_DRIVE/Users/pinchen/Documents/ExEP_Technology_Office/Coronagraph_Roadmap_Working_Group/Error_Budget/ctr-error-budget/examples/20230519_ExosimsSampleCode_SavranskyD_email/sample_exosims_intTime_calculation.py", line 7, in <module>
-    sim = EXOSIMS.MissionSim.MissionSim("sample_exosims_inputspec.json")
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/pinchen/EXOSIMS-3.1.3/EXOSIMS/MissionSim.py", line 110, in __init__
-    assert os.path.isfile(scriptfile), "%s is not a file." % scriptfile
-AssertionError: sample_exosims_inputspec.json is not a file.
