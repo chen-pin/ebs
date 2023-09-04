@@ -5,12 +5,12 @@ import json as js
 from astropy.io import fits
 import astropy.units as u
 import EXOSIMS.MissionSim as ems
-from freak import freak
+from ebs import ebs
 
 
 def nemati2020_vvc6():
     """
-    An example of how to run <freak> using sensitivities for the 
+    An example of how to run <ebs> using sensitivities for the 
     "6-m off-axis segmented with VVC-6" case in the reference.
 
     Reference
@@ -19,7 +19,7 @@ def nemati2020_vvc6():
 
     """
     # Instantiate the ErrorBudget object
-    error_budget = freak.ErrorBudget(
+    error_budget = ebs.ErrorBudget(
                         input_dir=os.path.join(".", "inputs")
                       , ref_json_filename="example_ref.json"
                       , pp_json_filename="example_pp.json"

@@ -3,7 +3,7 @@ import math
 import pytest as pt
 import numpy as np
 import astropy.units as u
-from freak import freak
+from ebs import ebs
 
 
 @pt.fixture
@@ -12,7 +12,7 @@ def obs():
     Instantiate EXOSIMS object.
 
     """
-    t = freak.ErrorBudget(input_dir=os.path.join(".", "test")
+    t = ebs.ErrorBudget(input_dir=os.path.join(".", "test")
                           , ref_json_filename="test_ref.json"
                           , pp_json_filename="test_pp.json"
                           , output_json_filename="test_output.json"

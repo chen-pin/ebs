@@ -358,7 +358,7 @@ class ErrorBudget(object):
         Write EXOSIMS results to a JSON file.  
 
         """
-        path = os.path.join("..", "freak_out", self.output_json_filename)
+        path = os.path.join("..", "ebs_out", self.output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
@@ -393,7 +393,7 @@ class ErrorBudget(object):
 
 def example_nemati2020():
     """
-    An example of how to run <freak> using sensitivities for the 
+    An example of how to run <ebs> using sensitivities for the 
     "6-m off-axis segmented with VVC-6" case in the reference.
 
     Reference
@@ -410,7 +410,7 @@ def example_nemati2020():
     # Now instantiate and run the calculation
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
-    # View the results in "./../freak_out/`self.outupt_json_filename`
+    # View the results in "./../ebs_out/`self.outupt_json_filename`
     return x
 
 
