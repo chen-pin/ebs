@@ -1,5 +1,6 @@
 import os
 import math
+import json as js
 import pytest as pt
 import numpy as np
 import astropy.units as u
@@ -32,7 +33,7 @@ def obs():
                             , 9.09, 3.68, 9.33, 15.0, 0.745])
                  .reshape(num_angles, num_spatial_modes)
                   )
-    t.run_etc(wfe, wfsc_factor, sensitivity)
+    t.run_etc(wfe, wfsc_factor, sensitivity, var_par=False)
     return t
 
 
@@ -86,6 +87,14 @@ def test_exposure_time(obs):
     assert tau == pt.approx(int_time, 0.001)
 
 
+def test_var_pars(obs):
+    diameters = (5.0, 6.0, 7.0)
+    obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, True
+              , None, 'pupilDiam', 6.0)
+    path = os.path.join(obs.input_dir, obs.pp_json_filename)
+    with open(path) as f:
+        input_dict = js.load(f)
+    assert input_dict['pupilDiam'] == diameters
 
 
 

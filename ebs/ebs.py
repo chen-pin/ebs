@@ -251,9 +251,7 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
 
-    def create_pp_json(self, wfe, wfsc_factor, sensitivity
-                           , num_spatial_modes=14, num_temporal_modes=6
-                           , num_angles=27):
+    def create_pp_json(self, wfe, wfsc_factor, sensitivity):
         """
         Utility to create an input JSON file (named by `self.pp_json_filename`)
         with user-created WFE, sensitivity, and post-processing parameters.  
@@ -375,7 +373,7 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, wfe, wfsc_factor, sensitivity):
+    def run_etc(self, wfe, wfsc_factor, sensitivity, var_par, *args):
         """
         Run end-to-end sequence of methods to produce results written to 
         output JSON file.  
@@ -386,6 +384,14 @@ class ErrorBudget(object):
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
+        if var_par:
+            if args[0] == None:
+                if args[1] == 'pupilDiam':
+                    self.input_dict['pupilDiam'] = args[2]
+                else: 
+                    print("Error in specifying EXOSIMS parameter to be varied")
+            else:
+                self.input_dict[args[0]][0][args[1]] = args[2]
         self.write_temp_json()
         self.run_exosims()
         self.output_to_json()
