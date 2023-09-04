@@ -88,12 +88,15 @@ def test_exposure_time(obs):
 
 def test_var_pars(obs):
     qe = (0.7, 0.8, 0.9)
-    obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, True
-              , 'scienceInstruments', 'QE', qe)
+    output_filename = 'test_var_par_output'
+    obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', True
+                , 'scienceInstruments', 'QE', qe)
     path = os.path.join(obs.input_dir, obs.pp_json_filename)
-    with open(path) as f:
-        input_dict = js.load(f)
-    assert input_dict['scienceInstruments'][0]['QE'] == qe
+    for value in qe:
+        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
+        with open(path) as f:
+            input_dict = js.load(f)
+        assert input_dict['scienceInstruments'][0]['QE'] == value
 
 
 

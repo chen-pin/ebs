@@ -35,6 +35,8 @@ class ErrorBudget(object):
     ----------
     input_dir : `os.path`
         Directory path where the above-listed input files reside
+    output_dir : `os.path`
+        Directory path where the output files will be saved
     ref_json_filename : str
         Name of JSON file specifying the initial EXOSIMS parameters, without 
         considering any wavefront drifts. 
@@ -126,6 +128,7 @@ class ErrorBudget(object):
 
     def __init__(self
                  , input_dir=os.path.join(".", "inputs")
+                 , output_dir=os.path.join("..", "ebs_out")
                  , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
@@ -135,6 +138,7 @@ class ErrorBudget(object):
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
                  , exo_zodi=5*[0.0]):
         self.input_dir = input_dir
+        self.output_dir = output_dir
         self.target_list = target_list
         self.luminosity = luminosity
         self.exo_zodi = exo_zodi
@@ -236,15 +240,16 @@ class ErrorBudget(object):
             arr = np.vstack((self.angles, self.ppFact)).T
             fits.writeto(f, arr, overwrite=True)
 
-    def write_temp_json(self):
+    def write_temp_json(self, filename='temp.json'):
         """
         Write `self.input_dict` to temporary JSON file for running EXOSIMS.
 
         """
         self.input_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
-        path = os.path.join(self.input_dir, "temp.json")
+        path = os.path.join(self.input_dir, filename)
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
+        return filename
 
     def create_pp_json(self, wfe, wfsc_factor, sensitivity):
         """
@@ -262,14 +267,14 @@ class ErrorBudget(object):
         with open(path_pp, 'w') as f:
             js.dump(input_dict, f, indent=4)
         
-    def run_exosims(self):
+    def run_exosims(self, temp_json_filename):
         """
         Run EXOSIMS to generate results, including exposure times 
         required for reaching specified SNR.  
 
         """
         # build sim object:
-        input_path = os.path.join(self.input_dir, 'temp.json')
+        input_path = os.path.join(self.input_dir, temp_json_filename)
         sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False)
         
         # identify targets of interest
@@ -358,7 +363,7 @@ class ErrorBudget(object):
             `instantiated `ErrorBudget` object
 
         """
-        path = os.path.join("..", "ebs_out", output_json_filename)
+        path = os.path.join(self.output_dir, output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
@@ -375,7 +380,8 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, wfe, wfsc_factor, sensitivity, output_json_filename
+    def run_etc(self, wfe, wfsc_factor, sensitivity
+                , output_filename_prefix
                 ,var_par, *args):
         """
         Run end-to-end sequence of methods to produce results written to 
@@ -410,6 +416,13 @@ class ErrorBudget(object):
                 'QE', or 'SNR')
                 3. List_like data providing the range of parameter values
 
+        Note
+        ----
+        - If `var_par`==True, the EXOSIMS parameter name and the iterated 
+        value will be appended to the name of each output JSON file
+        - See EXOSIMS documentation for EXOSIMS parameters:  
+            - https://exosims.readthedocs.io/en/latest/opticalsystem.html
+
 
         """
         self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor
@@ -418,22 +431,34 @@ class ErrorBudget(object):
         self.load_csv_contrast()
         self.compute_ppFact()
         if var_par:
-            instances = []
             if args[0] == None:
                 if args[1] == 'pupilDiam':
                     for value in args[2]:
-                        self.input_dict[args1] = value
-                        self.write_temp_json()
-                        self.run_exosims()
-                        self.output_to_json()
+                        self.input_dict[args[1]] = value
+                        temp_json_filename = self.write_temp_json(
+                                             'temp_'+args[1]+'_'+str(value)
+                                             +'.json'
+                                                                 )
+                        self.run_exosims(temp_json_filename)
+                        filename = (output_filename_prefix+'_'+args[1]+'_'
+                                    +str(value))
+                        self.output_to_json(filename)
                 else: 
                     print("Error in specifying EXOSIMS parameter to be varied")
             else:
-                self.input_dict[args[0]][0][args[1]] = args[2]
+                for value in args[2]:
+                    self.input_dict[args[0]][0][args[1]] = value
+                    temp_json_filename = self.write_temp_json(
+                                         'temp_'+args[1]+'_'+str(value)
+                                         +'.json')
+                    self.run_exosims(temp_json_filename)
+                    filename = (output_filename_prefix+'_'+args[1]+'_'
+                                +str(value)+'.json')
+                    self.output_to_json(filename)
         else:
-            self.write_temp_json()
-            self.run_exosims()
-            self.output_to_json(output_json_filename)
+            temp_json_filename = self.write_temp_json()
+            self.run_exosims(temp_json_filename)
+            self.output_to_json(output_filename_prefix+'.json')
 
 
 def example_nemati2020():
@@ -455,7 +480,6 @@ def example_nemati2020():
     # Now instantiate and run the calculation
     x = ErrorBudget()
     x.run_etc(wfe, wfsc_factor, sensitivity)
-    # View the results in "./../ebs_out/`self.outupt_json_filename`
     return x
 
 
