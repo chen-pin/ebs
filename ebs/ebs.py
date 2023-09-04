@@ -41,9 +41,6 @@ class ErrorBudget(object):
     pp_json_filename : str
         Name of JSON file that has WFE, WFS&C factors, and sensitivity 
         coefficients appended to the reference EXOSIMS parameters.
-    output_json_filename : str
-        Name of JSON file containing select attributes, with values, of the
-        instantiated `ErrorBudget` object
     contrast_filename : str
         Name of CSV file specifying contrast of th reference dark hole 
         (i.e. contrast obtained on the reference star)
@@ -72,13 +69,13 @@ class ErrorBudget(object):
         Wavefront-change-mitigation factors, loaded from the input JSON file.  
         Values should be between 0 and 1.    
         Dimensions:  same as `wfe`
-    post_wfsc_wfe : array
-        Element-by-element product of `wfe` and `wfsc_factor`.  
-        Dimensions:  same as `wfe`
     sensitivity : array
         Coefficients of contrast sensitivity w.r.t. wavefront changes, 
         in ppt/pm units.  
         Dimensions:  (num_angles, num_spatial_modes)
+    post_wfsc_wfe : array
+        Element-by-element product of `wfe` and `wfsc_factor`.  
+        Dimensions:  same as `wfe`
     delta_contrast : array
         Change in contrast due to residual wavefront error after WFS&C. 
         Dimensions:  (num_angles)
@@ -131,7 +128,6 @@ class ErrorBudget(object):
                  , input_dir=os.path.join(".", "inputs")
                  , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
-                 , output_json_filename="test_output.json"
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
                  , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
@@ -146,7 +142,6 @@ class ErrorBudget(object):
         self.eepsr = eepsr
         self.ref_json_filename = ref_json_filename
         self.pp_json_filename = pp_json_filename
-        self.output_json_filename = output_json_filename
         self.contrast_filename = contrast_filename
         self.input_dict = None
         self.wfe = None
@@ -351,12 +346,19 @@ class ErrorBudget(object):
             self.C_rn.append(counts[3]["C_rn"])
             self.C_star.append(counts[3]["C_star"])
 
-    def output_to_json(self):
+    def output_to_json(self, output_json_filename):
+                 
         """
-        Write EXOSIMS results to a JSON file.  
+        Write EXOSIMS results to a JSON file. 
+
+        Parameters
+        ----------
+        output_json_filename : str
+            Name of JSON file containing select attributes, with values, of the
+            `instantiated `ErrorBudget` object
 
         """
-        path = os.path.join("..", "ebs_out", self.output_json_filename)
+        path = os.path.join("..", "ebs_out", output_json_filename)
         output_dict = {
                 "int_time": [x.value.tolist() for x in self.int_time],
                 "ppFact": self.ppFact.tolist(),
@@ -373,10 +375,41 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, wfe, wfsc_factor, sensitivity, var_par, *args):
+    def run_etc(self, wfe, wfsc_factor, sensitivity, output_json_filename
+                ,var_par, *args):
         """
         Run end-to-end sequence of methods to produce results written to 
-        output JSON file.  
+        output JSON file. 
+
+        Parameters
+        ----------
+        wfe : array 
+            Wavefront changes specified in spatio-temporal bins, loaded from 
+            the input JSON file, in pm units.  
+            Dimensions:  (num_temporal_modes, num_spatial_modes).
+        wfsc_factor : array
+            Wavefront-change-mitigation factors, loaded from the input JSON 
+            file.  Values should be between 0 and 1.    
+            Dimensions:  same as `wfe`
+        sensitivity : array
+            Coefficients of contrast sensitivity w.r.t. wavefront changes, 
+            in ppt/pm units.  
+            Dimensions:  (num_angles, num_spatial_modes)
+        var_par : bool
+            Whether or not the user wants to input a range of values for an 
+            EXOSIMS 'scienceInstruments', 'starlightSuppressionSystems', or 
+            'observingModes' parameter.
+        *args 
+            If `var_par` == True, enter 3 additional arguments:  
+                1. String indicating the EXOSIMS subsystem.  Possible values 
+                comprise the following 
+                    - 'scienceInstruments'
+                    - 'starlightSuppressionSystems' 
+                    - 'observingModes'
+                2. String indicating the EXOSIMS paramter (e.g. 'optics', 
+                'QE', or 'SNR')
+                3. List_like data providing the range of parameter values
+
 
         """
         self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor
@@ -385,16 +418,22 @@ class ErrorBudget(object):
         self.load_csv_contrast()
         self.compute_ppFact()
         if var_par:
+            instances = []
             if args[0] == None:
                 if args[1] == 'pupilDiam':
-                    self.input_dict['pupilDiam'] = args[2]
+                    for value in args[2]:
+                        self.input_dict[args1] = value
+                        self.write_temp_json()
+                        self.run_exosims()
+                        self.output_to_json()
                 else: 
                     print("Error in specifying EXOSIMS parameter to be varied")
             else:
                 self.input_dict[args[0]][0][args[1]] = args[2]
-        self.write_temp_json()
-        self.run_exosims()
-        self.output_to_json()
+        else:
+            self.write_temp_json()
+            self.run_exosims()
+            self.output_to_json(output_json_filename)
 
 
 def example_nemati2020():

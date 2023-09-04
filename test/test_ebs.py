@@ -16,7 +16,6 @@ def obs():
     t = ebs.ErrorBudget(input_dir=os.path.join(".", "test")
                           , ref_json_filename="test_ref.json"
                           , pp_json_filename="test_pp.json"
-                          , output_json_filename="test_output.json"
                           , contrast_filename="test_contrast.csv"
                           , target_list=[57443, 15457, 72659]
                           , luminosity=[-0.0737, -0.0669, -0.2572]
@@ -33,7 +32,7 @@ def obs():
                             , 9.09, 3.68, 9.33, 15.0, 0.745])
                  .reshape(num_angles, num_spatial_modes)
                   )
-    t.run_etc(wfe, wfsc_factor, sensitivity, var_par=False)
+    t.run_etc(wfe, wfsc_factor, sensitivity, 'test_output.json', var_par=False)
     return t
 
 
@@ -88,13 +87,13 @@ def test_exposure_time(obs):
 
 
 def test_var_pars(obs):
-    diameters = (5.0, 6.0, 7.0)
+    qe = (0.7, 0.8, 0.9)
     obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, True
-              , None, 'pupilDiam', 6.0)
+              , 'scienceInstruments', 'QE', qe)
     path = os.path.join(obs.input_dir, obs.pp_json_filename)
     with open(path) as f:
         input_dict = js.load(f)
-    assert input_dict['pupilDiam'] == diameters
+    assert input_dict['scienceInstruments'][0]['QE'] == qe
 
 
 
