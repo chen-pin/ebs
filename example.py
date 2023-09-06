@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import json as js
 from astropy.io import fits
 import astropy.units as u
-import EXOSIMS.MissionSim as ems
+#import EXOSIMS.MissionSim as ems
 from ebs import ebs
 
 
@@ -23,7 +23,6 @@ def nemati2020_vvc6():
                         input_dir=os.path.join(".", "inputs")
                       , ref_json_filename="example_ref.json"
                       , pp_json_filename="example_pp.json"
-                      , output_json_filename="example_output.json"
                       , contrast_filename="example_contrast.csv"
                       , target_list=[32439, 77052, 79672, 26779, 113283]
                       , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.70]
@@ -32,6 +31,9 @@ def nemati2020_vvc6():
                           , exo_zodi=5*[3.0]
                           )
     
+    # Specify Spectral Type of stars in target_list
+    spT = ['F8V', 'G5V', 'G2Va', 'K1V', 'K4Ve']
+
     # Specify  WFE, WFS&C, and sensitivity input data
     num_spatial_modes = 13
     num_temporal_modes = 6
@@ -54,9 +56,15 @@ def nemati2020_vvc6():
     contrasts = np.array([1e-10, 2e-10, 5e-10])
     core_throughputs = np.array([0.08, 0.16, 0.32])
     # The following two files are required by EXOSIMS
-    contrast_filename = os.path.join(".", "inputs", "example_contrast.csv") 
+    contrast_filename = os.path.join(".", "inputs", error_budget.contrast_filename) 
     throughput_filename = os.path.join(".", "inputs", "example_throughput.csv")
     
+    # Specify output directory
+    output_dir=os.path.join(".", "output")
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+
     # Create arrays to hold output
     C_p = np.empty((3, 5, 3))  # Planet count rate [1/s]
     C_b = np.empty((3, 5, 3))  # Total background count rate 
@@ -86,7 +94,7 @@ def nemati2020_vvc6():
                                           *np.ones(num_angles)))
                        , delimiter=",", header=('r_as,core_thruput')
                        , comments="")
-            error_budget.run_etc(wfe, wfsc_factor, sensitivity)
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity, 'example_contrasts', False)
             C_p[k] = np.array(error_budget.C_p)
             C_b[k] = np.array(error_budget.C_b)
             C_sp[k] = np.array(error_budget.C_sp)
@@ -98,61 +106,45 @@ def nemati2020_vvc6():
             C_rn[k] = np.array(error_budget.C_rn)
             int_time[k] = np.array(error_budget.int_time)
         print(int_time)
+
         plt.figure(figsize=(16, 9))
-        plt.suptitle("Required Integration time (hr, SNR=7) vs. Raw Contrast")
-        plt.subplot(151)
-        star = 0
-        plt.title(str(error_budget.target_list[star])+' (F8V, EEID=74 mas)')
-        plt.plot(contrasts, 24*24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(152)
-        star = 1
-        plt.title(str(error_budget.target_list[star])+' (G5V, EEID=62 mas)')
-        plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(153)
-        star = 2
-        plt.title(str(error_budget.target_list[star])+' (G2Va, EEID=74 mas)')
-        plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(154)
-        star = 3
-        plt.title(str(error_budget.target_list[star])+' (K1V, EEID=56 mas)')
-        plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(155)
-        star = 4
-        plt.title(str(error_budget.target_list[star])+' (K4Ve, EEID=58 mas)')
-        plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.show()
+        plt.rcParams.update({'font.size': 12})
+        plt.suptitle("Required Integration time (hr, SNR=7) vs. Raw Contrast", fontsize=20)
+        
+        for star in range(len(spT)):
+            plt.subplot(1,5,star+1)
+            txt = 'HIP%s\n%s, EEID=%imas'%(error_budget.target_list[star], spT[star], \
+                                            np.round(error_budget.eeid[star]*1000))
+            plt.title(txt)
+            plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
+            plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
+            plt.plot(contrasts, 24*int_time[:, star, 2], label='outer HZ')
+            plt.legend()
+
+
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 't-vs-c.pdf'))
 
 
     elif sel == 't':
         # Loop through core-throughput values while holding contrast at 
         # mid-value
+        plt.figure(figsize=(16, 9))
+        plt.rcParams.update({'font.size': 12})
+        plt.suptitle("Required Integration time (hr, SNR=7) vs. Core Throughput", fontsize=20)
+        
         for t, throughput in enumerate(core_throughputs):
-            np.savetxt(throughput_filename
+            np.savetxt(contrast_filename
                        , np.column_stack((angles
                                           , contrasts[1]*np.ones(num_angles)))
-                       , delimiter=",", header=('r_as,contrast_thruput')
+                       , delimiter=",", header=('r_as,core_contrast')
                        , comments="")
             np.savetxt(throughput_filename
                        , np.column_stack((angles
                                         , throughput*np.ones(num_angles)))
                        , delimiter=",", header=('r_as,core_thruput')
                        , comments="")
-            error_budget.run_etc(wfe, wfsc_factor, sensitivity)
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity, 'example_core_tputs', False)
             C_p[t] = np.array(error_budget.C_p)
             C_b[t] = np.array(error_budget.C_b)
             C_sp[t] = np.array(error_budget.C_sp)
@@ -163,46 +155,20 @@ def nemati2020_vvc6():
             C_dc[t] = np.array(error_budget.C_dc)
             C_rn[t] = np.array(error_budget.C_rn)
             int_time[t] = np.array(error_budget.int_time)
-        print(int_time)
-        plt.figure(figsize=(16, 9))
-        plt.suptitle(
-                "Required Integration time (hr, SNR=7) vs. Core Throughput")
-        plt.subplot(151)
-        star = 0
-        plt.title(str(error_budget.target_list[star])+' (F8V, EEID=74 mas)')
-        plt.plot(core_throughputs, 24*24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(152)
-        star = 1
-        plt.title(str(error_budget.target_list[star])+' (G5V, EEID=62 mas)')
-        plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(153)
-        star = 2
-        plt.title(str(error_budget.target_list[star])+' (G2Va, EEID=74 mas)')
-        plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(154)
-        star = 3
-        plt.title(str(error_budget.target_list[star])+' (K1V, EEID=56 mas)')
-        plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.subplot(155)
-        star = 4
-        plt.title(str(error_budget.target_list[star])+' (K4Ve, EEID=58 mas)')
-        plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-        plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
-        plt.legend()
-        plt.show()
+            print(int_time)
+
+        for star in range(len(spT)):
+            plt.subplot(1,5,star+1)
+            txt = 'HIP%s\n%s, EEID=%imas'%(error_budget.target_list[star], spT[star], \
+                                            np.round(error_budget.eeid[star]*1000))
+            plt.title(txt)
+            plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
+            plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
+            plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
+            plt.legend()
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 't-vs-tau.pdf'))
 
 
 
