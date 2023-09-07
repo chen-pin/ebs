@@ -128,7 +128,7 @@ class ErrorBudget(object):
 
     def __init__(self
                  , input_dir=os.path.join(".", "inputs")
-                 , output_dir=os.path.join("..", "ebs_out")
+                 , output_dir=os.path.join(".", "output")
                  , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
@@ -377,6 +377,8 @@ class ErrorBudget(object):
                 "C_ez": [x.value.tolist() for x in self.C_ez], 
                 "C_dc": [x.value.tolist() for x in self.C_dc], 
                 "C_rn": [x.value.tolist() for x in self.C_rn]}
+        if not os.path.exists(self.output_dir):
+            os.mkdir(self.output_dir)
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
