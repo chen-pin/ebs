@@ -10,8 +10,8 @@ for arugments `contrast_filename`, `ref_json_filename`, and
 `pp_json_filename` below.  One can create arrays of WFE, sensitivity, and 
 WFS&C values, and then use the `create_pp_json()` method to create the JSON 
 file.  
-- See the `_demo()` function in this module for the sequence of methods 
-one needs to execute to generate the results.
+- See <example.py> in the parent directory for an example on how to use this 
+module.
 """
 
 # Contributors:
@@ -485,6 +485,5 @@ def example_nemati2020():
     return x
 
 
-
-if __name__ == '__main__':
-    _demo()
+#if __name__ == '__main__':
+#    _demo()
