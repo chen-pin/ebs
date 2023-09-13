@@ -2,6 +2,9 @@
 # repository-specific
 output
 inputs
+test/temp*.json
+test/*pp.json
+test/ppFact.fits
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
