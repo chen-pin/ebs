@@ -1,10 +1,15 @@
 
 # repository-specific
 output
-inputs
+inputs/temp*.json
+inputs/*pp.json
+inputs/ppFact.fits
+inputs/*.swx
+inputs/obsolete/
 test/temp*.json
 test/*pp.json
 test/ppFact.fits
+test/*.swx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

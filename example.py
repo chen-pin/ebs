@@ -56,7 +56,8 @@ def nemati2020_vvc6():
     contrasts = np.array([1e-10, 2e-10, 5e-10])
     core_throughputs = np.array([0.08, 0.16, 0.32])
     # The following two files are required by EXOSIMS
-    contrast_filename = os.path.join(".", "inputs", error_budget.contrast_filename) 
+    contrast_filename = os.path.join(".", "inputs"
+                                     , error_budget.contrast_filename) 
     throughput_filename = os.path.join(".", "inputs", "example_throughput.csv")
     
     # Specify output directory
