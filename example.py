@@ -55,6 +55,8 @@ def nemati2020_vvc6():
     # through to produce plots
     contrasts = np.array([1e-10, 2e-10, 5e-10])
     core_throughputs = np.array([0.08, 0.16, 0.32])
+    dark_currents = np.array([1.5e-5, 3e-5, 6e-5])
+    iwas = np.array([0.05, 0.07, 0.09])
     # The following two files are required by EXOSIMS
     contrast_filename = os.path.join(".", "inputs"
                                      , error_budget.contrast_filename) 
@@ -80,7 +82,9 @@ def nemati2020_vvc6():
     C_rn = np.empty((3, 5, 3))  # Read noise count rate
     int_time = np.empty((3, 5, 3))  # Required integration time to reach SNR
 
-    sel = input("Loop over contrast [c] or throughput [t]?  ")
+    prompt = "Loop over contrast [c], throughput [t], IWA [i], or dark \
+noise [d]?  "
+    sel = input(prompt)
     if sel == 'c':
         #Loop through contrast values while holding core throughput at 
         # mid-value
@@ -95,7 +99,8 @@ def nemati2020_vvc6():
                                           *np.ones(num_angles)))
                        , delimiter=",", header=('r_as,core_thruput')
                        , comments="")
-            error_budget.run_etc(wfe, wfsc_factor, sensitivity, 'example_contrasts', False)
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity
+                                 , 'example_contrasts', False)
             C_p[k] = np.array(error_budget.C_p)
             C_b[k] = np.array(error_budget.C_b)
             C_sp[k] = np.array(error_budget.C_sp)
@@ -110,12 +115,16 @@ def nemati2020_vvc6():
 
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
-        plt.suptitle("Required Integration time (hr, SNR=7) vs. Raw Contrast", fontsize=20)
+        plt.suptitle("Required Integration time (hr, SNR=7) vs. Raw Contrast"
+                     , fontsize=20)
         
         for star in range(len(spT)):
             plt.subplot(1,5,star+1)
-            txt = 'HIP%s\n%s, EEID=%imas'%(error_budget.target_list[star], spT[star], \
-                                            np.round(error_budget.eeid[star]*1000))
+            txt = 'HIP%s\n%s, EEID=%imas'%(
+                    error_budget.target_list[star]
+                    , spT[star]
+                    , np.round(error_budget.eeid[star]*1000)
+                                          )
             plt.title(txt)
             plt.plot(contrasts, 24*int_time[:, star, 0], label='inner HZ')
             plt.plot(contrasts, 24*int_time[:, star, 1], label='mid HZ')
@@ -132,7 +141,9 @@ def nemati2020_vvc6():
         # mid-value
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
-        plt.suptitle("Required Integration time (hr, SNR=7) vs. Core Throughput", fontsize=20)
+        plt.suptitle(
+                     "Required Integration time (hr, SNR=7) vs. Core Throughput"
+                     , fontsize=20)
         
         for t, throughput in enumerate(core_throughputs):
             np.savetxt(contrast_filename
@@ -145,7 +156,8 @@ def nemati2020_vvc6():
                                         , throughput*np.ones(num_angles)))
                        , delimiter=",", header=('r_as,core_thruput')
                        , comments="")
-            error_budget.run_etc(wfe, wfsc_factor, sensitivity, 'example_core_tputs', False)
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity
+                                 , 'example_core_tputs', False)
             C_p[t] = np.array(error_budget.C_p)
             C_b[t] = np.array(error_budget.C_b)
             C_sp[t] = np.array(error_budget.C_sp)
@@ -158,19 +170,115 @@ def nemati2020_vvc6():
             int_time[t] = np.array(error_budget.int_time)
             print(int_time)
 
+    elif sel == 'd':
+        # Loop through detector dark-noise values.  Note that the calling 
+        # routine is different from the ones above because this is an 
+        # EXOSIMS parameter (i.e. a paramter specified in the reference JSON 
+        # file).  
+        plt.figure(figsize=(16, 9))
+        plt.rcParams.update({'font.size': 12})
+        plt.suptitle(
+                     "Required Integration time (hr, SNR=7) vs. Dark Current"
+                     , fontsize=20)
+        
+        for m, idark in enumerate(dark_currents):
+            np.savetxt(contrast_filename
+                       , np.column_stack((angles
+                                          , contrasts[1]*np.ones(num_angles)))
+                       , delimiter=",", header=('r_as,core_contrast')
+                       , comments="")
+            np.savetxt(throughput_filename
+                       , np.column_stack((angles
+                                        , core_throughputs[1]*np.ones(
+                                                                  num_angles)))
+                       , delimiter=",", header=('r_as,core_thruput')
+                       , comments="")
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity
+                                 , 'example_dark_currents', True
+                                 , 'scienceInstruments', 'dark', [idark])
+            C_p[m] = np.array(error_budget.C_p)
+            C_b[m] = np.array(error_budget.C_b)
+            C_sp[m] = np.array(error_budget.C_sp)
+            C_star[m] = np.array(error_budget.C_star)
+            C_sr[m] = np.array(error_budget.C_sr)
+            C_z[m] = np.array(error_budget.C_z)
+            C_ez[m] = np.array(error_budget.C_ez)
+            C_dc[m] = np.array(error_budget.C_dc)
+            C_rn[m] = np.array(error_budget.C_rn)
+            int_time[m] = np.array(error_budget.int_time)
+            print(int_time)
         for star in range(len(spT)):
             plt.subplot(1,5,star+1)
-            txt = 'HIP%s\n%s, EEID=%imas'%(error_budget.target_list[star], spT[star], \
-                                            np.round(error_budget.eeid[star]*1000))
+            txt = 'HIP%s\n%s, EEID=%imas'%(
+                    error_budget.target_list[star]
+                    , spT[star], np.round(error_budget.eeid[star]*1000)
+                                          )
             plt.title(txt)
-            plt.plot(core_throughputs, 24*int_time[:, star, 0], label='inner HZ')
-            plt.plot(core_throughputs, 24*int_time[:, star, 1], label='mid HZ')
-            plt.plot(core_throughputs, 24*int_time[:, star, 2], label='outer HZ')
+            plt.plot(dark_currents, 24*int_time[:, star, 0]
+                     , label='inner HZ')
+            plt.plot(dark_currents, 24*int_time[:, star, 1]
+                     , label='mid HZ')
+            plt.plot(dark_currents, 24*int_time[:, star, 2]
+                     , label='outer HZ')
             plt.legend()
         
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 't-vs-tau.pdf'))
+        plt.savefig(os.path.join(output_dir, 't-vs-idark.pdf'))
 
+    elif sel == 'i':
+        # Loop through IWA values.  Note that the calling 
+        # routine is different from the ones above because this is an 
+        # EXOSIMS parameter (i.e. a paramter specified in the reference JSON 
+        # file).  
+        plt.figure(figsize=(16, 9))
+        plt.rcParams.update({'font.size': 12})
+        plt.suptitle(
+                     "Required Integration time (hr, SNR=7) vs. IWA"
+                     , fontsize=20)
+        
+        for n, iwa in enumerate(iwas):
+            np.savetxt(contrast_filename
+                       , np.column_stack((angles
+                                          , contrasts[1]*np.ones(num_angles)))
+                       , delimiter=",", header=('r_as,core_contrast')
+                       , comments="")
+            np.savetxt(throughput_filename
+                       , np.column_stack((angles
+                                        , core_throughputs[1]*np.ones(
+                                                                  num_angles)))
+                       , delimiter=",", header=('r_as,core_thruput')
+                       , comments="")
+            error_budget.run_etc(wfe, wfsc_factor, sensitivity
+                                 , 'example_IWA', True
+                                 , 'starlightSuppressionSystems', 'IWA', [iwa])
+            C_p[n] = np.array(error_budget.C_p)
+            C_b[n] = np.array(error_budget.C_b)
+            C_sp[n] = np.array(error_budget.C_sp)
+            C_star[n] = np.array(error_budget.C_star)
+            C_sr[n] = np.array(error_budget.C_sr)
+            C_z[n] = np.array(error_budget.C_z)
+            C_ez[n] = np.array(error_budget.C_ez)
+            C_dc[n] = np.array(error_budget.C_dc)
+            C_rn[n] = np.array(error_budget.C_rn)
+            int_time[n] = np.array(error_budget.int_time)
+            print(int_time)
+        for star in range(len(spT)):
+            plt.subplot(1,5,star+1)
+            txt = 'HIP%s\n%s, EEID=%imas'%(
+                    error_budget.target_list[star]
+                    , spT[star], np.round(error_budget.eeid[star]*1000)
+                                          )
+            plt.title(txt)
+            plt.plot(iwas, 24*int_time[:, star, 0]
+                     , label='inner HZ')
+            plt.plot(iwas, 24*int_time[:, star, 1]
+                     , label='mid HZ')
+            plt.plot(iwas, 24*int_time[:, star, 2]
+                     , label='outer HZ')
+            plt.legend()
+        
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 't-vs-IWA.pdf'))
 
 
 if __name__ == '__main__':
