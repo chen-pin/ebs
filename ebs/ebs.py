@@ -168,18 +168,6 @@ class ErrorBudget(object):
         self.C_rn = None
         self.int_time = None
 
-#    def xlsx2json(self):
-#        """
-#        Convert Exel input file into JSON file
-#        """
-#        sheet_name = ['KPP, no WFE', 'WFE', 'WFSC-PP factor']
-#        input_dict = pd.read_excel(io=self.input_path, sheet_name=sheet_name)
-#        df = input_dict['KPP, no WFE']
-#        print(df.iloc[30])
-#        with open(self.input_path.replace('.xlsx', '.json'), 'w') as f:
-#            for key in input_dict.keys():
-#                json_str = input_dict[key].to_json(f)
-
     def load_json(self, verbose=False):
         """
         Load the JSON input file, which contains reference EXOSIMS parameters 
@@ -461,29 +449,3 @@ class ErrorBudget(object):
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
             self.output_to_json(output_filename_prefix+'.json')
-
-
-def example_nemati2020():
-    """
-    An example of how to run <ebs> using sensitivities for the 
-    "6-m off-axis segmented with VVC-6" case in the reference.
-
-    Reference
-    ---------
-    Nemati et al. (2020) JATIS, Fig 26
-
-    """
-    num_spatial_modes = 13
-    num_temporal_modes = 6
-    num_angles = 27
-    wfe = (0.65*np.ones((num_temporal_modes, num_spatial_modes)))
-    wfsc_factor = 0.5*np.ones_like(wfe)
-    sensitivity = 1.69*np.ones((num_angles, num_spatial_modes))
-    # Now instantiate and run the calculation
-    x = ErrorBudget()
-    x.run_etc(wfe, wfsc_factor, sensitivity)
-    return x
-
-
-#if __name__ == '__main__':
-#    _demo()
