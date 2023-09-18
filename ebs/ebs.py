@@ -24,7 +24,7 @@ from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
 import EXOSIMS.MissionSim as ems
-
+from copy import deepcopy
 
 class ErrorBudget(object):
     """
@@ -136,10 +136,10 @@ class ErrorBudget(object):
                  , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
                  , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
-                 , exo_zodi=5*[0.0]):
+                 , exo_zodi=5*[0.0], npoints=3):
         self.input_dir = input_dir
         self.output_dir = output_dir
-        self.target_list = target_list
+        self.target_list = [f"HIP {n}" for n in target_list]
         self.luminosity = luminosity
         self.exo_zodi = exo_zodi
         self.eeid = eeid
@@ -156,17 +156,18 @@ class ErrorBudget(object):
         self.angles = None
         self.contrast = None
         self.ppFact = None
-        self.working_angles = None
-        self.C_p = None
-        self.C_b = None
-        self.C_sp = None
-        self.C_star = None
-        self.C_sr = None
-        self.C_z = None
-        self.C_ez = None
-        self.C_dc = None
-        self.C_rn = None
-        self.int_time = None
+        self.working_angles = []
+        self.npoints = npoints
+        self.C_p = []
+        self.C_b = []
+        self.C_sp = []
+        self.C_star = []
+        self.C_sr = []
+        self.C_z = []
+        self.C_ez = []
+        self.C_dc = []
+        self.C_rn = []
+        self.int_time = np.zeros((len(self.target_list), self.npoints)) * u.d
 
     def load_json(self, verbose=False):
         """
@@ -266,13 +267,12 @@ class ErrorBudget(object):
         sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False)
         
         # identify targets of interest
-        targnames = [f"HIP {n}" for n in self.target_list]
-        for j, t in enumerate(targnames):
+        for j, t in enumerate(self.target_list):
             if t not in sim.TargetList.Name:
-                targnames[j] += " A"
-                assert targnames[j] in sim.TargetList.Name
+                self.target_list[j] += " A"
+                assert self.target_list[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
-                         in targnames])
+                         in self.target_list])
         
         # assemble information needed for integration time calculation:
         
@@ -284,18 +284,6 @@ class ErrorBudget(object):
         
         # now we loop through the targets of interest and compute integration 
         # times for each:
-        npoints = 3
-        self.int_time = np.zeros((len(targnames), npoints)) * u.d
-        self.C_p = []
-        self.C_b = []
-        self.C_sp = []
-        self.C_sr = []
-        self.C_z = []
-        self.C_ez = []
-        self.C_dc = []
-        self.C_rn = []
-        self.C_star = []
-        self.working_angles = []
         for j, sInd in enumerate(sInds):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
@@ -310,9 +298,9 @@ class ErrorBudget(object):
                      , dMag0, (dMag0-2.5*np.log10(self.eeid[j]/WA_outer))]) 
             self.int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
-                [sInd] * npoints,
-                [fZ.value] * npoints * fZ.unit,
-                [self.exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * npoints 
+                [sInd] * self.npoints,
+                [fZ.value] * self.npoints * fZ.unit,
+                [self.exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * self.npoints 
                     * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
@@ -320,9 +308,9 @@ class ErrorBudget(object):
             )
             counts = sim.OpticalSystem.Cp_Cb_Csp(
                 sim.TargetList,
-                [sInd] * npoints,
-                [fZ.value] * npoints * fZ.unit,
-                [self.exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * npoints 
+                [sInd] * self.npoints,
+                [fZ.value] * self.npoints * fZ.unit,
+                [self.exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * self.npoints 
                     * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
@@ -330,6 +318,7 @@ class ErrorBudget(object):
                 True
             )
             self.C_p.append(counts[0])
+            print(len(self.C_p))
             self.C_b.append(counts[1])
             self.C_sp.append(counts[2])
             self.C_sr.append(counts[3]["C_sr"])
@@ -415,8 +404,7 @@ class ErrorBudget(object):
 
 
         """
-        self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor
-                            , sensitivity=sensitivity)
+        self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
@@ -449,3 +437,108 @@ class ErrorBudget(object):
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
             self.output_to_json(output_filename_prefix+'.json')
+
+
+class ParameterSweep:
+    def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
+                 fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='', is_exosims_param=False):
+        self.config = config
+        self.parameter = parameter # 'dark'
+        self.values = values
+        self.result_dict = {}
+        self.error_budget = error_budget
+        self.is_exosims_param = is_exosims_param
+        self.wfe = wfe
+        self.wfsc_factor = wfsc_factor
+        self.sensitivity = sensitivity
+        self.output_file_name = output_file_name
+        self.fixed_contrast = fixed_contrast
+        self.fixed_throughput = fixed_throughput
+        self.contrast_filename = contrast_filename
+        self.throughput_filename = throughput_filename
+        self.angles = angles
+
+    def plot_output(self, spectral_dict, parameter, values, int_times, save_dir, save_name):
+        plt.figure(figsize=(16, 9))
+        plt.rcParams.update({'font.size': 12})
+        plt.suptitle(f"Required Integration time (hr, SNR=7) vs. {parameter}", fontsize=20)
+
+        for i, (k, v) in enumerate(spectral_dict.items()):
+            plt.subplot(1, 5, i + 1)
+            txt = 'HIP%s\n%s, EEID=%imas' % (k, v, np.round(self.error_budget.eeid[i] * 1000))
+
+            plt.title(txt)
+            plt.plot(values, 24 * int_times[:, i, 0], label='inner HZ')
+            plt.plot(values, 24 * int_times[:, i, 1], label='mid HZ')
+            plt.plot(values, 24 * int_times[:, i, 2], label='outer HZ')
+            plt.legend()
+        plt.show()
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_dir, save_name))
+
+    def run_sweep(self):
+        # 3 contrasts, 5 stars, 3 zones
+        self.result_dict = {
+            'C_p': np.empty((3, 5, 3)),
+            'C_b': np.empty((3, 5, 3)),
+            'C_sp': np.empty((3, 5, 3)),
+            'C_star': np.empty((3, 5, 3)),
+            'C_sr': np.empty((3, 5, 3)),
+            'C_z': np.empty((3, 5, 3)),
+            'C_ez': np.empty((3, 5, 3)),
+            'C_dc': np.empty((3, 5, 3)),
+            'C_rn': np.empty((3, 5, 3)),
+            'int_time': np.empty((3, 5, 3))
+        }
+
+        if self.parameter == 'contrast':
+            for i, contrast in enumerate(self.values):
+                # TODO change mutable parameters in ErrorBudget class and remove this deep copy
+                error_budget = deepcopy(self.error_budget)
+                np.savetxt(self.contrast_filename, np.column_stack((self.angles, contrast * np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_contrast')
+                           , comments="")
+                np.savetxt(self.throughput_filename
+                           , np.column_stack((self.angles, self.fixed_throughput* np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_thruput')
+                           , comments="")
+
+                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity, 'example_contrasts', False)
+                for key in self.result_dict.keys():
+                    arr = self.result_dict[key]
+                    arr[i] = np.array(getattr(error_budget, key))
+                    self.result_dict[key] = arr
+
+        elif self.parameter == 'throughput':
+            for i, throughput in enumerate(self.values):
+                error_budget = deepcopy(self.error_budget)
+                np.savetxt(self.contrast_filename, np.column_stack((self.angles,
+                                                                    self.fixed_contrast * np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_contrast')
+                           , comments="")
+                np.savetxt(self.throughput_filename
+                           , np.column_stack((self.angles, throughput * np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_thruput')
+                           , comments="")
+                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity
+                                     , 'example_core_tputs', False)
+
+                for key in self.result_dict.keys():
+                    arr = self.result_dict[key]
+                    arr[i] = np.array(getattr(error_budget, key))
+                    self.result_dict[key] = arr
+        else:
+            for i, val in enumerate(self.values):
+                error_budget = deepcopy(self.error_budget)
+                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity, self.output_file_name, True,
+                                          'scienceInstruments', self.parameter, [i])
+                for key in self.result_dict.keys():
+                    arr = self.result_dict[key]
+                    arr[i] = np.array(getattr(error_budget, key))
+                    self.result_dict[key] = arr
+
+        return self.result_dict
+
+
+
+
