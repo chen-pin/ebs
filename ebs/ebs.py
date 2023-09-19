@@ -318,7 +318,7 @@ class ErrorBudget(object):
                 True
             )
             self.C_p.append(counts[0])
-            print(len(self.C_p))
+
             self.C_b.append(counts[1])
             self.C_sp.append(counts[2])
             self.C_sr.append(counts[3]["C_sr"])
