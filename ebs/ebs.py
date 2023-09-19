@@ -473,7 +473,6 @@ class ParameterSweep:
             plt.plot(values, 24 * int_times[:, i, 1], label='mid HZ')
             plt.plot(values, 24 * int_times[:, i, 2], label='outer HZ')
             plt.legend()
-        plt.show()
         plt.tight_layout()
         plt.savefig(os.path.join(save_dir, save_name))
 
