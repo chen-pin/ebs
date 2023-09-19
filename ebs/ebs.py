@@ -530,8 +530,16 @@ class ParameterSweep:
         else:
             for i, val in enumerate(self.values):
                 error_budget = deepcopy(self.error_budget)
+                np.savetxt(self.contrast_filename, np.column_stack((self.angles,
+                                                                    self.fixed_contrast * np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_contrast')
+                           , comments="")
+                np.savetxt(self.throughput_filename
+                           , np.column_stack((self.angles, self.fixed_throughput * np.ones(len(self.angles))))
+                           , delimiter=",", header=('r_as,core_thruput')
+                           , comments="")
                 error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity, self.output_file_name, True,
-                                          'scienceInstruments', self.parameter, [i])
+                                          'scienceInstruments', self.parameter, [val])
                 for key in self.result_dict.keys():
                     arr = self.result_dict[key]
                     arr[i] = np.array(getattr(error_budget, key))
