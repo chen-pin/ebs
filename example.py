@@ -19,27 +19,37 @@ def nemati2020_vvc6():
     Nemati et al. (2020) JATIS, Fig 26
 
     """
-    # Instantiate the ErrorBudget object
-    config = yaml.load('parameters.yml', Loader=yaml.SafeLoader)
+    # Load the config containing relevant parameters for running FREAK
+    with open('parameters.yml', 'r') as config:
+        config = yaml.load(config, Loader=yaml.FullLoader)
 
-    error_budget = ebs.ErrorBudget(input_dir=os.path.join(".", "inputs"),
-                                   ref_json_filename="example_ref.json",
-                                   pp_json_filename="example_pp.json",
-                                   contrast_filename="example_contrast.csv",
-                                   target_list=[32439, 77052, 79672, 26779, 113283],
-                                   luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.70],
-                                   eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829],
-                                   eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10],
-                                   exo_zodi=5*[3.0])
+    # load relevant parameters for the ErrorBudget class from the config
+    hip_numbers = [config['targets'][star]['HIP'] for star in config['targets']]
+    luminosities = [config['targets'][star]['luminosity'] for star in config['targets']]
+    eeids = [config['targets'][star]['eeid'] for star in config['targets']]
+    eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
+    exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
+    # Instantiate the ErrorBudget object
+    error_budget = ebs.ErrorBudget(input_dir=config['paths']['input'],
+                                   ref_json_filename=config['json_files']['ref_json'],
+                                   pp_json_filename=config['json_files']['pp_json'],
+                                   contrast_filename=config['input_files']['contrast'],
+                                   target_list=hip_numbers,
+                                   luminosity=luminosities,
+                                   eeid=eeids,
+                                   eepsr=eepsrs,
+                                   exo_zodi=exo_zodis)
     
     # Specify Spectral Type of stars in target_list
-    spectral_dict = {32439: 'F8V', 77052:'G5V', 79672: 'G2Va', 26779: 'K1V', 113283: 'K4Ve'}
+    spectral_dict = {}
+    for i, star in enumerate(config['targets']):
+        spectral_dict[config['targets'][star]['HIP']] = config['targets'][star]['spec_type']
 
     # Specify  WFE, WFS&C, and sensitivity input data
-    num_spatial_modes = 13
-    num_temporal_modes = 6
-    num_angles = 5
-    angles = np.linspace(0.055, 0.5, num_angles)  # Angular separation [as]
+    num_spatial_modes = config['num_spatial_modes']
+    num_temporal_modes = config['num_temporal_modes']
+    num_angles = config['angles']['num_angles']
+    angles = np.linspace(config['angles']['start'], config['angles']['stop'], num_angles)  # Angular separation [as]
     wfe = (np.sqrt(1.72**2/num_temporal_modes) * np.ones((num_temporal_modes, num_spatial_modes)))  # [pm]
     wfsc_factor = 0.5*np.ones_like(wfe)  # Fractional residual WFE post-WFS&C 
     sensitivity = (np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84, 9.09, 3.68, 9.33, 6.16, 0.745])
@@ -47,17 +57,17 @@ def nemati2020_vvc6():
   
     # Specify multiple contrast and throughput scenarios that will be looped 
     # through to produce plots
-    contrasts = np.array([1e-10, 2e-10, 5e-10])
-    core_throughputs = np.array([0.08, 0.16, 0.32])
-    dark_currents = np.array([1.5e-5, 3e-5, 6e-5])
-    iwas = np.array([0.05, 0.07, 0.09])
+    contrasts = np.array(config['iter_parameters']['contrasts'])
+    core_throughputs = np.array(config['iter_parameters']['throughputs'])
+    dark_currents = np.array(config['iter_parameters']['dark_currents'])
+    iwas = np.array(config['iter_parameters']['iwas'])
 
     # The following two files are required by EXOSIMS
-    contrast_filename = os.path.join(".", "inputs", error_budget.contrast_filename)
-    throughput_filename = os.path.join(".", "inputs", "example_throughput.csv")
+    contrast_filename = os.path.join(config['paths']['input'], error_budget.contrast_filename)
+    throughput_filename = os.path.join(config['paths']['input'], config['input_files']['throughput'])
     
     # Specify output directory
-    output_dir = os.path.join(".", "output")
+    output_dir = config['paths']['output']
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -76,8 +86,7 @@ def nemati2020_vvc6():
         print(result_dict['int_time'])
 
         sweep.plot_output(spectral_dict, 'contrast', contrasts, result_dict['int_time'],
-                          save_dir=output_dir, save_name= 't-vs-c.pdf')
-
+                          save_dir=output_dir, save_name='t-vs-c.pdf')
 
     elif sel == 't':
         # Loop through core-throughput values while holding contrast at mid-value
