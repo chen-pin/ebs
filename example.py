@@ -52,7 +52,6 @@ def nemati2020_vvc6():
     dark_currents = np.array([1.5e-5, 3e-5, 6e-5])
     iwas = np.array([0.05, 0.07, 0.09])
 
-
     # The following two files are required by EXOSIMS
     contrast_filename = os.path.join(".", "inputs", error_budget.contrast_filename)
     throughput_filename = os.path.join(".", "inputs", "example_throughput.csv")
@@ -68,9 +67,10 @@ def nemati2020_vvc6():
 
     if sel == 'c':
         sweep = ebs.ParameterSweep(config, parameter='contrast', values=contrasts, error_budget=error_budget, wfe=wfe,
-                           sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=None,
-                           fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
-                           throughput_filename=throughput_filename, angles=angles, output_file_name='example_contrasts')
+                                   sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=None,
+                                   fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
+                                   throughput_filename=throughput_filename, angles=angles,
+                                   output_file_name='example_contrasts')
 
         result_dict = sweep.run_sweep()
         print(result_dict['int_time'])
@@ -81,15 +81,16 @@ def nemati2020_vvc6():
 
     elif sel == 't':
         # Loop through core-throughput values while holding contrast at mid-value
-        sweep = ebs.ParameterSweep(config, parameter='throughput', values=core_throughputs, error_budget=error_budget, wfe=wfe,
-                           sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],
-                           fixed_throughput=None, contrast_filename=contrast_filename,
-                           throughput_filename=throughput_filename, angles=angles, output_file_name='example_core_tputs')
+        sweep = ebs.ParameterSweep(config, parameter='throughput', values=core_throughputs, error_budget=error_budget,
+                                   wfe=wfe, sensitivity=sensitivity, wfsc_factor=wfsc_factor,
+                                   fixed_contrast=contrasts[1], fixed_throughput=None,
+                                   contrast_filename=contrast_filename, throughput_filename=throughput_filename,
+                                   angles=angles, output_file_name='example_core_tputs')
         result_dict = sweep.run_sweep()
         print(result_dict['int_time'])
 
         sweep.plot_output(spectral_dict, 'throughput', core_throughputs, result_dict['int_time'],
-                          save_dir=output_dir, save_name= 't-vs-t.pdf')
+                          save_dir=output_dir, save_name='t-vs-t.pdf')
 
     elif sel == 'd':
         # Loop through detector dark-noise values.  Note that the calling 
@@ -98,20 +99,21 @@ def nemati2020_vvc6():
         # file).
 
         sweep = ebs.ParameterSweep(config, parameter='dark', values=dark_currents, error_budget=error_budget, wfe=wfe,
-                           sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],
-                           fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
-                           throughput_filename=throughput_filename, angles=angles, output_file_name='example_dark-currents')
+                                   sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],
+                                   fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
+                                   throughput_filename=throughput_filename, angles=angles,
+                                   output_file_name='example_dark-currents')
 
         result_dict = sweep.run_sweep()
         print(result_dict['int_time'])
 
         sweep.plot_output(spectral_dict, 'dark', dark_currents, result_dict['int_time'],
-                          save_dir=output_dir, save_name= 't-vs-d.pdf')
+                          save_dir=output_dir, save_name='t-vs-d.pdf')
 
     elif sel == 'i':
         # Loop through IWA values.  Note that the calling 
         # routine is different from the ones above because this is an 
-        # EXOSIMS parameter (i.e. a paramter specified in the reference JSON 
+        # EXOSIMS parameter (i.e. a parameter specified in the reference JSON
         # file).
         sweep = ebs.ParameterSweep(config, parameter='IWA', values=iwas, error_budget=error_budget, wfe=wfe,
                            sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],

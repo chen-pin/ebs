@@ -441,7 +441,8 @@ class ErrorBudget(object):
 
 class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
-                 fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='', is_exosims_param=False):
+                 fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='',
+                 is_exosims_param=False):
         self.config = config
         self.parameter = parameter # 'dark'
         self.values = values
