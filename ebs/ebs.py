@@ -444,7 +444,7 @@ class ParameterSweep:
                  fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='',
                  is_exosims_param=False):
         self.config = config
-        self.parameter = parameter # 'dark'
+        self.parameter = parameter
         self.values = values
         self.result_dict = {}
         self.error_budget = error_budget
@@ -458,6 +458,18 @@ class ParameterSweep:
         self.contrast_filename = contrast_filename
         self.throughput_filename = throughput_filename
         self.angles = angles
+        self.result_dict = {
+            'C_p': np.empty((len(values), len(config['targets']), 3)),
+            'C_b': np.empty((len(values), len(config['targets']), 3)),
+            'C_sp': np.empty((len(values), len(config['targets']), 3)),
+            'C_star': np.empty((len(values), len(config['targets']), 3)),
+            'C_sr': np.empty((len(values), len(config['targets']), 3)),
+            'C_z': np.empty((len(values), len(config['targets']), 3)),
+            'C_ez': np.empty((len(values), len(config['targets']), 3)),
+            'C_dc': np.empty((len(values), len(config['targets']), 3)),
+            'C_rn': np.empty((len(values), len(config['targets']), 3)),
+            'int_time': np.empty((len(values), len(config['targets']), 3))
+        }
 
     def plot_output(self, spectral_dict, parameter, values, int_times, save_dir, save_name):
         plt.figure(figsize=(16, 9))
@@ -478,19 +490,6 @@ class ParameterSweep:
 
     def run_sweep(self):
         # 3 contrasts, 5 stars, 3 zones
-        self.result_dict = {
-            'C_p': np.empty((3, 5, 3)),
-            'C_b': np.empty((3, 5, 3)),
-            'C_sp': np.empty((3, 5, 3)),
-            'C_star': np.empty((3, 5, 3)),
-            'C_sr': np.empty((3, 5, 3)),
-            'C_z': np.empty((3, 5, 3)),
-            'C_ez': np.empty((3, 5, 3)),
-            'C_dc': np.empty((3, 5, 3)),
-            'C_rn': np.empty((3, 5, 3)),
-            'int_time': np.empty((3, 5, 3))
-        }
-
         if self.parameter == 'contrast':
             for i, contrast in enumerate(self.values):
                 # TODO change mutable parameters in ErrorBudget class and remove this deep copy
