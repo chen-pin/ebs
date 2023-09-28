@@ -443,6 +443,37 @@ class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
                  fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='',
                  is_exosims_param=False):
+        '''
+
+        :param config: dict
+            The configuration for the ebs run.
+        :param parameter: str
+            The name of the parameter being swept over.
+        :param values: array
+            The values of the parameter to be swept over
+        :param error_budget: ErrorBudget
+            ErrorBudget object to use for the sweep.
+        :param wfe: array
+            Wavefront changes specified in spatio-temporal bins, loaded from the input JSON file, in pm units.
+        :param wfsc_factor: array
+            Wavefront-change-mitigation factors, loaded from the input JSON file. Values should be between 0 and 1.
+        :param sensitivity: array
+            Coefficients of contrast sensitivity w.r.t. wavefront changes, in ppt/pm units.
+        :param fixed_contrast: float
+            If contrast is not being swept over, the fixed value at which to keep it.
+        :param fixed_throughput: float
+            If throughput is not being swept over, the fixed value at which to keep it.
+        :param contrast_filename: str
+            The filename where the contrast information is stored.
+        :param throughput_filename: str
+            The filename where the throughput information is stored.
+        :param angles: array
+            Angular separation values [arcsec]
+        :param output_file_name: str
+            name of the output file
+        :param is_exosims_param: bool
+            If True will feed the parameter into EXOSIMS to be swept over
+        '''
         self.config = config
         self.parameter = parameter
         self.values = values
@@ -543,7 +574,6 @@ class ParameterSweep:
                     arr = self.result_dict[key]
                     arr[i] = np.array(getattr(error_budget, key))
                     self.result_dict[key] = arr
-
         return self.result_dict
 
 
