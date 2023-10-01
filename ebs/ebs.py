@@ -14,8 +14,6 @@ file.
 module.
 """
 
-# Contributors:
-#    Pin Chen
 
 import os 
 import numpy as np
