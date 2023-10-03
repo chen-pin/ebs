@@ -213,6 +213,7 @@ class ErrorBudget(object):
         self.wfe = np.array(self.input_dict['wfe'])
         self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
         self.sensitivity = np.array(self.input_dict['sensitivity'])
+
         self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
         delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
