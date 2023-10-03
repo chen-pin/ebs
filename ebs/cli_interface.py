@@ -53,7 +53,7 @@ def main():
                            fixed_throughput=config['fixed_throughput'] if args.param != 'throughput' else None,
                            contrast_filename=os.path.join(input_path, config['input_files']['contrast']),
                            throughput_filename=os.path.join(input_path, config['input_files']['throughput']), angles=angles,
-                           output_file_name=os.path.join(output_path, str(args.param) + '_output'))
+                           output_file_name='out')
 
     result_dict = sweep.run_sweep()
     # Specify Spectral Type of stars in target_list
