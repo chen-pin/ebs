@@ -1,13 +1,7 @@
 import os 
 import numpy as np
 import yaml
-import matplotlib.pyplot as plt
-import json as js
-from astropy.io import fits
-import astropy.units as u
-#import EXOSIMS.MissionSim as ems
-from ebs import ebs
-
+from ebs.error_budget import ErrorBudget, ParameterSweep
 
 def nemati2020_vvc6():
     """
