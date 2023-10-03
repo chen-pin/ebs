@@ -6,7 +6,7 @@ reference contrast and throughput values as functions of angular separation.
 The JSON file specifies instrument and observational parameter for the 
 reference exposure, followed by  WFE, contrast sensitivity, and WFS&C factors.  
 These files need to reside in the path "./inputs".  See doc strings 
-for arugments `contrast_filename`, `ref_json_filename`, and 
+for arugments `contrast_filename`, and
 `pp_json_filename` below.  One can create arrays of WFE, sensitivity, and 
 WFS&C values, and then use the `create_pp_json()` method to create the JSON 
 file.  
@@ -23,7 +23,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import EXOSIMS.MissionSim as ems
 from copy import deepcopy
-
+from ebs.utils import generate_pp_json
 class ErrorBudget(object):
     """
     Exposure time calculator incorporating dynamical wavefront errors and 
@@ -35,9 +35,6 @@ class ErrorBudget(object):
         Directory path where the above-listed input files reside
     output_dir : `os.path`
         Directory path where the output files will be saved
-    ref_json_filename : str
-        Name of JSON file specifying the initial EXOSIMS parameters, without 
-        considering any wavefront drifts. 
     pp_json_filename : str
         Name of JSON file that has WFE, WFS&C factors, and sensitivity 
         coefficients appended to the reference EXOSIMS parameters.
@@ -127,7 +124,6 @@ class ErrorBudget(object):
     def __init__(self
                  , input_dir=os.path.join(".", "inputs")
                  , output_dir=os.path.join(".", "output")
-                 , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
@@ -142,7 +138,6 @@ class ErrorBudget(object):
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
-        self.ref_json_filename = ref_json_filename
         self.pp_json_filename = pp_json_filename
         self.contrast_filename = contrast_filename
         self.input_dict = None
@@ -238,22 +233,6 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
         return filename
-
-    def create_pp_json(self, wfe, wfsc_factor, sensitivity):
-        """
-        Utility to create an input JSON file (named by `self.pp_json_filename`)
-        with user-created WFE, sensitivity, and post-processing parameters.  
-
-        """
-        path_ref = os.path.join(self.input_dir, self.ref_json_filename)
-        with open(path_ref) as f:
-            input_dict = js.load(f)
-        input_dict['wfe'] = wfe.tolist()
-        input_dict['wfsc_factor'] = wfsc_factor.tolist()
-        input_dict['sensitivity'] = sensitivity.tolist()
-        path_pp = os.path.join(self.input_dir, self.pp_json_filename)
-        with open(path_pp, 'w') as f:
-            js.dump(input_dict, f, indent=4)
         
     def run_exosims(self, temp_json_filename):
         """
@@ -403,7 +382,7 @@ class ErrorBudget(object):
 
 
         """
-        self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
+        generate_pp_json(self.pp_json_filename, wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
@@ -517,6 +496,7 @@ class ParameterSweep:
             plt.legend()
         plt.tight_layout()
         plt.savefig(os.path.join(save_dir, save_name))
+        plt.show()
 
     def run_sweep(self):
         # 3 contrasts, 5 stars, 3 zones

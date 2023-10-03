@@ -42,7 +42,6 @@ def main():
     angles = np.linspace(config['angles']['start'], config['angles']['stop'], num_angles)
 
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
-                               ref_json_filename=config['json_files']['ref_json'],
                                pp_json_filename=config['json_files']['pp_json'],
                                contrast_filename=config['input_files']['contrast'],
                                target_list=hip_numbers, luminosity=luminosities, eeid=eeids, eepsr=eepsrs,

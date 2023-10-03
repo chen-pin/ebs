@@ -26,7 +26,6 @@ input_files:
   sensitivity: example_sensitivity.csv
 
 json_files:
-  ref_json: example_ref.json
   pp_json: example_pp.json
 
 targets:
