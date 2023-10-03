@@ -4,7 +4,7 @@ import json as js
 import pytest as pt
 import numpy as np
 import astropy.units as u
-from ebs import ebs
+from ebs import error_budget
 
 
 @pt.fixture
