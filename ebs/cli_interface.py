@@ -26,7 +26,8 @@ def main():
 
     input_path = config['paths']['input']
     output_path = config['paths']['output']
-    log.info('Running parameter sweep over')
+
+    log.info(f'Running parameter sweep over {args.param}')
 
     values = config['iter_parameters'][str(args.param)]
     hip_numbers = [config['targets'][star]['HIP'] for star in config['targets']]
