@@ -382,7 +382,7 @@ class ErrorBudget(object):
 
 
         """
-        generate_pp_json(self.pp_json_filename, wfe=wfe, wfsc_factor=wfsc_factor, sensitivity=sensitivity)
+        generate_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor, sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
