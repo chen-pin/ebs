@@ -85,7 +85,7 @@ core_throughout: [0.15, 0.15, 0.15, 0.15, 0.15]
 
 # MCMC Paramters
 
-variable_id: [wfe, idark]
+variable_id: [wfsc_factor, idark]
 is_exosims: [false, true]
 prior_func: [uniform, uniform]
 prior_args: 
