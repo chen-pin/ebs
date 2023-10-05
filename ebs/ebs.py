@@ -286,8 +286,8 @@ class ErrorBudget(object):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
             # matters a lot when you have real performane curves
-            WA_inner = 0.95*self.eeid[j]
-            WA_outer = 1.67*self.eeid[j]
+            WA_inner = 0.95*np.exp(luminosity[j]/2)*self.eeid[j]
+            WA_outer = 1.67*np.exp(luminosity[j]/2)*self.eeid[j]
             WA = [WA_inner, self.eeid[j], WA_outer]
             self.working_angles.append(WA)
             # target planet deltaMag (evaluate for a range):

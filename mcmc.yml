@@ -1,27 +1,16 @@
+# Initial argument values for ebs.ErrorBudget.run_etc()
+
 paths:
   output: ./output
   input: ./inputs
-
-  # num_spatial_modes: 13
-  # num_temporal_modes: 6
-  #angles:
-  #  num_angles: 5
-  #  start: 0.055 # as
-  #  stop: 0.5 # as
-  #
-  #iter_parameters:
-  #  contrasts: [1.0e-10, 2.0e-10, 5.0e-10]
-  #  throughputs: [0.08, 0.16, 0.32]
-  #  dark_currents: [1.5e-5, 3.0e-5, 6.0e-5]
-  #  iwas: [0.05, 0.07, 0.09]
 
 input_files:
   contrast: mcmc_contrast.csv
   throughput: mcmc_throughput.csv
 
 json_files:
-  ref_json: mcmc_ref.json
-  pp_json: mcmc_pp.json
+  ref_json: mcmc_ref.json  # An input specifiying the 'unaberrated' observatory
+  pp_json: mcmc_pp.json  # An intermediate file read in by EXOSIMS
 
 targets:
   star1:
@@ -61,7 +50,8 @@ targets:
     exo_zodi: 3.0
 
 wfe:
-  - [10.0, 10.0, 10.0, 10.0]  # Static temporal, spatial [Low, Mid, High, High+]
+# Spatial frequency bins [Low, Mid, High, High+], unit = pm
+  - [10.0, 10.0, 10.0, 10.0]  # Static temporal
   - [10.0, 10.0, 10.0, 10.0]  # LF1 (10.000 s - 48 hr)
   - [10.0, 10.0, 10.0, 10.0]  # LF2 (LOWFS)
   - [10.0, 10.0, 10.0, 10.0]  # LF3 (Telescope alignment bandwidth)
@@ -69,13 +59,68 @@ wfe:
   - [10.0, 10.0, 10.0, 10.0]  # HF (Uncontrollable) 
 
 wfsc_factor: 
-  - [1E-6, 1E-6, 1E-6, 1E-6]
-  - [1E-3, 1E-3, 1E-3, 1E-3]
+  - [1.0E-6, 1.0E-6, 1.0E-6, 1.0E-6]
+  - [1.0E-3, 1.0E-3, 1.0E-3, 1.0E-3]
   - [0.5, 0.5, 0.5, 0.5] 
   - [1.0, 1.0, 1.0, 1.0]
   - [1.0, 1.0, 1.0, 1.0]
   - [1.0, 1.0, 1.0, 1.0]
 
 sensitivity:
-  - [
+# Spatial frequency bins [Low, Mid, High, High+], unit = ppt/pm
+# HZs of fiducial stars span 53.5 - 124.0 mas angular range
+# For D=6 m, 6.2-14.4 wvl/D @250nm, 2.8-3.7 wvl/D @550nm, 0.92-2.1 wvl/D @1.7um
+  - [30, 30, 30, 30]  # 47 - 66 mas (2.5-3.5 wvl/D, wvl=550 nm, D=6 m)
+  - [30, 30, 30, 30]  # 66 - 85 mas (3.5-4.5 wvl/D, wvl=550 nm, D=6 m)
+  - [30, 30, 30, 30]  # 85 - 104 mas (4.5-5.5 wvl/D, wvl=550 nm, D=6 m)
+  - [30, 30, 30, 30]  # 104 - 123 mas (5.5-6.5 wvl/D, wvl=550 nm, D=6 m)
+  - [30, 30, 30, 30]  # 123 - 142 mas (6.5-7.5 wvl/D, wvl=550 nm, D=6 m)
+
+output_filename_prefix: mcmc
+
+contrast: [1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10]
+
+core_throughout: [0.15, 0.15, 0.15, 0.15, 0.15]
+
+
+# MCMC Paramters
+
+variable_id: [wfe, idark]
+is_exosims: [false, true]
+prior_func: [uniform, uniform]
+prior_args: 
+  wfsc_factor:
+    - - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+      - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+      - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+      - [null, null, null, null]
+      - [null, null, null, null]
+    - - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+      - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+      - [0.5, 0.5, 0.5, 0.5] 
+      - [null, null, null, null]
+      - [null, null, null, null]
+  idark: 
+    - - [1.0e-6] 
+      - [1.0e-4]
+ini_min_max: 
+  wfsc_factor: 
+    # Center values for initializing walkers
+    - - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+      - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5]
+      - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3]
+      - [null, null, null, null]
+      - [null, null, null, null]
+    # Spread for initializing walkers
+    - - [9.9999E-9, 9.9999E-9, 9.9999E-9, 9.9999E-9]
+      - [9.999e-7, 9.999e-7, 9.999e-7, 9.999e-7]
+      - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
+      - [null, null, null, null]
+      - [null, null, null, null]
+  idark: 
+    - - [1.0e-5] 
+      - [1.0e-7] 
+    
+
+
 
