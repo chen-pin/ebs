@@ -345,15 +345,15 @@ class ErrorBudget(object):
 
         Parameters
         ----------
-        wfe : array 
+        wfe : array or list
             Wavefront changes specified in spatio-temporal bins, loaded from 
             the input JSON file, in pm units.  
             Dimensions:  (num_temporal_modes, num_spatial_modes).
-        wfsc_factor : array
+        wfsc_factor : array or list
             Wavefront-change-mitigation factors, loaded from the input JSON 
             file.  Values should be between 0 and 1.    
             Dimensions:  same as `wfe`
-        sensitivity : array
+        sensitivity : array or list
             Coefficients of contrast sensitivity w.r.t. wavefront changes, 
             in ppt/pm units.  
             Dimensions:  (num_angles, num_spatial_modes)
