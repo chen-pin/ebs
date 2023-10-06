@@ -85,7 +85,7 @@ core_throughout: [0.15, 0.15, 0.15, 0.15, 0.15]
 
 # MCMC Paramters
 mcmc: 
-  wfac_factor: 
+  wfsc_factor: 
     is_exosims: false
     prior_func: uniform
     prior_args: 
@@ -120,11 +120,11 @@ mcmc:
     is_exosims: true
     prior_func: uniform
     prior_args:
-      lower_bound: 1.0e-6 
-      upper_bound: 1.0e-4
+      lower_bound: [1.0e-6] 
+      upper_bound: [1.0e-4]
     ini_pars: 
-      center: 1.0e-5 
-      spread: 1.0e-7 
+      center: [1.0e-5] 
+      spread: [1.0e-7] 
     
 
 
