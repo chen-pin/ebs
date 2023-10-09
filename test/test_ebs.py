@@ -4,7 +4,7 @@ import json as js
 import pytest as pt
 import numpy as np
 import astropy.units as u
-from ebs import error_budget
+from ebs.error_budget import ErrorBudget
 
 
 @pt.fixture
@@ -13,15 +13,15 @@ def obs():
     Instantiate EXOSIMS object.
 
     """
-    t = ebs.ErrorBudget(input_dir=os.path.join(".", "test")
-                          , ref_json_filename="test_ref.json"
-                          , pp_json_filename="test_pp.json"
-                          , contrast_filename="test_contrast.csv"
-                          , target_list=[57443, 15457, 72659]
-                          , luminosity=[-0.0737, -0.0669, -0.2572]
-                          , eeid=[0.09858, 0.09981, 0.11012]
-                          , eepsr=[1.37e-10, 1.35e-10, 2.09e-10]
-                          , exo_zodi=3*[3.0])
+    t = ErrorBudget(input_dir='./'
+                    , pp_json_filename="test_pp.json"
+                    , contrast_filename="test_contrast.csv"
+                    , target_list=[57443, 15457, 72659]
+                    , luminosity=[-0.0737, -0.0669, -0.2572]
+                    , eeid=[0.09858, 0.09981, 0.11012]
+                    , eepsr=[1.37e-10, 1.35e-10, 2.09e-10]
+                    , exo_zodi=3*[3.0])
+
     num_spatial_modes = 13
     num_temporal_modes = 1
     num_angles = 27
