@@ -1,4 +1,4 @@
-"""<Flux-Ratio Error Allocation Kit (FREAK)> module
+"""<error_budget> module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
 - Also need 2 CSV files and 1 JSON input file.  The CSV files specify 
