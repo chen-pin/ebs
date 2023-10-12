@@ -369,7 +369,7 @@ class ErrorBudget(object):
                     - 'scienceInstruments'
                     - 'starlightSuppressionSystems' 
                     - 'observingModes'
-                2. String indicating the EXOSIMS paramter (e.g. 'optics', 
+                2. String indicating the EXOSIMS parameter (e.g. 'optics',
                 'QE', or 'SNR')
                 3. List_like data providing the range of parameter values
 
@@ -399,6 +399,7 @@ class ErrorBudget(object):
                         filename = (output_filename_prefix+'_'+args[1]+'_'
                                     +str(value))
                         self.output_to_json(filename)
+                        os.remove(temp_json_filename)
                 else: 
                     print("Error in specifying EXOSIMS parameter to be varied")
             else:
@@ -411,10 +412,12 @@ class ErrorBudget(object):
                     filename = (output_filename_prefix+'_'+args[1]+'_'
                                 +str(value)+'.json')
                     self.output_to_json(filename)
+                    os.remove(temp_json_filename)
         else:
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
             self.output_to_json(output_filename_prefix+'.json')
+            os.remove(temp_json_filename)
 
 
 class ParameterSweep:
