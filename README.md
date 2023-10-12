@@ -4,6 +4,53 @@ The Error Budget Software (EBS) package is an error-budgeting toolkit to aid the
 * Please use Git branching for code development to keep the main branch in a working state (ref. [Git Feature-Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)).
   * If you would like to push branches to the repository, please request to become a collaborator.      
 
+## Getting Started 
+### Setting up a conda environment 
+
+from the root directory in a terminal run
+
+`conda env create -f environment.yml`
+
+activate the environment by running
+
+`conda activate ebs`
+
+you should now have access to all of the dependencies necessary to run the EBS package, including EXOSIMS. 
+### Installing EBS
+From the command line in the root directory run
+
+`python setup.py install`
+
+### Running EBS from the command line 
+
+EBS is run by formatting and generating input JSON files that are processed by EXOSIMS to yield exposure times for a 
+variety of observing scenarios. These parameters are split between a `parameters.yml` file and .csv files containing the 
+wavefront error, wavefront sensing and control factors, sensitivity factors, throughputs, and contrasts. Example files 
+can be found and modified in the `inputs` folder.
+
+It should be noted that any parameter which is not specified in the input JSON file that EBS passes to EXOSIMS will 
+automatically receive the default EXOSIMS values and so users should familiarize themselves with all relevant EXOSIMS
+variables or potentially receive unexpected results. 
+
+To run ebs from the command line, users should first ensure that all of the previously described parameter files contain 
+the desired values. Currently command line usage for parameter searches is only supported for 4 key variables, with 
+immediate plans to generalize this to any EXOSIMS parameter. These values can be found in the `parameters.yml` file 
+under `iter_paramaters` and are `contrast`, `throughput`, `dark_current`, and `iwa`. For whichever value is selected, 
+the sweep will be performed over the values in the `paramaters.yml` file while keeping all others fixed. 
+
+For example, to sweep over contrast you would use the following syntax:
+
+`run_ebs <parameter> -c <path/to/config.yml>`
+
+i.e.
+
+`run_ebs contrast -c inputs/parameters.yml`
+
+When completed this will display a plot of the expected exposure times for each of the observing scenarios in the 
+`parameters.yml` as a function of the selected `iter_parameter`.
+
+
+
 # Legal Notices
 Copyright (c) 2023-24 California Institute of Technology (“Caltech”). U.S. Government
 sponsorship acknowledged.  
