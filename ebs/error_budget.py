@@ -15,7 +15,7 @@ module.
 """
 
 
-import os 
+import os, glob
 import numpy as np
 import json as js
 from astropy.io import fits
@@ -401,6 +401,13 @@ class ErrorBudget(object):
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
             self.output_to_json(output_filename_prefix + '.json')
+
+        # Remove temp files to run EXOSIMS to prevent clutter. If these want to be maintained they should be renamed and
+        # potentially reformatted
+        for fname in glob.glob(config['paths']['input'] + '/*'):
+            if 'temp_' in fname:
+                print(f'Removing {fname}')
+                os.remove(fname)
 
 
 class ParameterSweep:
