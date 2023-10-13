@@ -12,11 +12,7 @@ angles:
   start: 0.055 # as
   stop: 0.5 # as
 
-iter_parameters:
-  contrast: [1.0e-10, 2.0e-10, 5.0e-10]
-  throughput: [0.08, 0.16, 0.32]
-  dark_current: [1.5e-5, 3.0e-5, 6.0e-5]
-  iwa: [0.05, 0.07, 0.09]
+iter_values: [0.6, 0.7, 0.8, 0.9, 1.0]
 
 input_files:
   contrast: example_contrast.csv
