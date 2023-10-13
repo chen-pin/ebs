@@ -227,7 +227,6 @@ class ErrorBudget(object):
     def write_temp_json(self, filename='temp.json'):
         """
         Write `self.input_dict` to temporary JSON file for running EXOSIMS.
-
         """
         self.input_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
         path = os.path.join(self.input_dir, filename)
@@ -338,9 +337,8 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, wfe, wfsc_factor, sensitivity
-                , output_filename_prefix
-                ,var_par, *args):
+    def run_etc(self, config, wfe, wfsc_factor, sensitivity, output_filename_prefix='output_',
+                var_par=False, subsystem=None, name=None, value=None):
         """
         Run end-to-end sequence of methods to produce results written to 
         output JSON file. 
@@ -383,42 +381,28 @@ class ErrorBudget(object):
 
 
         """
-        generate_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor, sensitivity=sensitivity)
+        update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), config=config, wfe=wfe, wfsc=wfsc_factor,
+                       sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
         if var_par:
-            if args[0] == None:
-                if args[1] == 'pupilDiam':
-                    for value in args[2]:
-                        self.input_dict[args[1]] = value
-                        temp_json_filename = self.write_temp_json(
-                                             'temp_'+args[1]+'_'+str(value)
-                                             +'.json'
-                                                                 )
-                        self.run_exosims(temp_json_filename)
-                        filename = (output_filename_prefix+'_'+args[1]+'_'
-                                    +str(value))
-                        self.output_to_json(filename)
-                        os.remove(temp_json_filename)
-                else: 
-                    print("Error in specifying EXOSIMS parameter to be varied")
-            else:
-                for value in args[2]:
-                    self.input_dict[args[0]][0][args[1]] = value
-                    temp_json_filename = self.write_temp_json(
-                                         'temp_'+args[1]+'_'+str(value)
-                                         +'.json')
-                    self.run_exosims(temp_json_filename)
-                    filename = (output_filename_prefix+'_'+args[1]+'_'
-                                +str(value)+'.json')
-                    self.output_to_json(filename)
-                    os.remove(temp_json_filename)
+            try:
+                self.input_dict[subsystem][0][name] = value
+                temp_json_filename = self.write_temp_json('temp_' + name + '_' + str(value) + '.json')
+                self.run_exosims(temp_json_filename)
+                filename = (output_filename_prefix + '_' + name + '_' + str(value))
+                self.output_to_json(filename)
+            except KeyError:
+                self.input_dict[name][0] = value
+                temp_json_filename = self.write_temp_json('temp_' + name + '_' + str(value) + '.json')
+                self.run_exosims(temp_json_filename)
+                filename = (output_filename_prefix + '_' + name + '_' + str(value))
+                self.output_to_json(filename)
         else:
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
-            self.output_to_json(output_filename_prefix+'.json')
-            os.remove(temp_json_filename)
+            self.output_to_json(output_filename_prefix + '.json')
 
 
 class ParameterSweep:
@@ -457,7 +441,7 @@ class ParameterSweep:
             If True will feed the parameter into EXOSIMS to be swept over
         '''
         self.config = config
-        self.parameter = parameter
+        self.parameter, self.subparameter = parameter
         self.values = values
         self.result_dict = {}
         self.error_budget = error_budget
@@ -471,6 +455,7 @@ class ParameterSweep:
         self.contrast_filename = contrast_filename
         self.throughput_filename = throughput_filename
         self.angles = angles
+        self.var_par = True
         self.result_dict = {
             'C_p': np.empty((len(values), len(config['targets']), 3)),
             'C_b': np.empty((len(values), len(config['targets']), 3)),
@@ -504,59 +489,40 @@ class ParameterSweep:
 
     def run_sweep(self):
         # 3 contrasts, 5 stars, 3 zones
-        if self.parameter == 'contrast':
-            for i, contrast in enumerate(self.values):
-                # TODO change mutable parameters in ErrorBudget class and remove this deep copy
-                error_budget = deepcopy(self.error_budget)
-                np.savetxt(self.contrast_filename, np.column_stack((self.angles, contrast * np.ones(len(self.angles))))
+        for i, value in enumerate(self.values):
+            if self.parameter == 'contrast':
+                np.savetxt(self.contrast_filename, np.column_stack((self.angles, value * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_contrast')
                            , comments="")
-                np.savetxt(self.throughput_filename
-                           , np.column_stack((self.angles, self.fixed_throughput* np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_thruput')
-                           , comments="")
-
-                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity, 'example_contrasts', False)
-                for key in self.result_dict.keys():
-                    arr = self.result_dict[key]
-                    arr[i] = np.array(getattr(error_budget, key))
-                    self.result_dict[key] = arr
-
-        elif self.parameter == 'throughput':
-            for i, throughput in enumerate(self.values):
-                error_budget = deepcopy(self.error_budget)
+                self.var_par = False
+            else:
                 np.savetxt(self.contrast_filename, np.column_stack((self.angles,
                                                                     self.fixed_contrast * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_contrast')
                            , comments="")
+            if self.parameter == 'throughput':
                 np.savetxt(self.throughput_filename
-                           , np.column_stack((self.angles, throughput * np.ones(len(self.angles))))
+                           , np.column_stack((self.angles, value * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_thruput')
                            , comments="")
-                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity
-                                     , 'example_core_tputs', False)
-
-                for key in self.result_dict.keys():
-                    arr = self.result_dict[key]
-                    arr[i] = np.array(getattr(error_budget, key))
-                    self.result_dict[key] = arr
-        else:
-            for i, val in enumerate(self.values):
-                error_budget = deepcopy(self.error_budget)
-                np.savetxt(self.contrast_filename, np.column_stack((self.angles,
-                                                                    self.fixed_contrast * np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_contrast')
-                           , comments="")
+                self.var_par = False
+            else:
                 np.savetxt(self.throughput_filename
                            , np.column_stack((self.angles, self.fixed_throughput * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_thruput')
                            , comments="")
-                error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity, self.output_file_name, True,
-                                          'scienceInstruments', self.parameter, [val])
-                for key in self.result_dict.keys():
-                    arr = self.result_dict[key]
-                    arr[i] = np.array(getattr(error_budget, key))
-                    self.result_dict[key] = arr
+
+            # TODO change mutable parameters in ErrorBudget class and remove this deep copy
+            error_budget = deepcopy(self.error_budget)
+            error_budget.run_etc(self.config, self.wfe, self.wfsc_factor, self.sensitivity,
+                                 f'example_{self.parameter}', var_par=self.var_par, subsystem=self.parameter,
+                                 name=self.subparameter, value=value)
+
+            for key in self.result_dict.keys():
+                arr = self.result_dict[key]
+                arr[i] = np.array(getattr(error_budget, key))
+                self.result_dict[key] = arr
+
         return self.result_dict
 
 
