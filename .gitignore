@@ -2,7 +2,7 @@
 # repository-specific
 output
 inputs/temp*.json
-inputs/*pp.json
+#inputs/*pp.json
 inputs/ppFact.fits
 inputs/*.swx
 inputs/obsolete/
