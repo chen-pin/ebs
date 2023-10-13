@@ -33,16 +33,22 @@ automatically receive the default EXOSIMS values and so users should familiarize
 variables or potentially receive unexpected results. 
 
 To run ebs from the command line, users should first ensure that all of the previously described parameter files contain 
-the desired values. Currently command line usage for parameter searches is only supported for 4 key variables, with 
-immediate plans to generalize this to any EXOSIMS parameter. These values can be found in the `parameters.yml` file 
-under `iter_paramaters` and are `contrast`, `throughput`, `dark_current`, and `iwa`. For whichever value is selected, 
-the sweep will be performed over the values in the `paramaters.yml` file while keeping all others fixed. 
+the desired values. Command line usage for parameter searches is supported for all EXOSIMS variables that can be
+found in the pp_json file, as well as `contrast` and `throughput`. EXOSIMS parameters should be specified by both the 
+subsystem they are a part of, as well as the parameter name (e.g. `scienceInstrument` and `QE`). The values that will 
+be swept over should be specified in the `parameters.yml` file under `iter_paramaters`. All other values will be kept 
+fixed. Performing sweeps over multiple parameters simultaneously will be added in a future version update.  
 
 For example, to sweep over contrast you would use the following syntax:
 
-`run_ebs <parameter> -c <path/to/config.yml>`
+`run_ebs <subsystem> <parameter> -c <path/to/config.yml>`
 
-i.e.
+e.g. 
+
+`run_ebs scienceInstruments QE -c inputs/parameters.yml`
+
+`contrast` and `throughput` are special cases where these should just be given as the `subsystem` parameter with the 
+second field left blank, e.g. 
 
 `run_ebs contrast -c inputs/parameters.yml`
 
