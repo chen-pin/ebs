@@ -357,21 +357,19 @@ class ErrorBudget(object):
             Coefficients of contrast sensitivity w.r.t. wavefront changes, 
             in ppt/pm units.  
             Dimensions:  (num_angles, num_spatial_modes)
+        output_filename_prefix: str
+            prefix for the output file name.
         var_par : bool
-            Whether or not the user wants to input a range of values for an 
+            Whether the user wants to input a range of values for an
             EXOSIMS 'scienceInstruments', 'starlightSuppressionSystems', or 
             'observingModes' parameter.
-        *args 
-            If `var_par` == True, enter 3 additional arguments:  
-                1. String indicating the EXOSIMS subsystem.  Possible values 
-                comprise the following 
-                    - 'scienceInstruments'
-                    - 'starlightSuppressionSystems' 
-                    - 'observingModes'
-                2. String indicating the EXOSIMS parameter (e.g. 'optics',
-                'QE', or 'SNR')
-                3. List_like data providing the range of parameter values
-
+        subsystem: str
+            subsystem of the parameter being swept over e.g. 'scienceInstruments, 'starlightSuppressionSystems', or
+            'observingModes'.
+        name: str
+            Name of the parameter being swept over under the given subsystem e.g. 'QE', 'idark', 'IWA, etc.
+        value: float
+            Value for the parameter subsystem, name to take for this run of EXOSIMS.
         Note
         ----
         - If `var_par`==True, the EXOSIMS parameter name and the iterated 
