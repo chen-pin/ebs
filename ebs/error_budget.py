@@ -23,7 +23,8 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import EXOSIMS.MissionSim as ems
 from copy import deepcopy
-from ebs.utils import generate_pp_json
+from ebs.utils import update_pp_json
+
 class ErrorBudget(object):
     """
     Exposure time calculator incorporating dynamical wavefront errors and 
