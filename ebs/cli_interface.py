@@ -65,5 +65,6 @@ def main():
     for i, star in enumerate(config['targets']):
         spectral_dict[config['targets'][star]['HIP']] = config['targets'][star]['spec_type']
 
+    save_name = f'inttime_vs_{subparameter if subparameter else parameter}.pdf'
     sweep.plot_output(spectral_dict, parameter if not subparameter else subparameter, values, result_dict['int_time'],
-                      save_dir=output_path, save_name='cli_t-vs-c.pdf')
+                      save_dir=output_path, save_name=save_name)
