@@ -5,6 +5,7 @@ import pytest as pt
 import numpy as np
 import astropy.units as u
 from ebs.error_budget import ErrorBudget
+import yaml
 
 
 @pt.fixture
@@ -13,7 +14,7 @@ def obs():
     Instantiate EXOSIMS object.
 
     """
-    t = ErrorBudget(input_dir='./'
+    t = ErrorBudget(input_dir='./inputs'
                     , pp_json_filename="test_pp.json"
                     , contrast_filename="test_contrast.csv"
                     , target_list=[57443, 15457, 72659]
@@ -25,14 +26,27 @@ def obs():
     num_spatial_modes = 13
     num_temporal_modes = 1
     num_angles = 27
+
+    config_fname = './inputs/test_parameters.yml'
+    with open(config_fname, 'r') as config:
+        config = yaml.load(config, Loader=yaml.FullLoader)
+
+    config['paths']['input'] = './inputs'
+    config['paths']['output'] = './outputs'
+
+    config['num_spatial_modes'] = 13
+    config['num_temporal_modes'] = 1
+    config['angles']['num_angles'] = 27
+
+    with open(config_fname, 'w') as output_config:
+        yaml.dump(config, output_config)
+
     wfe = 1.72*np.random.rand(num_temporal_modes, num_spatial_modes)
     wfsc_factor = 0.5*np.random.rand(wfe.shape[0], wfe.shape[1])
-    sensitivity = (
-        np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84
-                            , 9.09, 3.68, 9.33, 15.0, 0.745])
-                 .reshape(num_angles, num_spatial_modes)
-                  )
-    t.run_etc(wfe, wfsc_factor, sensitivity, 'test_output.json', var_par=False)
+    sensitivity = (np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84, 9.09, 3.68, 9.33, 15.0, 0.745])
+                 .reshape(num_angles, num_spatial_modes))
+
+    t.run_etc(config, wfe, wfsc_factor, sensitivity, 'test_output.json', var_par=False)
     return t
 
 
@@ -87,13 +101,20 @@ def test_exposure_time(obs):
 
 
 def test_var_pars(obs):
-    qe = (0.7, 0.8, 0.9)
-    output_filename = 'test_var_par_output'
-    obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', True
-                , 'scienceInstruments', 'QE', qe)
-    path = os.path.join(obs.input_dir, obs.pp_json_filename)
+
+    config = './inputs/test_parameters.yml'
+    with open(config, 'r') as config:
+        config = yaml.load(config, Loader=yaml.FullLoader)
+
+    qe = [0.7, 0.8, 0.9]
+
     for value in qe:
-        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
+        obs.run_etc(config, obs.wfe, obs.wfsc_factor, obs.sensitivity, var_par=True
+                    , subsystem='scienceInstruments', name='QE', value=value, remove_temp_jsons=False)
+
+        print(obs.input_dir )
+        path = os.path.join(obs.input_dir, 'temp_' + 'QE' + '_' + str(value) + '.json')
+
         with open(path) as f:
             input_dict = js.load(f)
         assert input_dict['scienceInstruments'][0]['QE'] == value
