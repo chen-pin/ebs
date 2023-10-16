@@ -338,7 +338,7 @@ class ErrorBudget(object):
             js.dump(output_dict, f, indent=4)
 
     def run_etc(self, config, wfe, wfsc_factor, sensitivity, output_filename_prefix='output_',
-                var_par=False, subsystem=None, name=None, value=None):
+                var_par=False, subsystem=None, name=None, value=None, remove_temp_jsons=True):
         """
         Run end-to-end sequence of methods to produce results written to 
         output JSON file. 
@@ -404,10 +404,11 @@ class ErrorBudget(object):
 
         # Remove temp files to run EXOSIMS to prevent clutter. If these want to be maintained they should be renamed and
         # potentially reformatted
-        for fname in glob.glob(config['paths']['input'] + '/*'):
-            if 'temp_' in fname:
-                print(f'Removing {fname}')
-                os.remove(fname)
+        if remove_temp_jsons:
+            for fname in glob.glob(config['paths']['input'] + '/*'):
+                if 'temp_' in fname:
+                    print(f'Removing {fname}')
+                    os.remove(fname)
 
 
 class ParameterSweep:
