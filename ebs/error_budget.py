@@ -389,13 +389,13 @@ class ErrorBudget(object):
                 self.input_dict[subsystem][0][name] = value
                 temp_json_filename = self.write_temp_json('temp_' + name + '_' + str(value) + '.json')
                 self.run_exosims(temp_json_filename)
-                filename = (output_filename_prefix + '_' + name + '_' + str(value))
+                filename = (output_filename_prefix + '_' + name + '_' + str(value)+ '.json')
                 self.output_to_json(filename)
             except KeyError:
                 self.input_dict[name][0] = value
                 temp_json_filename = self.write_temp_json('temp_' + name + '_' + str(value) + '.json')
                 self.run_exosims(temp_json_filename)
-                filename = (output_filename_prefix + '_' + name + '_' + str(value))
+                filename = (output_filename_prefix + '_' + name + '_' + str(value)+ '.json')
                 self.output_to_json(filename)
         else:
             temp_json_filename = self.write_temp_json()
