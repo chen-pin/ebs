@@ -11,7 +11,8 @@ def parse():
     # read in command line arguments
     parser = argparse.ArgumentParser(description='EBS Command Line Interface')
     parser.add_argument('param', type=str, help='parameter to sweep over')
-    parser.add_argument('sub_param', type=str, default=None, help='sub parameter to sweep over')
+    parser.add_argument('-sub', type=str, default=None, help='sub parameter to sweep over',
+                        dest='sub_param')
     parser.add_argument('-c', type=str, help='config of parameter values', default='parameters.yml',
                         dest='config')
     return parser.parse_args()

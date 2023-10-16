@@ -41,11 +41,14 @@ fixed. Performing sweeps over multiple parameters simultaneously will be added i
 
 For example, to sweep over contrast you would use the following syntax:
 
-`run_ebs <subsystem> <parameter> -c <path/to/config.yml>`
+`run_ebs <subsystem> -sub <parameter> -c <path/to/config.yml>`
 
 e.g. 
 
-`run_ebs scienceInstruments QE -c inputs/parameters.yml`
+`run_ebs scienceInstruments -sub QE -c inputs/parameters.yml`
+
+Here `-sub` refers to the fact that this is a sub-parameter (i.e. nested) and should not be confused with the subsystem 
+name.
 
 `contrast` and `throughput` are special cases where these should just be given as the `subsystem` parameter with the 
 second field left blank, e.g. 
