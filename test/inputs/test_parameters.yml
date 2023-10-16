@@ -1,0 +1,61 @@
+angles:
+  num_angles: 27
+  start: 0.055
+  stop: 0.5
+fixed_contrast: 1.0e-10
+fixed_throughput: 0.08
+input_files:
+  contrast: test_contrast.csv
+  sensitivity: test_sensitivity.csv
+  throughput: test_throughput.csv
+  wfe: test_wfe.csv
+  wfsc: test_wfsc.csv
+iter_values:
+- 0.6
+- 0.7
+- 0.8
+- 0.9
+- 1.0
+json_files:
+  pp_json: test_pp.json
+num_spatial_modes: 13
+num_temporal_modes: 1
+paths:
+  input: ./inputs
+  output: ./outputs
+targets:
+  star1:
+    HIP: 32439
+    eeid: 0.07423
+    eepsr: 6.34e-11
+    exo_zodi: 3.0
+    luminosity: 0.2615
+    spec_type: F8V
+  star2:
+    HIP: 77052
+    eeid: 0.06174
+    eepsr: 1.39e-10
+    exo_zodi: 3.0
+    luminosity: -0.0788
+    spec_type: G5V
+  star3:
+    HIP: 79672
+    eeid: 0.07399
+    eepsr: 1.06e-10
+    exo_zodi: 3.0
+    luminosity: 0.0391
+    spec_type: G2Va
+  star4:
+    HIP: 26779
+    eeid: 0.05633
+    eepsr: 2.42e-10
+    exo_zodi: 3.0
+    luminosity: -0.3209
+    spec_type: K1V
+  star5:
+    HIP: 113283
+    eeid: 0.05829
+    eepsr: 5.89e-10
+    exo_zodi: 3.0
+    luminosity: -0.7
+    spec_type: K4Ve
