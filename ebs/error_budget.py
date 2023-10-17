@@ -417,6 +417,77 @@ class ErrorBudget(object):
             self.output_to_json(output_filename_prefix+'.json')
 
 
+class ErrorBudget2(object):
+
+    def __init__(self):
+        self.target_list = None
+        self.exo_zodi = None
+        self.eeid = None
+        self.eepsr = None 
+        self.wfe = None
+        self.wfsc_factor = None
+        self.sensitivity = None
+        self.post_wfsc_wfe = None
+        self.delta_contrast = None
+        self.angles = None
+        self.contrast = None
+        self.ppFact = None
+        self.working_angles = []
+        self.npoints = npoints
+        self.QE = None
+        self.sread = None
+        self.idark = None
+        self.Rs = None
+        self.lensSamp = None
+        self.pixelNumber = None
+        self.pixelSize = None
+        self.optics = None
+        self.BW = None
+        self.IWA = None
+        self.core_thruput = None
+        self.core_mean_intensity = None
+        senf.SNR = None
+        self.C_p = []
+        self.C_b = []
+        self.C_sp = []
+        self.C_star = []
+        self.C_sr = []
+        self.C_z = []
+        self.C_ez = []
+        self.C_dc = []
+        self.C_rn = []
+        self.int_time = None
+        self.ppFact_filename = None
+        self.contrast_filename = None
+        self.throughput_filename = None
+
+    def compute_ppFact(self):
+        """
+        Compute the post-processing factor and assign the array to 
+        `self.ppFact`. Also create FITS file of ppFact values with randomized 
+        filename.
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+        delta_contrast = np.empty(self.sensitivity.shape[0])
+        for n in range(len(delta_contrast)):
+            delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
+                                     , self.post_wfsc_wfe)**2).sum()
+                                       ) 
+        self.delta_contrast = 1E-12*delta_contrast
+        ppFact = self.delta_contrast/self.contrast
+        self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
+        random_string = str(int(1e10*np.random.rand))
+        filename = "ppFact_"+random_string+".fits"
+        path = os.path.join(self.input_dir, filename)
+        with open(path, 'wb') as f:
+            arr = np.vstack((self.angles, self.ppFact)).T
+
+
 class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
                  fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='',
