@@ -422,7 +422,6 @@ class ErrorBudget2(object):
         self.wfsc_factor = None
         self.sensitivity = None
         self.post_wfsc_wfe = None
-        self.delta_contrast = None
         self.angles = None
         self.contrast = None
         self.working_angles = []
@@ -455,9 +454,9 @@ class ErrorBudget2(object):
         self.throughput_filename = None
 
     @property
-    def ppFact(self):
+    def delta_contrast(self):
         """
-        Compute the post-processing factor and assign the array to 
+        Compute change in contrast due to residual WFE and assign the array to 
         `self.ppFact`. 
 
         Reference
@@ -473,12 +472,25 @@ class ErrorBudget2(object):
                 delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
                                          , self.post_wfsc_wfe)**2).sum()
                                            ) 
-            self.delta_contrast = 1E-12*delta_contrast
-            ppFact = self.delta_contrast/self.contrast
-            return np.where(ppFact>1.0, 1.0, ppFact)
+            return 1E-12*delta_contrast
         else: 
             print("Need to assign wfe, wfsc_factor, sensitivity, " + 
                   "and contrast values before determining ppFact")
+
+
+    @property
+    def ppFact(self):
+        """
+        Compute the post-processing factor and assign the array to 
+        `self.ppFact`. 
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        ppFact = self.delta_contrast/self.contrast
+        return np.where(ppFact>1.0, 1.0, ppFact)
 
     def write_ppFact_fits(self, input_dir):
         """
