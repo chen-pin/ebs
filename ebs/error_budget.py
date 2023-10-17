@@ -431,9 +431,8 @@ class ErrorBudget2(object):
         self.delta_contrast = None
         self.angles = None
         self.contrast = None
-        self.ppFact = None
         self.working_angles = []
-        self.npoints = npoints
+        self.npoints = None 
         self.QE = None
         self.sread = None
         self.idark = None
@@ -446,7 +445,7 @@ class ErrorBudget2(object):
         self.IWA = None
         self.core_thruput = None
         self.core_mean_intensity = None
-        senf.SNR = None
+        self.SNR = None
         self.C_p = []
         self.C_b = []
         self.C_sp = []
@@ -461,31 +460,45 @@ class ErrorBudget2(object):
         self.contrast_filename = None
         self.throughput_filename = None
 
-    def compute_ppFact(self):
+    @property
+    def ppFact(self):
         """
         Compute the post-processing factor and assign the array to 
-        `self.ppFact`. Also create FITS file of ppFact values with randomized 
-        filename.
+        `self.ppFact`. 
 
         Reference
         ---------
         - See <Post-Processing Factor> document for mathematical description
 
         """
-        self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
-        delta_contrast = np.empty(self.sensitivity.shape[0])
-        for n in range(len(delta_contrast)):
-            delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
-                                     , self.post_wfsc_wfe)**2).sum()
-                                       ) 
-        self.delta_contrast = 1E-12*delta_contrast
-        ppFact = self.delta_contrast/self.contrast
-        self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
-        random_string = str(int(1e10*np.random.rand))
-        filename = "ppFact_"+random_string+".fits"
-        path = os.path.join(self.input_dir, filename)
-        with open(path, 'wb') as f:
-            arr = np.vstack((self.angles, self.ppFact)).T
+        if (self.wfe is not None and self.wfsc_factor is not None 
+            and self.sensitivity is not None and self.contrast is not None):
+            self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+            delta_contrast = np.empty(self.sensitivity.shape[0])
+            for n in range(len(delta_contrast)):
+                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
+                                         , self.post_wfsc_wfe)**2).sum()
+                                           ) 
+            self.delta_contrast = 1E-12*delta_contrast
+            ppFact = self.delta_contrast/self.contrast
+            return np.where(ppFact>1.0, 1.0, ppFact)
+        else: 
+            print("Need to assign wfe, wfsc_factor, sensitivity, " + 
+                  "and contrast values before determining ppFact")
+
+    def write_ppFact_fits(self, input_dir):
+        """
+        Create FITS file of ppFact array with randomized filename.  
+
+        """
+        if self.angles is not None:
+            random_string = str(int(1e10*np.random.rand()))
+            filename = "ppFact_"+random_string+".fits"
+            path = os.path.join(input_dir, filename)
+            with open(path, 'wb') as f:
+                arr = np.vstack((self.angles, self.ppFact)).T
+        else:  
+            print("Need to assign angle values to write ppFact FITS file")
 
 
 class ParameterSweep:
