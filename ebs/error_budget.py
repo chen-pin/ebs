@@ -282,7 +282,7 @@ class ErrorBudget(object):
                     * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
-                mode,
+                mode
             )
             counts = sim.OpticalSystem.Cp_Cb_Csp(
                 sim.TargetList,
