@@ -18,6 +18,7 @@ module.
 import os, glob
 import numpy as np
 import json as js
+import yaml 
 from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
@@ -413,7 +414,9 @@ class ErrorBudget(object):
 
 class ErrorBudget2(object):
 
-    def __init__(self):
+    def __init__(self, config_file="config.yml"):
+        with open(config_file, 'r') as config:
+            self.config = yaml.load(config, Loader=yaml.FullLoader)
         self.target_list = None
         self.exo_zodi = None
         self.eeid = None
@@ -477,7 +480,6 @@ class ErrorBudget2(object):
             print("Need to assign wfe, wfsc_factor, sensitivity, " + 
                   "and contrast values before determining ppFact")
 
-
     @property
     def ppFact(self):
         """
@@ -491,6 +493,29 @@ class ErrorBudget2(object):
         """
         ppFact = self.delta_contrast/self.contrast
         return np.where(ppFact>1.0, 1.0, ppFact)
+    
+    def load_json(self, input_json_filename, verbose=False):
+        """
+        Load the JSON input file, which contains reference EXOSIMS parameters 
+        as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter 
+        dictionary to `self.input_dict`. 
+
+        """
+        input_path = os.path.join(self.input_dir, self.pp_json_filename)
+        with open(os.path.join(input_path)) as input_json:
+            input_dict = js.load(input_json)
+            if verbose:
+                print("Top two level dictionary keys\n")
+                for key in input_dict.keys():
+                    print(key)
+                    try:
+                        for subkey in input_dict[key].keys():
+                            print("\t{}".format(subkey))
+                    except:
+                        pass
+                print("\nStarlightSuppressionSystems:")
+                print(input_dict['starlightSuppressionSystems'])
+        self.input_dict = input_dict
 
     def write_ppFact_fits(self, input_dir):
         """
@@ -505,6 +530,17 @@ class ErrorBudget2(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
         else:  
             print("Need to assign angle values to write ppFact FITS file")
+
+    def write_temp_json(self, filename='temp.json'):
+        """
+        Write `self.input_dict` to temporary JSON file for running EXOSIMS.
+
+        """
+        self.input_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
+        path = os.path.join(self.input_dir, filename)
+        with open(path, 'w') as f:
+            js.dump(self.input_dict, f)
+        return filename
 
 
 class ParameterSweep:
