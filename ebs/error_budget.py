@@ -573,7 +573,7 @@ class ErrorBudget2(object):
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
             ['core_thruput'] = throughput_path
 
-    def run_exosims(self):
+    def run_exosims(self, file_cleanup=True):
         """
         Run EXOSIMS to generate results, including exposure times
         required for reaching specified SNR.
@@ -590,10 +590,10 @@ class ErrorBudget2(object):
                              , **self.exosims_pars_dict)
 
         # identify targets of interest
-        for j, t in enumerate(target_list):
-            if t not in sim.TargetList.Name:
-                target_list[j] += " A"
-                assert target_list[j] in sim.TargetList.Name
+#        for j, t in enumerate(target_list):
+#            if t not in sim.TargetList.Name:
+#                target_list[j] += " A"
+#                assert target_list[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t
                          in target_list])
 
