@@ -462,6 +462,7 @@ class ErrorBudget2(object):
         self.ppFact_filename = None
         self.contrast_filename = None
         self.throughput_filename = None
+        self.ppFact_filename = None
         self.exosims_pars_dict = None
 
     @property
@@ -516,8 +517,8 @@ class ErrorBudget2(object):
             with open(path, 'wb') as f:
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=True)
-            return path
-        else:
+                self.ppFact_filename = path
+        else:  
             print("Need to assign angle values to write ppFact FITS file")
 
     def initialize(self):
@@ -566,14 +567,15 @@ class ErrorBudget2(object):
 #        self.wfe = np.array(config['wfsc_args']['wfe'])
 #        self.wfsc_factor = np.array(config['wfsc_args']['wfsc_factor'])
 #        self.sensitivity = np.array(config['wfsc_args']['sensitivity'])
-        self.exosims_pars_dict['ppFact'] = self.write_ppFact_fits()
+        self.write_ppFact_fits()
+        self.exosims_pars_dict['ppFact'] = self.ppFact_filename
         self.exosims_pars_dict['cherryPickStars'] = self.target_list
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
             ['core_contrast'] = contrast_path
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
             ['core_thruput'] = throughput_path
 
-    def run_exosims(self, file_cleanup=True):
+    def run_exosims(self, remove_ppFact_file=True):
         """
         Run EXOSIMS to generate results, including exposure times
         required for reaching specified SNR.
@@ -651,8 +653,8 @@ class ErrorBudget2(object):
             self.C_dc.append(counts[3]["C_dc"])
             self.C_rn.append(counts[3]["C_rn"])
             self.C_star.append(counts[3]["C_star"])
-
-
+        if remove_ppFact_file:
+            os.remove(self.ppFact_filename)
 
 
 class ParameterSweep:
