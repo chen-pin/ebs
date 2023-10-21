@@ -466,6 +466,7 @@ class ErrorBudget2(object):
         self.throughput_filename = None
         self.ppFact_filename = None
         self.exosims_pars_dict = None
+        self.mcmc_vars = self.config['mcmc'].keys()
 
     @property
     def delta_contrast(self):
@@ -523,7 +524,7 @@ class ErrorBudget2(object):
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
-    def initialize(self):
+    def initialize_for_exosims(self):
         config = self.config
         input_path = self.config['paths']['input']
         contrast_path = os.path.join(input_path, config['input_files']\
@@ -577,13 +578,37 @@ class ErrorBudget2(object):
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
             ['core_thruput'] = throughput_path
 
-    def run_exosims(self, remove_ppFact_file=True):
+    def repack_array(self, par_name, *values):
+        print(values)
+        template = np.array(self.config['mcmc'][par_name]['ini_pars']['center'])
+        print(template)
+        indices = np.where(np.isfinite(template))
+        print(indices)
+        arr = getattr(self, par_name)
+        print(arr)
+        arr[indices] = values
+        print(arr)
+
+
+    def update(self, value):
+        print(self.config['mcmc'].keys())
+        print(dir(self))
+        for i, key in enumerate(self.config['mcmc'].keys()):
+            if key in dir(self):
+                setattr(self, key, value[i])
+                print(f"Updated {key} to {getattr(self, key)}")
+            else:
+                print(key+" not found in attributes list")
+
+
+    def run_exosims(self, initial=True, remove_ppFact_file=True):
         """
         Run EXOSIMS to generate results, including exposure times 
         required for reaching specified SNR.  
 
         """
-        self.initialize()
+        if initial:
+            self.initialize_for_exosims()
         n_angles = 3
         target_list = self.target_list
         eeid = self.eeid
