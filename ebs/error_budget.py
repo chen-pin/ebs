@@ -26,6 +26,7 @@ import EXOSIMS.MissionSim as ems
 from copy import deepcopy
 from ebs.utils import update_pp_json
 from ebs.utils import read_csv
+import ebs.log_pdf as pdf
 
 class ErrorBudget(object):
     """
@@ -464,7 +465,7 @@ class ErrorBudget2(object):
         self.throughput_filename = None
         self.ppFact_filename = None
         self.exosims_pars_dict = None
-        self.mcmc_vars = self.config['mcmc'].keys()
+        self.mcmc_vars = self.config['mcmc']['variables'].keys()
 
     @property
     def delta_contrast(self):
@@ -578,7 +579,8 @@ class ErrorBudget2(object):
 
     def repack_array(self, par_name, *values):
         print(values)
-        template = np.array(self.config['mcmc'][par_name]['ini_pars']['center'])
+        template = np.array(self.config['mcmc']['variables'][par_name]
+                                       ['ini_pars']['center'])
         print(template)
         indices = np.where(np.isfinite(template))
         print(indices)
@@ -588,20 +590,42 @@ class ErrorBudget2(object):
         print(arr)
 
     def initialize_walkers(self):
-        var_names = self.config['mcmc'].keys()
-        kwargs = [self.config['mcmc'][par_name]['ini_pars'].keys() 
+        nwalkers = self.config['mcmc']['nwalkers']
+        var_names = self.config['mcmc']['variables'].keys()
+        kwargs = [self.config['mcmc']['variables'][par_name]['ini_pars'].keys() 
                   for par_name in var_names]
-        #values = [self.config['mcmc'][kwar]
+        center = []
+        [center.append(np.array(val).ravel())  
+         for var_name in self.config['mcmc']['variables'] 
+         for val in self.config['mcmc']['variables'][var_name]['ini_pars']
+                               ['center']]
+        center = np.concatenate(center)
+        center = center[np.where(np.isfinite(center))]
+        # print(center)
+        spread = []
+        [spread.append(np.array(val).ravel())  
+         for var_name in self.config['mcmc']['variables'] 
+         for val in self.config['mcmc']['variables'][var_name]['ini_pars']
+                               ['spread']]
+        spread = np.concatenate(spread)
+        spread= spread[np.where(np.isfinite(spread))]
+        # print(spread)
+        ndim = center.shape[0]
+        walker_pos = np.random.normal(center, spread, (nwalkers, ndim))
+        return walker_pos
+        #print(walker_pos)
+
+        #values = [self.config['mcmc']['variables'][kwar]
         #print(values)
-        for i, name in enumerate(var_names):
-            print(f"MCMC Variable:  {name}")
-            [print(f"    keyword:  {key}") for key in kwargs[i]]
+        #for i, name in enumerate(var_names):
+        #    print(f"MCMC Variable:  {name}")
+        #    [print(f"    keyword:  {key}") for key in kwargs[i]]
 
 
     def update_attributes(self, value):
-        print(self.config['mcmc'].keys())
+        print(self.config['mcmc']['variables'].keys())
         print(dir(self))
-        for i, key in enumerate(self.config['mcmc'].keys()):
+        for i, key in enumerate(self.config['mcmc']['variables'].keys()):
             if key in dir(self):
                 setattr(self, key, value[i])
                 print(f"Updated {key} to {getattr(self, key)}")
