@@ -2,7 +2,7 @@
 mcmc: 
   wfsc_factor: 
     is_exosims: false
-    prior_func: uniform
+    prior_ftn: uniform
     prior_args: 
       lower_bound:    
         - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
@@ -33,7 +33,7 @@ mcmc:
         - [.NAN, .NAN, .NAN, .NAN]
   idark: 
     is_exosims: true
-    prior_func: uniform
+    prior_ftn: uniform
     prior_args:
       lower_bound: [1.0e-6] 
       upper_bound: [1.0e-4]

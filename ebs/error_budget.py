@@ -589,8 +589,18 @@ class ErrorBudget2(object):
         arr[indices] = values
         print(arr)
 
+    def initialize_walkers(self):
+        var_names = self.config['mcmc'].keys()
+        kwargs = [self.config['mcmc'][par_name]['ini_pars'].keys() 
+                  for par_name in var_names]
+        #values = [self.config['mcmc'][kwar]
+        #print(values)
+        for i, name in enumerate(var_names):
+            print(f"MCMC Variable:  {name}")
+            [print(f"    keyword:  {key}") for key in kwargs[i]]
 
-    def update(self, value):
+
+    def update_attributes(self, value):
         print(self.config['mcmc'].keys())
         print(dir(self))
         for i, key in enumerate(self.config['mcmc'].keys()):
