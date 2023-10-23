@@ -1,7 +1,16 @@
 # MCMC Paramters
 mcmc: 
-  nwalkers: 1000
+  nwalkers: 4
   variables:
+      idark: 
+        is_exosims: true
+        prior_ftn: uniform
+        prior_args:
+          lower_bound: [1.0e-6] 
+          upper_bound: [1.0e-4]
+        ini_pars: 
+          center: [1.0e-5] 
+          spread: [1.0e-7] 
       wfsc_factor: 
         is_exosims: false
         prior_ftn: uniform
@@ -33,15 +42,6 @@ mcmc:
             - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
             - [.NAN, .NAN, .NAN, .NAN]
             - [.NAN, .NAN, .NAN, .NAN]
-      idark: 
-        is_exosims: true
-        prior_ftn: uniform
-        prior_args:
-          lower_bound: [1.0e-6] 
-          upper_bound: [1.0e-4]
-        ini_pars: 
-          center: [1.0e-5] 
-          spread: [1.0e-7] 
       
 # Initial argument values for ebs.ErrorBudget.run_etc()
 
