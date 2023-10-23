@@ -1,13 +1,7 @@
 import os 
 import numpy as np
 import yaml
-import matplotlib.pyplot as plt
-import json as js
-from astropy.io import fits
-import astropy.units as u
-#import EXOSIMS.MissionSim as ems
-from ebs import ebs
-
+from ebs.error_budget import ErrorBudget, ParameterSweep
 
 def nemati2020_vvc6():
     """
@@ -30,7 +24,7 @@ def nemati2020_vvc6():
     eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
     # Instantiate the ErrorBudget object
-    error_budget = ebs.ErrorBudget(input_dir=config['paths']['input'],
+    error_budget = ErrorBudget(input_dir=config['paths']['input'],
                                    ref_json_filename=config['json_files']['ref_json'],
                                    pp_json_filename=config['json_files']['pp_json'],
                                    contrast_filename=config['input_files']['contrast'],
@@ -76,7 +70,7 @@ def nemati2020_vvc6():
     sel = input(prompt)
 
     if sel == 'c':
-        sweep = ebs.ParameterSweep(config, parameter='contrast', values=contrasts, error_budget=error_budget, wfe=wfe,
+        sweep = ParameterSweep(config, parameter='contrast', values=contrasts, error_budget=error_budget, wfe=wfe,
                                    sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=None,
                                    fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
                                    throughput_filename=throughput_filename, angles=angles,
@@ -90,7 +84,7 @@ def nemati2020_vvc6():
 
     elif sel == 't':
         # Loop through core-throughput values while holding contrast at mid-value
-        sweep = ebs.ParameterSweep(config, parameter='throughput', values=core_throughputs, error_budget=error_budget,
+        sweep = ParameterSweep(config, parameter='throughput', values=core_throughputs, error_budget=error_budget,
                                    wfe=wfe, sensitivity=sensitivity, wfsc_factor=wfsc_factor,
                                    fixed_contrast=contrasts[1], fixed_throughput=None,
                                    contrast_filename=contrast_filename, throughput_filename=throughput_filename,
@@ -107,7 +101,7 @@ def nemati2020_vvc6():
         # EXOSIMS parameter (i.e. a paramter specified in the reference JSON 
         # file).
 
-        sweep = ebs.ParameterSweep(config, parameter='dark', values=dark_currents, error_budget=error_budget, wfe=wfe,
+        sweep = ParameterSweep(config, parameter='dark', values=dark_currents, error_budget=error_budget, wfe=wfe,
                                    sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],
                                    fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
                                    throughput_filename=throughput_filename, angles=angles,
@@ -124,7 +118,7 @@ def nemati2020_vvc6():
         # routine is different from the ones above because this is an 
         # EXOSIMS parameter (i.e. a parameter specified in the reference JSON
         # file).
-        sweep = ebs.ParameterSweep(config, parameter='IWA', values=iwas, error_budget=error_budget, wfe=wfe,
+        sweep = ParameterSweep(config, parameter='IWA', values=iwas, error_budget=error_budget, wfe=wfe,
                            sensitivity=sensitivity, wfsc_factor=wfsc_factor, fixed_contrast=contrasts[1],
                            fixed_throughput=core_throughputs[1], contrast_filename=contrast_filename,
                            throughput_filename=throughput_filename, angles=angles, output_file_name='example_IWA')

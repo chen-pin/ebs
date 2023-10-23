@@ -1,4 +1,4 @@
-"""<Flux-Ratio Error Allocation Kit (FREAK)> module
+"""<error_budget> module
 
 - Need to first install EXOSIMS, see Refs 2 & 3 below
 - Also need 2 CSV files and 1 JSON input file.  The CSV files specify 
@@ -6,7 +6,7 @@ reference contrast and throughput values as functions of angular separation.
 The JSON file specifies instrument and observational parameter for the 
 reference exposure, followed by  WFE, contrast sensitivity, and WFS&C factors.  
 These files need to reside in the path "./inputs".  See doc strings 
-for arugments `contrast_filename`, `ref_json_filename`, and 
+for arugments `contrast_filename`, and
 `pp_json_filename` below.  One can create arrays of WFE, sensitivity, and 
 WFS&C values, and then use the `create_pp_json()` method to create the JSON 
 file.  
@@ -18,11 +18,15 @@ module.
 import os 
 import numpy as np
 import json as js
+import yaml 
 from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
 import EXOSIMS.MissionSim as ems
 from copy import deepcopy
+from ebs.utils import generate_pp_json
+from ebs.utils import read_csv
+
 
 class ErrorBudget(object):
     """
@@ -35,9 +39,6 @@ class ErrorBudget(object):
         Directory path where the above-listed input files reside
     output_dir : `os.path`
         Directory path where the output files will be saved
-    ref_json_filename : str
-        Name of JSON file specifying the initial EXOSIMS parameters, without 
-        considering any wavefront drifts. 
     pp_json_filename : str
         Name of JSON file that has WFE, WFS&C factors, and sensitivity 
         coefficients appended to the reference EXOSIMS parameters.
@@ -127,7 +128,6 @@ class ErrorBudget(object):
     def __init__(self
                  , input_dir=os.path.join(".", "inputs")
                  , output_dir=os.path.join(".", "output")
-                 , ref_json_filename="test_ref.json"
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
@@ -142,7 +142,6 @@ class ErrorBudget(object):
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
-        self.ref_json_filename = ref_json_filename
         self.pp_json_filename = pp_json_filename
         self.contrast_filename = contrast_filename
         self.input_dict = None
@@ -213,6 +212,7 @@ class ErrorBudget(object):
         self.wfe = np.array(self.input_dict['wfe'])
         self.wfsc_factor = np.array(self.input_dict['wfsc_factor'])
         self.sensitivity = np.array(self.input_dict['sensitivity'])
+
         self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
         delta_contrast = np.empty(self.sensitivity.shape[0])
         for n in range(len(delta_contrast)):
@@ -237,22 +237,6 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(self.input_dict, f)
         return filename
-
-    def create_pp_json(self, wfe, wfsc_factor, sensitivity):
-        """
-        Utility to create an input JSON file (named by `self.pp_json_filename`)
-        with user-created WFE, sensitivity, and post-processing parameters.  
-
-        """
-        path_ref = os.path.join(self.input_dir, self.ref_json_filename)
-        with open(path_ref) as f:
-            input_dict = js.load(f)
-        input_dict['wfe'] = wfe.tolist()
-        input_dict['wfsc_factor'] = wfsc_factor.tolist()
-        input_dict['sensitivity'] = sensitivity.tolist()
-        path_pp = os.path.join(self.input_dir, self.pp_json_filename)
-        with open(path_pp, 'w') as f:
-            js.dump(input_dict, f, indent=4)
         
     def run_exosims(self, temp_json_filename):
         """
@@ -302,7 +286,7 @@ class ErrorBudget(object):
                     * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
-                mode,
+                mode
             )
             counts = sim.OpticalSystem.Cp_Cb_Csp(
                 sim.TargetList,
@@ -402,14 +386,7 @@ class ErrorBudget(object):
 
 
         """
-        if isinstance(wfe, list):
-            wfe = np.array(wfe)
-        if isinstance(wfsc_factor, list):
-            wfsc_factor = np.array(wfsc_facor)
-        if isinstance(sensitivity, list):
-            sensitivity = np.array(sensitivity)
-        self.create_pp_json(wfe=wfe, wfsc_factor=wfsc_factor
-                            , sensitivity=sensitivity)
+        generate_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor, sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
@@ -442,6 +419,269 @@ class ErrorBudget(object):
             temp_json_filename = self.write_temp_json()
             self.run_exosims(temp_json_filename)
             self.output_to_json(output_filename_prefix+'.json')
+
+
+class ErrorBudget2(object):
+
+    def __init__(self, config_file="config.yml"):
+        with open(config_file, 'r') as config:
+            self.config = yaml.load(config, Loader=yaml.FullLoader)
+        self.target_list = None
+        self.exo_zodi = None
+        self.eeid = None
+        self.eepsr = None 
+        self.wfe = None
+        self.wfsc_factor = None
+        self.sensitivity = None
+        self.post_wfsc_wfe = None
+        self.angles = None
+        self.contrast = None
+        self.working_angles = []
+#        self.npoints = None 
+        self.QE = None
+        self.sread = None
+        self.idark = None
+        self.Rs = None
+        self.lensSamp = None
+        self.pixelNumber = None
+        self.pixelSize = None
+        self.optics = None
+        self.BW = None
+        self.IWA = None
+        self.core_thruput = None
+        self.core_mean_intensity = None
+        self.SNR = None
+        self.C_p = []
+        self.C_b = []
+        self.C_sp = []
+        self.C_star = []
+        self.C_sr = []
+        self.C_z = []
+        self.C_ez = []
+        self.C_dc = []
+        self.C_rn = []
+        self.int_time = None
+        self.ppFact_filename = None
+        self.contrast_filename = None
+        self.throughput_filename = None
+        self.ppFact_filename = None
+        self.exosims_pars_dict = None
+        self.mcmc_vars = self.config['mcmc'].keys()
+
+    @property
+    def delta_contrast(self):
+        """
+        Compute change in contrast due to residual WFE and assign the array to 
+        `self.ppFact`. 
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        if (self.wfe is not None and self.wfsc_factor is not None 
+            and self.sensitivity is not None and self.contrast is not None):
+            self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+            delta_contrast = np.empty(self.contrast.shape[0])
+            for n in range(len(delta_contrast)):
+                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
+                                         , self.post_wfsc_wfe)**2).sum()
+                                           ) 
+            return 1E-12*delta_contrast
+        else: 
+            print("Need to assign wfe, wfsc_factor, sensitivity, " + 
+                  "and contrast values before determining delta_contrast") 
+
+    @property
+    def ppFact(self):
+        """
+        Compute the post-processing factor and assign the array to 
+        `self.ppFact`. 
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        ppFact = self.delta_contrast/self.contrast
+        return np.where(ppFact>1.0, 1.0, ppFact)
+
+    
+    def write_ppFact_fits(self):
+        """
+        Create FITS file of ppFact array with randomized filename.  
+
+        """
+        input_dir = self.config['paths']['input']
+        if self.angles is not None:
+            random_string = str(int(1e10*np.random.rand()))
+            filename = "ppFact_"+random_string+".fits"
+            path = os.path.join(input_dir, filename)
+            with open(path, 'wb') as f:
+                arr = np.vstack((self.angles, self.ppFact)).T
+                fits.writeto(f, arr, overwrite=True)
+                self.ppFact_filename = path
+        else:  
+            print("Need to assign angle values to write ppFact FITS file")
+    
+    def initialize_for_exosims(self):
+        config = self.config
+        input_path = self.config['paths']['input']
+        contrast_path = os.path.join(input_path, config['input_files']\
+                ['contrast'])
+        throughput_path = os.path.join(
+                input_path, config['input_files']['throughput'])
+        self.angles = read_csv(
+                filename=contrast_path
+                , skiprows=1
+                )[:,0]
+        self.contrast = read_csv(
+                filename=contrast_path
+                , skiprows=1
+                )[:,1]
+        self.throughput = read_csv(
+                filename=throughput_path
+                , skiprows=1
+                )[:, 1]
+        self.wfe = read_csv(
+                filename=os.path.join(input_path, config['input_files']['wfe'])
+                , skiprows=1
+                                )
+        self.wfsc_factor = read_csv(
+            filename=os.path.join(input_path
+            , config['input_files']['wfsc_factor'])
+            , skiprows=1
+                                )
+        self.sensitivity = read_csv(
+            filename=os.path.join(input_path
+            , config['input_files']['sensitivity'])
+            , skiprows=1
+                                )
+#        self.load_csv_contrast()
+        self.target_list = ['HIP '+ str(config['targets'][star]['HIP'])
+                                for star in config['targets']]
+        self.eeid = [config['targets'][star]['eeid'] 
+                                for star in config['targets']]
+        self.eepsr = [config['targets'][star]['eepsr'] 
+                                for star in config['targets']]
+        self.exo_zodi = [config['targets'][star]['exo_zodi'] 
+                                for star in config['targets']]
+        self.exosims_pars_dict = config['initial_exosims']
+#        self.wfe = np.array(config['wfsc_args']['wfe'])
+#        self.wfsc_factor = np.array(config['wfsc_args']['wfsc_factor'])
+#        self.sensitivity = np.array(config['wfsc_args']['sensitivity'])
+        self.write_ppFact_fits()
+        self.exosims_pars_dict['ppFact'] = self.ppFact_filename
+        self.exosims_pars_dict['cherryPickStars'] = self.target_list
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_contrast'] = contrast_path
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_thruput'] = throughput_path
+
+    def repack_array(self, par_name, *values):
+        print(values)
+        template = np.array(self.config['mcmc'][par_name]['ini_pars']['center'])
+        print(template)
+        indices = np.where(np.isfinite(template))
+        print(indices)
+        arr = getattr(self, par_name)
+        print(arr)
+        arr[indices] = values
+        print(arr)
+
+
+    def update(self, value):
+        print(self.config['mcmc'].keys())
+        print(dir(self))
+        for i, key in enumerate(self.config['mcmc'].keys()):
+            if key in dir(self):
+                setattr(self, key, value[i])
+                print(f"Updated {key} to {getattr(self, key)}")
+            else:
+                print(key+" not found in attributes list")
+
+
+    def run_exosims(self, initial=True, remove_ppFact_file=True):
+        """
+        Run EXOSIMS to generate results, including exposure times 
+        required for reaching specified SNR.  
+
+        """
+        if initial:
+            self.initialize_for_exosims()
+        n_angles = 3
+        target_list = self.target_list
+        eeid = self.eeid
+        eepsr = self.eepsr
+        exo_zodi = self.exo_zodi
+        # build sim object:
+        sim = ems.MissionSim(use_core_thruput_for_ez=False
+                             , **self.exosims_pars_dict)
+        
+        # identify targets of interest
+#        for j, t in enumerate(target_list): 
+#            if t not in sim.TargetList.Name:
+#                target_list[j] += " A"
+#                assert target_list[j] in sim.TargetList.Name
+        sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
+                         in target_list])
+        
+        # assemble information needed for integration time calculation:
+        
+        # we have only one observing mode defined, so use that
+        mode = sim.OpticalSystem.observingModes[0]
+        
+        # use the nominal local zodi and exozodi values
+        fZ = sim.ZodiacalLight.fZ0
+        
+        # now we loop through the targets of interest and compute integration 
+        # times for each:
+        self.int_time = np.empty((len(target_list), n_angles))*u.d
+        for j, sInd in enumerate(sInds):
+            # choose angular separation for coronagraph performance
+            # this doesn't matter for a flat contrast/throughput, but
+            # matters a lot when you have real performane curves
+            WA_inner = 0.95*eeid[j]
+            WA_outer = 1.67*eeid[j]
+            WA = [WA_inner, eeid[j], WA_outer]
+            self.working_angles.append(WA)
+            # target planet deltaMag (evaluate for a range):
+            dMag0 = -2.5*np.log10(eepsr[j])
+            dMags = np.array([(dMag0-2.5*np.log10(eeid[j]/WA_inner))
+                     , dMag0, (dMag0-2.5*np.log10(eeid[j]/WA_outer))])
+            self.int_time[j] = sim.OpticalSystem.calc_intTime(
+                sim.TargetList,
+                [sInd] * n_angles,
+                [fZ.value] * n_angles * fZ.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
+                    * sim.ZodiacalLight.fEZ0.unit,
+                dMags,
+                WA * u.arcsec,
+                mode
+            )
+            counts = sim.OpticalSystem.Cp_Cb_Csp(
+                sim.TargetList,
+                [sInd] * n_angles,
+                [fZ.value] * n_angles * fZ.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
+                    * sim.ZodiacalLight.fEZ0.unit,
+                dMags,
+                WA * u.arcsec,
+                mode,
+                True
+            )
+            self.C_p.append(counts[0])
+
+            self.C_b.append(counts[1])
+            self.C_sp.append(counts[2])
+            self.C_sr.append(counts[3]["C_sr"])
+            self.C_z.append(counts[3]["C_z"])
+            self.C_ez.append(counts[3]["C_ez"])
+            self.C_dc.append(counts[3]["C_dc"])
+            self.C_rn.append(counts[3]["C_rn"])
+            self.C_star.append(counts[3]["C_star"])
+        if remove_ppFact_file:
+            os.remove(self.ppFact_filename)
 
 
 class ParameterSweep:
@@ -523,6 +763,7 @@ class ParameterSweep:
             plt.legend()
         plt.tight_layout()
         plt.savefig(os.path.join(save_dir, save_name))
+        plt.show()
 
     def run_sweep(self):
         # 3 contrasts, 5 stars, 3 zones

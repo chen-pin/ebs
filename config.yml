@@ -1,0 +1,189 @@
+# MCMC Paramters
+mcmc: 
+  wfsc_factor: 
+    is_exosims: false
+    prior_func: uniform
+    prior_args: 
+      lower_bound:    
+        - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+        - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+        - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+        - [.NAN, .NAN, .NAN, .NAN]
+        - [.NAN, .NAN, .NAN, .NAN]
+      upper_bound:
+        - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+        - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+        - [0.5, 0.5, 0.5, 0.5] 
+        - [.NAN, .NAN, .NAN, .NAN]
+        - [.NAN, .NAN, .NAN, .NAN]
+    ini_pars: 
+      center: 
+        # Center values for initializing walkers
+        - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+        - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5]
+        - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3]
+        - [.NAN, .NAN, .NAN, .NAN]
+        - [.NAN, .NAN, .NAN, .NAN]
+      spread: 
+        # Spread for initializing walkers
+        - [9.9999E-9, 9.9999E-9, 9.9999E-9, 9.9999E-9]
+        - [9.999e-7, 9.999e-7, 9.999e-7, 9.999e-7]
+        - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
+        - [.NAN, .NAN, .NAN, .NAN]
+        - [.NAN, .NAN, .NAN, .NAN]
+  idark: 
+    is_exosims: true
+    prior_func: uniform
+    prior_args:
+      lower_bound: [1.0e-6] 
+      upper_bound: [1.0e-4]
+    ini_pars: 
+      center: [1.0e-5] 
+      spread: [1.0e-7] 
+      
+# Initial argument values for ebs.ErrorBudget.run_etc()
+
+paths:
+  output: ./output
+  input: ./inputs
+
+input_files:
+  contrast: mcmc_contrast.csv
+  throughput: mcmc_throughput.csv
+  wfe: mcmc_wfe.csv
+  wfsc_factor: mcmc_wfsc.csv
+  sensitivity: mcmc_sensitivity.csv
+
+json_files:
+  ref_json: mcmc_ref.json  # An input specifiying the 'unaberrated' observatory
+  pp_json: mcmc_pp.json  # An intermediate file read in by EXOSIMS
+
+targets:
+  star1:
+    HIP: 32439 A
+    spec_type: F8V
+    luminosity: 0.2615
+    eeid: 0.07423
+    eepsr: 6.34e-11
+    exo_zodi: 3.0
+  star2:
+    HIP: 77052 A
+    spec_type: G5V
+    luminosity: -0.0788
+    eeid: 0.06174
+    eepsr: 1.39e-10
+    exo_zodi: 3.0
+  star3:
+    HIP: 79672 
+    spec_type: G2Va
+    luminosity: 0.0391
+    eeid: 0.07399
+    eepsr: 1.06e-10
+    exo_zodi: 3.0
+  star4:
+    HIP: 26779 
+    spec_type: K1V
+    luminosity: -0.3209
+    eeid: 0.05633
+    eepsr: 2.42e-10
+    exo_zodi: 3.0
+  star5:
+    HIP: 113283
+    spec_type: K4Ve
+    luminosity: -0.70
+    eeid: 0.05829
+    eepsr: 5.89e-10
+    exo_zodi: 3.0
+    
+    #wfsc_args:
+    #  wfe:
+    #  # Spatial frequency bins [Low, Mid, High, High+], unit = pm
+    #    - [10.0, 10.0, 10.0, 10.0]  # Static temporal
+    #    - [10.0, 10.0, 10.0, 10.0]  # LF1 (10.000 s - 48 hr)
+    #    - [10.0, 10.0, 10.0, 10.0]  # LF2 (LOWFS)
+    #    - [10.0, 10.0, 10.0, 10.0]  # LF3 (Telescope alignment bandwidth)
+    #    - [10.0, 10.0, 10.0, 10.0]  # MF (PM segment control)
+    #    - [10.0, 10.0, 10.0, 10.0]  # HF (Uncontrollable) 
+    #  
+    #  wfsc_factor: 
+    #    - [1.0E-6, 1.0E-6, 1.0E-6, 1.0E-6]
+    #    - [1.0E-3, 1.0E-3, 1.0E-3, 1.0E-3]
+    #    - [0.5, 0.5, 0.5, 0.5] 
+    #    - [1.0, 1.0, 1.0, 1.0]
+    #    - [1.0, 1.0, 1.0, 1.0]
+    #    - [1.0, 1.0, 1.0, 1.0]
+    #  
+    #  sensitivity:
+    #  # Spatial frequency bins [Low, Mid, High, High+], unit = ppt/pm
+    #  # HZs of fiducial stars span 53.5 - 124.0 mas angular range
+    #  # For D=6 m, 6.2-14.4 wvl/D @250nm, 2.8-3.7 wvl/D @550nm, 0.92-2.1 wvl/D @1.7um
+    #    - [30, 30, 30, 30]  # 47 - 66 mas (2.5-3.5 wvl/D, wvl=550 nm, D=6 m)
+    #    - [30, 30, 30, 30]  # 66 - 85 mas (3.5-4.5 wvl/D, wvl=550 nm, D=6 m)
+    #    - [30, 30, 30, 30]  # 85 - 104 mas (4.5-5.5 wvl/D, wvl=550 nm, D=6 m)
+    #    - [30, 30, 30, 30]  # 104 - 123 mas (5.5-6.5 wvl/D, wvl=550 nm, D=6 m)
+    #    - [30, 30, 30, 30]  # 123 - 142 mas (6.5-7.5 wvl/D, wvl=550 nm, D=6 m)
+  
+  #  output_filename_prefix: mcmc
+
+#contrast: [1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10]
+
+#core_throughout: [0.15, 0.15, 0.15, 0.15, 0.15]
+
+
+initial_exosims: 
+    skipSaturationCalcs: true
+    filterBinaries: false
+    keepStarCatalog: true
+    minComp: 0
+    modules:
+      BackgroundSources: ' '
+      Completeness: ' '
+      Observatory: ' '
+      OpticalSystem: Nemati
+      PlanetPhysicalModel: ' '
+      PlanetPopulation: ' '
+      PostProcessing: ' '
+      SimulatedUniverse: ' '
+      StarCatalog: HWOMissionStars
+      SurveyEnsemble: ' '
+      SurveySimulation: ' '
+      TargetList: ' '
+      TimeKeeping: ' '
+      ZodiacalLight: ' '
+    obscurFac: 0.1
+    observingModes:
+    - SNR: 3.0
+      detectionMode: true
+      instName: CONF_NF_Imager
+      systName: coronagraph
+      timeMultiplier: 1.0
+#    ppFact: 0.01
+    pupilDiam: 6.0
+    scienceInstruments:
+    - CIC: 0.0021
+      ENF: 1.0
+      FoV: 9.5
+      Pceff: 1.0
+      QE: 0.835
+      idark: 3.0e-05
+      name: CONF_NF_Imager
+      optics: 0.816
+      pixelNumber: 1024
+      pixelScale: 0.02
+      pixelSize: 1.3e-05
+      radDos: 0
+      sread: 1.7e-06
+      texp: 3
+    starlightSuppressionSystems:
+    - BW: 0.2
+      IWA: 0.02
+      OWA: 0.5
+      core_area: 0.000552
+#      core_contrast: ./test/test_contrast.csv
+#      core_thruput: ./test/test_throughput.csv
+      lam: 550.0
+      name: coronagraph
+      occ_trans: 0.33
+      occulter: false
+      ohTime: 1.0
+      optics: 1.0
