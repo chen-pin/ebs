@@ -467,7 +467,6 @@ class ErrorBudget2(object):
         self.throughput_filename = None
         self.ppFact_filename = None
         self.exosims_pars_dict = None
-        self.mcmc_vars = self.config['mcmc']['variables'].keys()
 
     @property
     def delta_contrast(self):
@@ -578,24 +577,19 @@ class ErrorBudget2(object):
             ['core_contrast'] = contrast_path
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
             ['core_thruput'] = throughput_path
-
-    def repack_array(self, par_name, *values):
-        print(values)
-        template = np.array(self.config['mcmc']['variables'][par_name]
-                                       ['ini_pars']['center'])
-        print(template)
-        indices = np.where(np.isfinite(template))
-        print(indices)
-        arr = getattr(self, par_name)
-        print(arr)
-        arr[indices] = values
-        print(arr)
+        for key in self.exosims_pars_dict['scienceInstruments'][0].keys():
+            if key != 'optics' in dir(self):
+                setattr(self, key
+                        , self.exosims_pars_dict['scienceInstruments'][0][key])
+        for key \
+             in self.exosims_pars_dict['starlightSuppressionSystems'][0] \
+                 .keys():
+            if key in dir(self):
+                setattr(self, key
+                        , self.exosims_pars_dict['starlightSuppressionSystems']
+                                                [0][key])
 
     def initialize_walkers(self):
-        nwalkers = self.config['mcmc']['nwalkers']
-        var_names = self.config['mcmc']['variables'].keys()
-        kwargs = [self.config['mcmc']['variables'][par_name]['ini_pars'].keys() 
-                  for par_name in var_names]
         center = []
         [center.append(np.array(val).ravel())  
          for var_name in self.config['mcmc']['variables'] 
@@ -603,7 +597,6 @@ class ErrorBudget2(object):
                                ['center']]
         center = np.concatenate(center)
         center = center[np.where(np.isfinite(center))]
-        # print(center)
         spread = []
         [spread.append(np.array(val).ravel())  
          for var_name in self.config['mcmc']['variables'] 
@@ -611,26 +604,26 @@ class ErrorBudget2(object):
                                ['spread']]
         spread = np.concatenate(spread)
         spread= spread[np.where(np.isfinite(spread))]
-        # print(spread)
         ndim = center.shape[0]
+        nwalkers = self.config['mcmc']['nwalkers']
         walker_pos = np.random.normal(center, spread, (nwalkers, ndim))
         return walker_pos
-        #print(walker_pos)
 
-        #values = [self.config['mcmc']['variables'][kwar]
-        #print(values)
-        #for i, name in enumerate(var_names):
-        #    print(f"MCMC Variable:  {name}")
-        #    [print(f"    keyword:  {key}") for key in kwargs[i]]
-
-
-    def update_attributes(self, value):
-        print(self.config['mcmc']['variables'].keys())
-        print(dir(self))
-        for i, key in enumerate(self.config['mcmc']['variables'].keys()):
-            if key in dir(self):
-                setattr(self, key, value[i])
-                print(f"Updated {key} to {getattr(self, key)}")
+    def update_attributes(self, values):
+        for i, var_name in enumerate(self.config['mcmc']['variables']):
+            if var_name in dir(self):
+                template = np.array(self.config['mcmc']['variables'][var_name]
+                                               ['ini_pars']['center'])
+                indices = np.where(np.isfinite(template))
+                use_values, values = np.split(values, [indices[0].size])
+                arr = getattr(self, var_name)
+                print(arr)
+                if type(arr) == float:
+                    arr = use_values[0]
+                else:
+                    arr[indices] = use_values
+                setattr(self, var_name, arr)
+                print(f"Updated {var_name} to {getattr(self, var_name)}")
             else:
                 print(key+" not found in attributes list")
 
