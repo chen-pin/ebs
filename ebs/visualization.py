@@ -15,6 +15,29 @@ plt.rcParams.update({'ytick.labelsize': 'large'})
 
 
 def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, save_dir, save_name):
+    """Plots the EBS parameter that was swept over as a function of calculated integration time.
+
+    All observing scenarios are plotted on the same plot with different colors denoting the different stars and
+    different linestyles indicating the inner, mid, or outer habitable zones. The plots will automatically scale to be
+    semilog or loglog if one or both of the variables span more than three orders of magnitude.
+
+    :param error_budget: ebs.error_budget.ErrorBudget
+        Error Budget class from which results are desired to be plotted.
+    :param spectral_dict: dict
+        Dictionary of HIP numbers and spectral types of stars observed.
+    :param parameter: str
+        Parameter ovr which to plot.
+    :param values: list or array
+        Values of the parameter that were swept over.
+    :param int_times: list or array
+        Calculated integration times.
+    :param save_dir: str
+        Path to save the output plot.
+    :param save_name: str
+        Name to save the output plot under.
+    :return: None
+
+    """
     fig, ax = plt.subplots(figsize=(16, 9))
     plt.title(f"Required Integration Time (hr, SNR=7) vs. {parameter.capitalize()}", fontsize=26)
 
