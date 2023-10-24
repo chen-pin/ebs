@@ -524,6 +524,30 @@ class ErrorBudget2(object):
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
+    def write_csv(self, contrast_or_throughput):
+        """
+        Create csv file of contrast or throughput  array with randomized 
+        filename.  
+
+        """
+        input_dir = self.config['paths']['input']
+        if self.angles is not None:
+            random_string = str(int(1e10*np.random.rand()))
+            filename = contrast_or_throughput+'_'+random_string+".csv"
+            path = os.path.join(input_dir, filename)
+            if contrast_or_throughput == 'contrast':
+                arr = np.vstack((self.angles, self.contrast)).T
+                self.contrast_filename = path
+                np.savetxt(path, arr, delimiter=','
+                           , header="r_as,core_contrast", comments='')
+            if contrast_or_throughput == 'throughput':
+                arr = np.vstack((self.angles, self.throughput)).T
+                self.contrast_filename = path
+                np.savetxt(path, arr, delimiter=',', header="r_as,thruput"
+                           , comments='')
+        else:  
+            print("Need to assign angle values to write CSV file")
+
     def initialize_for_exosims(self):
         config = self.config
         input_path = self.config['paths']['input']
@@ -606,7 +630,9 @@ class ErrorBudget2(object):
         spread= spread[np.where(np.isfinite(spread))]
         ndim = center.shape[0]
         nwalkers = self.config['mcmc']['nwalkers']
-        walker_pos = np.random.normal(center, spread, (nwalkers, ndim))
+#        walker_pos = np.random.normal(center, spread, (nwalkers, ndim))
+        walker_pos = center + np.random.uniform(-spread/2.0, spread/2.0
+                                                , (nwalkers, ndim))
         return walker_pos
 
     def update_attributes(self, values):
@@ -624,11 +650,13 @@ class ErrorBudget2(object):
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
                 print(f"Updated {var_name} to {getattr(self, var_name)}")
+                if var_name == 'contrast'  or var_name == 'throughput':
+                    self.write_csv(var_name)
             else:
                 print(key+" not found in attributes list")
 
 
-    def run_exosims(self, initial=True, remove_ppFact_file=True):
+    def run_exosims(self, initial=True, file_cleanup=True):
         """
         Run EXOSIMS to generate results, including exposure times 
         required for reaching specified SNR.  
@@ -707,8 +735,20 @@ class ErrorBudget2(object):
             self.C_dc.append(counts[3]["C_dc"])
             self.C_rn.append(counts[3]["C_rn"])
             self.C_star.append(counts[3]["C_star"])
-        if remove_ppFact_file:
+        if file_cleanup:
+            self.clean_files()
+
+    def clean_files(self):
+        if self.ppFact_filename != None \
+            and os.path.isfile(self.ppFact_filename):
             os.remove(self.ppFact_filename)
+        if self.contrast_filename != None \
+            and os.path.isfile(self.contrast_filename):
+            os.remove(self.contrast_filename)
+        if self.throughput_filename != None \
+            and os.path.isfile(self.throughput_filename):
+            os.remove(self.throughput_filename)
+
 
 
 class ParameterSweep:
