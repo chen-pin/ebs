@@ -1,47 +1,60 @@
 # MCMC Paramters
 mcmc: 
-  nwalkers: 4
+  nwalkers: 512
   variables:
-      idark: 
-        is_exosims: true
-        prior_ftn: uniform
-        prior_args:
-          lower_bound: [1.0e-6] 
-          upper_bound: [1.0e-4]
-        ini_pars: 
-          center: [1.0e-5] 
-          spread: [1.0e-7] 
-      wfsc_factor: 
-        is_exosims: false
-        prior_ftn: uniform
-        prior_args: 
-          lower_bound:    
-            - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
-            - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
-            - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
-            - [.NAN, .NAN, .NAN, .NAN]
-            - [.NAN, .NAN, .NAN, .NAN]
-          upper_bound:
-            - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
-            - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
-            - [0.5, 0.5, 0.5, 0.5] 
-            - [.NAN, .NAN, .NAN, .NAN]
-            - [.NAN, .NAN, .NAN, .NAN]
-        ini_pars: 
-          center: 
-            # Center values for initializing walkers
-            - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
-            - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5]
-            - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3]
-            - [.NAN, .NAN, .NAN, .NAN]
-            - [.NAN, .NAN, .NAN, .NAN]
-          spread: 
-            # Spread for initializing walkers
-            - [9.9999E-9, 9.9999E-9, 9.9999E-9, 9.9999E-9]
-            - [9.999e-7, 9.999e-7, 9.999e-7, 9.999e-7]
-            - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
-            - [.NAN, .NAN, .NAN, .NAN]
-            - [.NAN, .NAN, .NAN, .NAN]
+    idark: 
+      prior_ftn: uniform
+      prior_args:
+        lower_bound: [1.0e-6] 
+        upper_bound: [1.0e-4]
+      ini_pars: 
+        center: [1.0e-5] 
+        spread: [1.0e-7] 
+    wfsc_factor: 
+      prior_ftn: uniform
+      prior_args: 
+        lower_bound:    
+          - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+          - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+          - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+          - [.NAN, .NAN, .NAN, .NAN]
+          - [.NAN, .NAN, .NAN, .NAN]
+        upper_bound:
+          - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
+          - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
+          - [0.5, 0.5, 0.5, 0.5] 
+          - [.NAN, .NAN, .NAN, .NAN]
+          - [.NAN, .NAN, .NAN, .NAN]
+      ini_pars: 
+        center: 
+          # Center values for initializing walkers
+          - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
+          - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5]
+          - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3]
+          - [.NAN, .NAN, .NAN, .NAN]
+          - [.NAN, .NAN, .NAN, .NAN]
+        spread: 
+          # Spread for initializing walkers
+          - [9.9999E-9, 9.9999E-9, 9.9999E-9, 9.9999E-9]
+          - [9.999e-7, 9.999e-7, 9.999e-7, 9.999e-7]
+          - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
+          - [.NAN, .NAN, .NAN, .NAN]
+          - [.NAN, .NAN, .NAN, .NAN]
+    contrast:
+      ini_pars:
+        center:
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+        spread:
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+          - 5.000000000000000311e-10
+
       
 # Initial argument values for ebs.ErrorBudget.run_etc()
 
