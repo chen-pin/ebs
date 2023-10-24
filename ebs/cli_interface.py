@@ -5,6 +5,7 @@ from ebs.error_budget import ParameterSweep, ErrorBudget
 import numpy as np
 import yaml
 import os
+from .visualization import plot_ebs_output
 
 
 def parse():
@@ -67,5 +68,5 @@ def main():
         spectral_dict[config['targets'][star]['HIP']] = config['targets'][star]['spec_type']
 
     save_name = f'inttime_vs_{subparameter if subparameter else parameter}.pdf'
-    sweep.plot_output(spectral_dict, parameter if not subparameter else subparameter, values, result_dict['int_time'],
-                      save_dir=output_path, save_name=save_name)
+    plot_ebs_output(error_budget, spectral_dict, parameter if not subparameter else subparameter, values,
+                    result_dict['int_time'], save_dir=output_path, save_name=save_name)
