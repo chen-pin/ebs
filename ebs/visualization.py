@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 from matplotlib.lines import Line2D
+import numpy as np
 
 # Update rcParams for all visualizations
 plt.rcParams.update({'font.size': 16})
