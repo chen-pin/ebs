@@ -7,7 +7,20 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 from matplotlib.lines import Line2D
 
-def plot_exptimes(self, param1, param2, exp_times, param1_name='', param2_name='', colormap='viridis', vmin=0,
+
+# Update rcParams for all visualizations
+plt.rcParams.update({'font.size': 16})
+plt.rcParams.update({'lines.linewidth': 3})
+plt.rcParams.update({'axes.linewidth': 3})
+plt.rcParams.update({'ytick.major.size': 8})
+plt.rcParams.update({'ytick.major.width': 2})
+plt.rcParams.update({'xtick.major.size': 8})
+plt.rcParams.update({'xtick.major.width': 2})
+plt.rcParams.update({'xtick.labelsize': 'large'})
+plt.rcParams.update({'ytick.labelsize': 'large'})
+
+
+def plot_exptimes(param1, param2, exp_times, param1_name='', param2_name='', colormap='viridis', vmin=0,
                   vmax=50, n_colors=3, filter=True, sigma=3, plot_contours=False, plot_pos=(1, 1, 1)):
     """
 
@@ -38,6 +51,7 @@ def plot_exptimes(self, param1, param2, exp_times, param1_name='', param2_name='
         If True will plot contours of constant exposure time over the plot.
     :return:
     """
+    f = plt.figure()
     n_colors = n_colors
     ax = f.add_subplot(plot_pos[0], plot_pos[1], plot_pos[2])
     divider = make_axes_locatable(ax)
@@ -60,11 +74,11 @@ def plot_exptimes(self, param1, param2, exp_times, param1_name='', param2_name='
         CS = ax.contour(X, Y, Z, colors='white')
         ax.clabel(CS, inline=True, fontsize=10)
 
-    ax.set_xticks(np.arange(len(param1)), param1)
-    ax.set_yticks(np.arange(len(param2)), param2)
+    ax.set_xticks(np.arange(len(param1)), param1, fontsize=16)
+    ax.set_yticks(np.arange(len(param2)), param2, fontsize=16)
 
-    ax.set_xlabel(param1_name, fontsize=14)
-    ax.set_ylabel(param2_name, fontsize=14)
+    ax.set_xlabel(param1_name, fontsize=18)
+    ax.set_ylabel(param2_name, fontsize=18)
     cmap.set_bad('black')
     im = ax.imshow(exp_times, cmap=cmap, norm=norm)
     cax = divider.append_axes('right', size='5%', pad=0.05)
@@ -72,21 +86,46 @@ def plot_exptimes(self, param1, param2, exp_times, param1_name='', param2_name='
     cb.ax.set_ylabel('Exposure Time (hours)', fontsize=12)
     return ax
 
+
 def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, save_dir, save_name):
     fig, ax = plt.subplots(figsize=(16, 9))
-    plt.rcParams.update({'font.size': 16})
-    plt.title(f"Required Integration time (hr, SNR=7) vs. {parameter.capitalize()}", fontsize=20)
+    plt.title(f"Required Integration Time (hr, SNR=7) vs. {parameter.capitalize()}", fontsize=26)
 
     colors = ['#01a075','#00cc9e','#6403fa', '#ff9400', '#cf5f00']
+
+    semilog_x, semilog_y, loglog = False, False, False
+
+    if np.abs(np.nanmax(values)/np.nanmin(values)) > 1000:
+        semilog_x = True
+
+    if np.abs(np.nanmax(int_times)/np.nanmin(int_times)) > 1000:
+        semilog_y = True
+
+    if semilog_x and semilog_y:
+        loglog = True
 
     for i, (k, v) in enumerate(spectral_dict.items()):
         txt = 'HIP%s\n%s, EEID=%imas' % (k, v, np.round(error_budget.eeid[i] * 1000))
 
-        plt.plot(values, 24 * int_times[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
-        plt.plot(values, 24 * int_times[:, i, 1], linestyle='dashed', label=txt + 'mid', color=colors[i], linewidth=3)
-        plt.plot(values, 24 * int_times[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
-    plt.xlabel(f'{parameter.capitalize()}')
-    plt.ylabel('Integration Time (hours)')
+        if loglog:
+            plt.loglog(values, 24 * int_times[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
+            plt.loglog(values, 24 * int_times[:, i, 1], linestyle='dashed', label=txt + 'mid', color=colors[i], linewidth=3)
+            plt.loglog(values, 24 * int_times[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+        elif semilog_x:
+            plt.semilogx(values, 24 * int_times[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
+            plt.semilogx(values, 24 * int_times[:, i, 1], linestyle='dashed', label=txt + 'mid', color=colors[i], linewidth=3)
+            plt.semilogx(values, 24 * int_times[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+        elif semilog_y:
+            plt.semilogy(values, 24 * int_times[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
+            plt.semilogy(values, 24 * int_times[:, i, 1], linestyle='dashed', label=txt + 'mid', color=colors[i], linewidth=3)
+            plt.semilogy(values, 24 * int_times[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+        else:
+            plt.plot(values, 24 * int_times[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
+            plt.plot(values, 24 * int_times[:, i, 1], linestyle='dashed', label=txt + 'mid', color=colors[i], linewidth=3)
+            plt.plot(values, 24 * int_times[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+
+    plt.xlabel(f'{parameter.capitalize()}', fontsize=24)
+    plt.ylabel('Integration Time (hours)', fontsize=24)
 
     legend_elements = []
     for i, (k, v) in enumerate(spectral_dict.items()):
@@ -99,6 +138,6 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, s
 
     ax.legend(handles=legend_elements, loc='upper left')
 
-    #plt.tight_layout()
     plt.savefig(os.path.join(save_dir, save_name))
     plt.show()
+    print(plt.rcParams.keys())
