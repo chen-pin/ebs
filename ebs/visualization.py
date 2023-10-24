@@ -1,9 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib import colors
-import matplotlib as mpl
-from scipy.ndimage.filters import gaussian_filter
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 from matplotlib.lines import Line2D
 
