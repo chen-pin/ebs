@@ -636,7 +636,7 @@ class ErrorBudget2(object):
         return walker_pos
 
     def update_attributes(self, values):
-        for i, var_name in enumerate(self.config['mcmc']['variables']):
+        for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
                 template = np.array(self.config['mcmc']['variables'][var_name]
                                                ['ini_pars']['center'])
@@ -654,6 +654,18 @@ class ErrorBudget2(object):
                     self.write_csv(var_name)
             else:
                 print(key+" not found in attributes list")
+
+    def log_prior(self):
+        prior_list = []
+        for var_name in self.config['mcmc']['variables']:
+            for ftn_name in self.config['mcmc']['variables'][var_name]\
+                                       ['prior_ftn']:
+                if type(ftn_name) != list:
+                    ftn_name = [ftn_name]
+                prior_list.extend(ftn_name)
+        prior_list_no_nan = []
+        [prior_list_no_nan.append(item) for item in prior_list if item == item]
+        return prior_list_no_nan
 
 
     def run_exosims(self, initial=True, file_cleanup=True):
