@@ -15,7 +15,8 @@ plt.rcParams.update({'xtick.labelsize': 'large'})
 plt.rcParams.update({'ytick.labelsize': 'large'})
 
 
-def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, save_dir, save_name):
+def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, force_linear=False, save_dir='',
+                    save_name=''):
     """Plots the EBS parameter that was swept over as a function of calculated integration time.
 
     All observing scenarios are plotted on the same plot with different colors denoting the different stars and
@@ -32,6 +33,8 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, s
         Values of the parameter that were swept over.
     :param int_times: list or array
         Calculated integration times.
+    :param force_linear: bool
+        If true will force the plot to have linear scaling for both parameters.
     :param save_dir: str
         Path to save the output plot.
     :param save_name: str
@@ -46,10 +49,10 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, s
 
     semilog_x, semilog_y, loglog = False, False, False
 
-    if np.abs(np.nanmax(values)/np.nanmin(values)) > 1000:
+    if np.abs(np.nanmax(values)/np.nanmin(values)) > 1000 and not force_linear:
         semilog_x = True
 
-    if np.abs(np.nanmax(int_times)/np.nanmin(int_times)) > 1000:
+    if np.abs(np.nanmax(int_times)/np.nanmin(int_times)) > 1000 and not force_linear:
         semilog_y = True
 
     if semilog_x and semilog_y:

@@ -61,4 +61,5 @@ targets:
     eepsr: 5.89e-10
     exo_zodi: 3.0
 
-
+plotting:
+  force_linear: True
