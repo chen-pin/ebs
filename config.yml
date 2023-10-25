@@ -5,8 +5,8 @@ mcmc:
     idark: 
       prior_ftn: [uniform]  # Must be a list
       prior_args:
-        lower_bound: 1.0e-6
-        upper_bound: 1.0e-4
+        lower_bound: [1.0e-6]
+        upper_bound: [1.0e-4]
       ini_pars: 
         center: [1.0e-5] 
         spread: [1.0e-7] 
