@@ -246,7 +246,8 @@ class ErrorBudget(object):
         """
         # build sim object:
         input_path = os.path.join(self.input_dir, temp_json_filename)
-        sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False)
+        sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False
+                             , verbose=False)
         
         # identify targets of interest
         for j, t in enumerate(self.target_list):
@@ -653,18 +654,32 @@ class ErrorBudget2(object):
             else:
                 print(key+" not found in attributes list")
 
-    def log_prior(self):
-        prior_list = []
-        for var_name in self.config['mcmc']['variables']:
-            for ftn_name in self.config['mcmc']['variables'][var_name]\
-                                       ['prior_ftn']:
-                if type(ftn_name) != list:
-                    ftn_name = [ftn_name]
-                prior_list.extend(ftn_name)
-        prior_list_no_nan = []
-        [prior_list_no_nan.append(item) for item in prior_list if item == item]
-        return prior_list_no_nan
-
+    def log_prior(self, values):
+        joint_prob = 1.0
+        counter = 0
+        for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
+            prior_ftn = np.array(
+                    self.config['mcmc']['variables'][var_name]['prior_ftn']
+                                )
+            index = np.where(prior_ftn!='nan')
+            all_args = [np.array(item) for item in 
+                    self.config['mcmc']['variables'][var_name]['prior_args']
+                        .values()]
+            for m, row_index in enumerate(index[0]):
+                if len(index) > 1:
+                    col_index = index[1][m]
+                    ftn = getattr(pdf, prior_ftn[row_index, col_index])
+                    args = [page[row_index][col_index] for page in all_args]
+                else:
+                    ftn = getattr(pdf, prior_ftn[row_index])
+                    args = [page[row_index] for page in all_args]
+                prob = ftn(values[counter], *args)
+                counter += 1
+                if not np.isfinite(prob):
+                    return prob
+                else: 
+                    joint_prob *= prob
+        return joint_prob  
 
     def run_exosims(self, initial=True, file_cleanup=True):
         """
