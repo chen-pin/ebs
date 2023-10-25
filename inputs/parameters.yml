@@ -62,4 +62,4 @@ targets:
     exo_zodi: 3.0
 
 plotting:
-  force_linear: True
+  force_linear: False
