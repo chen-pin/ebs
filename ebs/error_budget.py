@@ -451,16 +451,16 @@ class ErrorBudget2(object):
         self.core_thruput = None
         self.core_mean_intensity = None
         self.SNR = None
-        self.C_p = []
-        self.C_b = []
-        self.C_sp = []
-        self.C_star = []
-        self.C_sr = []
-        self.C_z = []
-        self.C_ez = []
-        self.C_dc = []
-        self.C_rn = []
-        self.int_time = None
+#        self.C_p = []
+#        self.C_b = []
+#        self.C_sp = []
+#        self.C_star = []
+#        self.C_sr = []
+#        self.C_z = []
+#        self.C_ez = []
+#        self.C_dc = []
+#        self.C_rn = []
+#        self.int_time = None
         self.ppFact_filename = None
         self.contrast_filename = None
         self.throughput_filename = None
@@ -642,13 +642,12 @@ class ErrorBudget2(object):
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
                 arr = getattr(self, var_name)
-                print(arr)
                 if type(arr) == float:
                     arr = use_values[0]
                 else:
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
-                print(f"Updated {var_name} to {getattr(self, var_name)}")
+                #print(f"Updated {var_name} to {getattr(self, var_name)}")
                 if var_name == 'contrast'  or var_name == 'throughput':
                     self.write_csv(var_name)
             else:
@@ -679,16 +678,43 @@ class ErrorBudget2(object):
                     return prob
                 else: 
                     joint_prob *= prob
-        return joint_prob  
+        return joint_prob
 
-    def run_exosims(self, initial=True, file_cleanup=True):
+    def log_merit(self, values):
+#        log_prior = log_prior(self, values)
+#        if not np.isfinite(log_prior):
+#            return -np.inf
+        self.update_attributes(values)
+        int_time = self.run_exosims()[0]
+        print(int_time)
+        if np.isnan(int_time.value).any():
+            return -np.inf
+        else:
+            ftn_name = self.config['mcmc']['merit']['ftn']
+            args = [arg for arg in self.config['mcmc']['merit']['args'].values()]
+            ftn = getattr(pdf, ftn_name)
+            tot_int_time = np.array(int_time.value).mean()
+            print(int_time)
+            print(int_time.value)
+            print(args)
+            print(tot_int_time)
+            return ftn(tot_int_time, *args)
+
+    def run_exosims(self, file_cleanup=True):
         """
         Run EXOSIMS to generate results, including exposure times
         required for reaching specified SNR.
 
         """
-        if initial:
-            self.initialize_for_exosims()
+        C_p = []
+        C_b = []
+        C_sp = []
+        C_sr = []
+        C_z = []
+        C_ez = []
+        C_dc = []
+        C_rn = []
+        C_star = []
         n_angles = 3
         target_list = self.target_list
         eeid = self.eeid
@@ -699,10 +725,6 @@ class ErrorBudget2(object):
                              , **self.exosims_pars_dict)
 
         # identify targets of interest
-#        for j, t in enumerate(target_list):
-#            if t not in sim.TargetList.Name:
-#                target_list[j] += " A"
-#                assert target_list[j] in sim.TargetList.Name
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t
                          in target_list])
 
@@ -716,7 +738,7 @@ class ErrorBudget2(object):
 
         # now we loop through the targets of interest and compute integration
         # times for each:
-        self.int_time = np.empty((len(target_list), n_angles))*u.d
+        int_time = np.empty((len(target_list), n_angles))*u.d
         for j, sInd in enumerate(sInds):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
@@ -729,7 +751,7 @@ class ErrorBudget2(object):
             dMag0 = -2.5*np.log10(eepsr[j])
             dMags = np.array([(dMag0-2.5*np.log10(eeid[j]/WA_inner))
                      , dMag0, (dMag0-2.5*np.log10(eeid[j]/WA_outer))])
-            self.int_time[j] = sim.OpticalSystem.calc_intTime(
+            int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
@@ -750,18 +772,19 @@ class ErrorBudget2(object):
                 mode,
                 True
             )
-            self.C_p.append(counts[0])
+            C_p.append(counts[0])
 
-            self.C_b.append(counts[1])
-            self.C_sp.append(counts[2])
-            self.C_sr.append(counts[3]["C_sr"])
-            self.C_z.append(counts[3]["C_z"])
-            self.C_ez.append(counts[3]["C_ez"])
-            self.C_dc.append(counts[3]["C_dc"])
-            self.C_rn.append(counts[3]["C_rn"])
-            self.C_star.append(counts[3]["C_star"])
+            C_b.append(counts[1])
+            C_sp.append(counts[2])
+            C_sr.append(counts[3]["C_sr"])
+            C_z.append(counts[3]["C_z"])
+            C_ez.append(counts[3]["C_ez"])
+            C_dc.append(counts[3]["C_dc"])
+            C_rn.append(counts[3]["C_rn"])
+            C_star.append(counts[3]["C_star"])
         if file_cleanup:
             self.clean_files()
+        return int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
 
     def clean_files(self):
         if self.ppFact_filename != None \
