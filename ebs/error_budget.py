@@ -644,19 +644,19 @@ class ErrorBudget2(object):
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
                 arr = getattr(self, var_name)
-                if type(arr) == float:
+                if type(arr) == float or type(arr)==np.float64:
                     arr = use_values[0]
                 else:
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
-                #print(f"Updated {var_name} to {getattr(self, var_name)}")
+                print(f"Updated {var_name} to {getattr(self, var_name)}")
                 if var_name == 'contrast'  or var_name == 'throughput':
                     self.write_csv(var_name)
             else:
                 print(key+" not found in attributes list")
 
     def log_prior(self, values):
-        joint_prob = 1.0
+        joint_prob = 0.0
         counter = 0
         for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
             prior_ftn = np.array(
@@ -676,16 +676,13 @@ class ErrorBudget2(object):
                     args = [page[row_index] for page in all_args]
                 prob = ftn(values[counter], *args)
                 counter += 1
-                if not np.isfinite(prob):
+                if np.isinf(prob):
                     return prob
                 else: 
-                    joint_prob *= prob
+                    joint_prob += prob
         return joint_prob 
 
     def log_merit(self, values):
-#        log_prior = log_prior(self, values)
-#        if not np.isfinite(log_prior):
-#            return -np.inf
         self.update_attributes(values)
         int_time = self.run_exosims()[0]
         print(int_time)
@@ -693,7 +690,8 @@ class ErrorBudget2(object):
             return -np.inf
         else:
             ftn_name = self.config['mcmc']['merit']['ftn']
-            args = [arg for arg in self.config['mcmc']['merit']['args'].values()]
+            args = [arg for arg in self.config['mcmc']['merit']['args']\
+                    .values()]
             ftn = getattr(pdf, ftn_name)
             tot_int_time = np.array(int_time.value).mean() 
             print(int_time)
@@ -701,6 +699,16 @@ class ErrorBudget2(object):
             print(args)
             print(tot_int_time)
             return ftn(tot_int_time, *args)
+
+    def log_probability(self, values):
+        log_prior = self.log_prior(values)
+        if np.isinf(log_prior):
+            return -np.inf
+        log_merit = self.log_merit(values)
+        if np.isinf(log_merit):
+            return -np.inf
+        log_probability = log_prior + log_merit
+        return log_probability
 
     def run_exosims(self, file_cleanup=True):
         """
