@@ -732,12 +732,8 @@ class ErrorBudget2(object):
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
-        # build sim object:
-        specs = deepcopy(self.exosims_pars_dict)
-        print(f"specs:")
-        pprint.pp(specs)
         sim = ems.MissionSim(use_core_thruput_for_ez=False
-                             , **specs)
+                             , **deepcopy(self.exosims_pars_dict))
         print("sim object instantiated\n\n")
         
         # identify targets of interest
