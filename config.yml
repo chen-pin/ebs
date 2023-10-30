@@ -195,40 +195,40 @@ initial_exosims:
       TargetList: ' '
       TimeKeeping: ' '
       ZodiacalLight: ' '
-    obscurFac: 0.1
+    obscurFac: 0.01
     observingModes:
-    - SNR: 3.0
+    - SNR: 5.0
       detectionMode: true
       instName: CONF_NF_Imager
       systName: coronagraph
       timeMultiplier: 1.0
 #    ppFact: 0.01
-    pupilDiam: 6.0
+    pupilDiam: 6.52  # USORT enscribed diameter
     scienceInstruments:
-    - CIC: 0.0021
-      ENF: 1.0
+    - CIC: 0.0021  # Ref Roman_Coronagraph_ETC
+      ENF: 1.0  # Parameter specific to EMCCDs
       FoV: 9.5
-      Pceff: 1.0
-      QE: 0.835
-      idark: 3.0e-05
-      name: CONF_NF_Imager
-      optics: 0.816
+      QE: 0.835  # ibid
+      idark: 3.0e-05  # ibid
+      name: CONS_NF_Imager
+      optics: 0.85
       pixelNumber: 1024
-      pixelScale: 0.02
-      pixelSize: 1.3e-05
-      radDos: 0
-      sread: 1.7e-06
-      texp: 3
+      pixelScale: 0.00928 # derived from FoV and pixelNumber
+      pixelSize: 1.3e-05  # ibid
+      sread: 1.7e-06  # ibid
+      texp: 3  # ibid
+#      Rs: 140  # parameter specific to spectrometers
+#      lensSamp: 4  # parameter specific to spectrometers
     starlightSuppressionSystems:
     - BW: 0.2
-      IWA: 0.02
+      IWA: 0.065
       OWA: 0.5
       core_area: 0.000552
 #      core_contrast: ./test/test_contrast.csv
 #      core_thruput: ./test/test_throughput.csv
       lam: 550.0
-      name: coronagraph
-      occ_trans: 0.33
+      name: coronagraph-550
+      occ_trans: 0.4  # Rough estimate from Roman Coronagraph ETC
       occulter: false
-      ohTime: 1.0
-      optics: 1.0
+      optics: 0.39  # 2 reflections @ 0.92, 13 reflections @ 0.98, 0.60 
+                    # in-band transmission at the photometric filter (EXO-C)

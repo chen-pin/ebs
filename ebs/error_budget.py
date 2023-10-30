@@ -23,6 +23,7 @@ import yaml
 from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
+import emcee
 import EXOSIMS.MissionSim as ems
 from copy import deepcopy
 from ebs.utils import generate_pp_json
@@ -523,6 +524,7 @@ class ErrorBudget2(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=True)
                 self.ppFact_filename = path
+                print(f"ppFact file written: {path}")
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
@@ -712,6 +714,13 @@ class ErrorBudget2(object):
         log_probability = log_prior + log_merit
         return log_probability
 
+    def run_mcmc(self):
+        pos = self.initialize_walkers()
+        nwalkers, ndim = pos.shape
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability)
+        sampler.run_mcmc(pos, 10, progress=True)
+
+
     def run_exosims(self, file_cleanup=True):
         """
         Run EXOSIMS to generate results, including exposure times 
@@ -802,12 +811,15 @@ class ErrorBudget2(object):
         if self.ppFact_filename != None \
             and os.path.isfile(self.ppFact_filename):
             os.remove(self.ppFact_filename)
+            print("ppFact file removed")
         if self.contrast_filename != None \
             and os.path.isfile(self.contrast_filename):
             os.remove(self.contrast_filename)
+            print("contrast file removed")
         if self.throughput_filename != None \
             and os.path.isfile(self.throughput_filename):
             os.remove(self.throughput_filename)
+            print("throughput file removed")
 
 
 
