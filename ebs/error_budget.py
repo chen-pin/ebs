@@ -16,6 +16,7 @@ module.
 
 
 import os 
+import pprint
 import numpy as np
 import json as js
 import yaml 
@@ -683,6 +684,7 @@ class ErrorBudget2(object):
         return joint_prob 
 
     def log_merit(self, values):
+        self.initialize_for_exosims()
         self.update_attributes(values)
         int_time = self.run_exosims()[0]
         print(int_time)
@@ -731,8 +733,12 @@ class ErrorBudget2(object):
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
         # build sim object:
+        specs = deepcopy(self.exosims_pars_dict)
+        print(f"specs:")
+        pprint.pp(specs)
         sim = ems.MissionSim(use_core_thruput_for_ez=False
-                             , **self.exosims_pars_dict)
+                             , **specs)
+        print("sim object instantiated\n\n")
         
         # identify targets of interest
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
