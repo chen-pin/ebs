@@ -1,6 +1,6 @@
 # MCMC Paramters
 mcmc: 
-  nwalkers: 512
+  nwalkers: 2
   merit:
     ftn: uniform
     args:
