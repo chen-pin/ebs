@@ -716,6 +716,7 @@ class ErrorBudget2(object):
 
     def run_mcmc(self):
         pos = self.initialize_walkers()
+        [print(f"Initial position {i}: {pos[i]}") for i in range(pos.shape[0])] 
         nwalkers, ndim = pos.shape
         sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability)
         sampler.run_mcmc(pos, 10, progress=True)
