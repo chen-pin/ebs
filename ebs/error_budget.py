@@ -169,7 +169,7 @@ class ErrorBudget(object):
         self.C_rn = []
         self.int_time = np.zeros((len(self.target_list), self.npoints)) * u.d
 
-    def load_json(self, verbose=False):
+    def load_json(self):
         """
         Load the JSON input file, which contains reference EXOSIMS parameters 
         as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter 
@@ -179,17 +179,6 @@ class ErrorBudget(object):
         input_path = os.path.join(self.input_dir, self.pp_json_filename)
         with open(os.path.join(input_path)) as input_json:
             input_dict = js.load(input_json)
-            if verbose:
-                print("Top two level dictionary keys\n")
-                for key in input_dict.keys():
-                    print(key)
-                    try:
-                        for subkey in input_dict[key].keys():
-                            print("\t{}".format(subkey))
-                    except:
-                        pass
-                print("\nStarlightSuppressionSystems:")
-                print(input_dict['starlightSuppressionSystems'])
         self.input_dict = input_dict
 
     def load_csv_contrast(self):
@@ -249,8 +238,7 @@ class ErrorBudget(object):
         """
         # build sim object:
         input_path = os.path.join(self.input_dir, temp_json_filename)
-        sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False
-                             , verbose=False)
+        sim = ems.MissionSim(str(input_path), use_core_thruput_for_ez=False)
         
         # identify targets of interest
         for j, t in enumerate(self.target_list):
@@ -523,7 +511,6 @@ class ErrorBudget2(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=True)
                 self.ppFact_filename = path
-                print(f"ppFact file written: {path}")
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
@@ -651,7 +638,6 @@ class ErrorBudget2(object):
                 else:
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
-                print(f"Updated {var_name} to {getattr(self, var_name)}")
                 if var_name == 'contrast'  or var_name == 'throughput':
                     self.write_csv(var_name)
             else:
@@ -688,7 +674,6 @@ class ErrorBudget2(object):
         self.initialize_for_exosims()
         self.update_attributes(values)
         int_time = self.run_exosims()[0]
-        print(int_time)
         if np.isnan(int_time.value).any():
             return -np.inf
         else:
@@ -697,10 +682,6 @@ class ErrorBudget2(object):
                     .values()]
             ftn = getattr(pdf, ftn_name)
             tot_int_time = np.array(int_time.value).mean()
-            print(int_time)
-            print(int_time.value)
-            print(args)
-            print(tot_int_time)
             return ftn(tot_int_time, *args)
 
     def log_probability(self, values):
@@ -750,7 +731,6 @@ class ErrorBudget2(object):
         exo_zodi = self.exo_zodi
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
-        print("sim object instantiated\n\n")
         
         # identify targets of interest
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t
@@ -818,15 +798,12 @@ class ErrorBudget2(object):
         if self.ppFact_filename != None \
             and os.path.isfile(self.ppFact_filename):
             os.remove(self.ppFact_filename)
-            print("ppFact file removed")
         if self.contrast_filename != None \
             and os.path.isfile(self.contrast_filename):
             os.remove(self.contrast_filename)
-            print("contrast file removed")
         if self.throughput_filename != None \
             and os.path.isfile(self.throughput_filename):
             os.remove(self.throughput_filename)
-            print("throughput file removed")
 
 
 
