@@ -683,8 +683,8 @@ class ErrorBudget2(object):
             args = [arg for arg in self.config['mcmc']['merit']['args']\
                     .values()]
             ftn = getattr(pdf, ftn_name)
-            tot_int_time = np.array(int_time.value).mean() 
-            return ftn(tot_int_time, *args)
+            mean_int_time = np.array(int_time.value).mean() 
+            return ftn(mean_int_time, *args)
 
     def log_probability(self, values):
         log_prior = self.log_prior(values)
@@ -699,14 +699,16 @@ class ErrorBudget2(object):
     def run_mcmc(self, parallel=True):
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
+        backend = emcee.backends.HDFBackend(self.config['mcmc']['backend_path'])
+        backend.reset(nwalkers, ndim)
         if parallel:
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
-                            , self.log_probability, pool=pool)
+                            , self.log_probability, backend=backend, pool=pool)
         else:
             sampler = emcee.EnsembleSampler(nwalkers, ndim
-                        , self.log_probability)
+                          , self.log_probability, backend=backend)
         nsteps = self.config['mcmc']['nsteps']
         sampler.run_mcmc(pos, nsteps, progress=True)
         return sampler
@@ -806,7 +808,6 @@ class ErrorBudget2(object):
         if self.throughput_filename != None \
             and os.path.isfile(self.throughput_filename):
             os.remove(self.throughput_filename)
-
 
 
 class ParameterSweep:
