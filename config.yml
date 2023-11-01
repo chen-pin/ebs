@@ -1,7 +1,8 @@
 # MCMC Paramters
 mcmc: 
   nwalkers: 38
-  nsteps: 3
+  nsteps: 2
+  backend_path: ./output/backend_20231101t1107.hdf
   merit:
     ftn: uniform
     args:
