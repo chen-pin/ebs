@@ -270,7 +270,7 @@ initial_exosims:
 #      lensSamp: 4  # parameter specific to spectrometers
     starlightSuppressionSystems:
     - BW: 0.2
-      IWA: 0.065
+      IWA: 0.05
       OWA: 0.5
       core_area: 0.000552
 #      core_contrast: ./test/test_contrast.csv

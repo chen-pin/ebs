@@ -674,6 +674,7 @@ class ErrorBudget2(object):
         self.initialize_for_exosims()
         self.update_attributes(values)
         int_time = self.run_exosims()[0]
+        print(f"integration time: {int_time}")
         if np.isnan(int_time.value).any():
             return -np.inf
         else:
