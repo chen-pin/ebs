@@ -20,6 +20,7 @@ import pprint
 import numpy as np
 import json as js
 import yaml 
+from multiprocessing import Pool
 from astropy.io import fits
 import astropy.units as u
 import matplotlib.pyplot as plt
@@ -714,13 +715,19 @@ class ErrorBudget2(object):
         log_probability = log_prior + log_merit
         return log_probability
 
-    def run_mcmc(self):
+    def run_mcmc(self, parallel=True):
         pos = self.initialize_walkers()
-        [print(f"Initial position {i}: {pos[i]}") for i in range(pos.shape[0])] 
         nwalkers, ndim = pos.shape
-        sampler = emcee.EnsembleSampler(nwalkers, ndim, self.log_probability)
+        if parallel:
+            os.environ["OMP_NUM_THREADS"] = "1"
+            with Pool() as pool:
+                sampler = emcee.EnsembleSampler(nwalkers, ndim
+                            , self.log_probability, pool=pool)
+        else:
+            sampler = emcee.EnsembleSampler(nwalkers, ndim
+                        , self.log_probability)
         sampler.run_mcmc(pos, 10, progress=True)
-
+        return sampler
 
     def run_exosims(self, file_cleanup=True):
         """
@@ -961,7 +968,6 @@ class ParameterSweep:
                     arr[i] = np.array(getattr(error_budget, key))
                     self.result_dict[key] = arr
         return self.result_dict
-
 
 
 
