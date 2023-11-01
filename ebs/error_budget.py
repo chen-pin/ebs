@@ -726,7 +726,8 @@ class ErrorBudget2(object):
         else:
             sampler = emcee.EnsembleSampler(nwalkers, ndim
                         , self.log_probability)
-        sampler.run_mcmc(pos, 10, progress=True)
+        nsteps = self.config['mcmc']['nsteps']
+        sampler.run_mcmc(pos, nsteps, progress=True)
         return sampler
 
     def run_exosims(self, file_cleanup=True):
@@ -968,6 +969,5 @@ class ParameterSweep:
                     arr[i] = np.array(getattr(error_budget, key))
                     self.result_dict[key] = arr
         return self.result_dict
-
 
 
