@@ -459,6 +459,7 @@ class ErrorBudget2(object):
         self.throughput_filename = None
         self.ppFact_filename = None
         self.exosims_pars_dict = None
+        self.trash_can = []
 
     @property
     def delta_contrast(self):
@@ -514,6 +515,7 @@ class ErrorBudget2(object):
                 fits.writeto(f, arr, overwrite=True)
                 self.ppFact_filename = path
                 print(f"Wrote ppFact FITS file {path}")
+            self.trash_can.append(path)
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
@@ -538,6 +540,7 @@ class ErrorBudget2(object):
                 self.throughput_filename = path
                 np.savetxt(path, arr, delimiter=',', header="r_as,core_thruput"
                            , comments='')
+            self.trash_can.append(path)
         else:  
             print("Need to assign angle values to write CSV file")
 
@@ -727,7 +730,7 @@ class ErrorBudget2(object):
         sampler.run_mcmc(pos, nsteps, progress=True)
         return sampler
 
-    def run_exosims(self, file_cleanup=False):
+    def run_exosims(self, file_cleanup=True):
         """
         Run EXOSIMS to generate results, including exposure times 
         required for reaching specified SNR.  
@@ -816,15 +819,9 @@ class ErrorBudget2(object):
         return int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
 
     def clean_files(self):
-        if self.ppFact_filename != None \
-            and os.path.isfile(self.ppFact_filename):
-            os.remove(self.ppFact_filename)
-        if self.contrast_filename != None \
-            and os.path.isfile(self.contrast_filename):
-            os.remove(self.contrast_filename)
-        if self.throughput_filename != None \
-            and os.path.isfile(self.throughput_filename):
-            os.remove(self.throughput_filename)
+        for path in self.trash_can:
+            if os.path.isfile(path):
+                os.remove(path)
 
 
 class ParameterSweep:
