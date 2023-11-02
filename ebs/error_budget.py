@@ -428,7 +428,6 @@ class ErrorBudget2(object):
         self.angles = None
         self.contrast = None
         self.working_angles = []
-#        self.npoints = None
         self.QE = None
         self.sread = None
         self.idark = None
@@ -442,16 +441,6 @@ class ErrorBudget2(object):
         self.throughput = None
         self.core_mean_intensity = None
         self.SNR = None
-#        self.C_p = []
-#        self.C_b = []
-#        self.C_sp = []
-#        self.C_star = []
-#        self.C_sr = []
-#        self.C_z = []
-#        self.C_ez = []
-#        self.C_dc = []
-#        self.C_rn = []
-#        self.int_time = None
         self.ppFact_filename = None
         self.contrast_filename = None
         self.throughput_filename = None
@@ -512,7 +501,6 @@ class ErrorBudget2(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=True)
                 self.ppFact_filename = path
-                print(f"Wrote ppFact FITS file {path}")
             self.trash_can.append(path)
         else:  
             print("Need to assign angle values to write ppFact FITS file")
@@ -620,7 +608,6 @@ class ErrorBudget2(object):
         spread= spread[np.where(np.isfinite(spread))]
         ndim = center.shape[0]
         nwalkers = self.config['mcmc']['nwalkers']
-#        walker_pos = np.random.normal(center, spread, (nwalkers, ndim))
         walker_pos = center + np.random.uniform(-spread/2.0, spread/2.0
                                                 , (nwalkers, ndim))
         return walker_pos
@@ -628,18 +615,15 @@ class ErrorBudget2(object):
     def update_attributes(self, values):
         for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
-                print(f"var_name: {var_name}")
                 template = np.array(self.config['mcmc']['variables'][var_name]
                                                ['ini_pars']['center'])
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
                 arr = getattr(self, var_name)
-                print(f"arr: {arr}")
                 if type(arr) == float or type(arr)==np.float64:
                     arr = use_values[0]
                 else:
                     arr[indices] = use_values
-                print(f"use_values: {use_values}")
                 setattr(self, var_name, arr)
                 if var_name in ['contrast', 'wfe', 'wfsc_factor'
                                 , 'sensitivity']:
@@ -647,7 +631,6 @@ class ErrorBudget2(object):
                         self.write_csv(var_name)
                         self.exosims_pars_dict['starlightSuppressionSystems']\
                                 [0]['core_contrast'] = self.contrast_filename
-                    print(f"ppFact2: {self.ppFact}")
                     self.write_ppFact_fits()
                     self.exosims_pars_dict['ppFact'] = self.ppFact_filename
                 if var_name == 'throughput':
@@ -685,12 +668,8 @@ class ErrorBudget2(object):
         return joint_prob 
 
     def log_merit(self, values):
-#        self.initialize_for_exosims()
-        print(f"ppFact1: {self.ppFact}")
         self.update_attributes(values)
-        print(f"ppFact3: {self.ppFact}")
         int_time = self.run_exosims()[0]
-        print(f"integration time: {int_time}")
         if np.isnan(int_time.value).any():
             return -np.inf
         else:
@@ -712,6 +691,7 @@ class ErrorBudget2(object):
         return log_probability
 
     def run_mcmc(self, parallel=True):
+        self.initialize_for_exosims()
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
         backend = emcee.backends.HDFBackend(self.config['mcmc']['backend_path'])
@@ -748,9 +728,6 @@ class ErrorBudget2(object):
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
-        print(f"exosims_pars_dict:ppFact: {self.exosims_pars_dict['ppFact']}")
-        print(f"exosims_pars_dict:ppFact: {self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_contrast']}")
-        print(f"exosims_pars_dict:ppFact:{self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput']}")
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
         
