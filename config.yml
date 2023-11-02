@@ -1,8 +1,8 @@
 # MCMC Paramters
 mcmc: 
-  nwalkers: 52
-  nsteps: 50
-  backend_path: ./output/backend_20231101t1107.hdf
+  nwalkers: 100
+  nsteps: 5000
+  backend_path: ./output/backend_20231101t1541.hdf
   merit:
     ftn: uniform
     args:
@@ -18,46 +18,46 @@ mcmc:
       ini_pars: 
         center: [1.0e-5] 
         spread: [1.0e-7] 
-#    wfsc_factor: 
-#      prior_ftn:
-#        - [uniform, uniform, uniform, uniform]
-#        - [uniform, uniform, uniform, uniform]
-#        - [uniform, uniform, uniform, uniform]
-#        - [.NAN, .NAN, .NAN, .NAN]
-#        - [.NAN, .NAN, .NAN, .NAN]
-#        - [.NAN, .NAN, .NAN, .NAN]
-#      prior_args: 
-#        lower_bound:    
-#          - [9.9999E-7, 9.9999E-7, 9.9999E-7, 9.9999E-7]
-#          - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
-#          - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#        upper_bound:
-#          - [9.999e-5, 9.999e-5, 9.999e-5, 9.999e-5] 
-#          - [9.90099e-3, 9.90099e-3, 9.90099e-3, 9.90099e-3] 
-#          - [0.5, 0.5, 0.5, 0.5] 
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#      ini_pars: 
-#        center: 
-#          # Center values for initializing walkers
-#          - [9.9999E-6, 9.9999E-6, 9.9999E-6, 9.9999E-6]
-#          - [9.999e-4, 9.999e-4, 9.999e-4, 9.999e-4]
-#          - [9.90099e-2, 9.90099e-2, 9.90099e-2, 9.90099e-2]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#        spread: 
-#          # Spread for initializing walkers
-#          - [9.9999E-9, 9.9999E-9, 9.9999E-9, 9.9999E-9]
-#          - [9.999e-7, 9.999e-7, 9.999e-7, 9.999e-7]
-#          - [9.90099e-5, 9.90099e-5, 9.90099e-5, 9.90099e-5]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
-#          - [.NAN, .NAN, .NAN, .NAN]
+    wfsc_factor: 
+      prior_ftn:
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+      prior_args: 
+        lower_bound:    
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+        upper_bound:
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+      ini_pars: 
+        center: 
+          # Center values for initializing walkers
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+        spread: 
+          # Spread for initializing walkers
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
     contrast:  # raw contrast
       prior_ftn:
         - uniform
@@ -83,12 +83,12 @@ mcmc:
           - 5.0e-10
       ini_pars:
         center:
-          - 2.000000000000000311e-10
-          - 2.000000000000000311e-10
-          - 2.000000000000000311e-10
-          - 2.000000000000000311e-10
-          - 2.000000000000000311e-10
-          - 2.000000000000000311e-10
+          - 1.000000000000000311e-10
+          - 1.000000000000000311e-10
+          - 1.000000000000000311e-10
+          - 1.000000000000000311e-10
+          - 1.000000000000000311e-10
+          - 1.000000000000000311e-10
         spread:
           - 2.000000000000000311e-12
           - 2.000000000000000311e-12
@@ -96,7 +96,7 @@ mcmc:
           - 2.000000000000000311e-12
           - 2.000000000000000311e-12
           - 2.000000000000000311e-12
-    throughput:  # core throughput
+    core_thruput:  # core throughput
       prior_ftn:
         - uniform
         - uniform
@@ -189,40 +189,6 @@ targets:
     eepsr: 5.89e-10
     exo_zodi: 3.0
     
-    #wfsc_args:
-    #  wfe:
-    #  # Spatial frequency bins [Low, Mid, High, High+], unit = pm
-    #    - [10.0, 10.0, 10.0, 10.0]  # Static temporal
-    #    - [10.0, 10.0, 10.0, 10.0]  # LF1 (10.000 s - 48 hr)
-    #    - [10.0, 10.0, 10.0, 10.0]  # LF2 (LOWFS)
-    #    - [10.0, 10.0, 10.0, 10.0]  # LF3 (Telescope alignment bandwidth)
-    #    - [10.0, 10.0, 10.0, 10.0]  # MF (PM segment control)
-    #    - [10.0, 10.0, 10.0, 10.0]  # HF (Uncontrollable) 
-    #  
-    #  wfsc_factor: 
-    #    - [1.0E-6, 1.0E-6, 1.0E-6, 1.0E-6]
-    #    - [1.0E-3, 1.0E-3, 1.0E-3, 1.0E-3]
-    #    - [0.5, 0.5, 0.5, 0.5] 
-    #    - [1.0, 1.0, 1.0, 1.0]
-    #    - [1.0, 1.0, 1.0, 1.0]
-    #    - [1.0, 1.0, 1.0, 1.0]
-    #  
-    #  sensitivity:
-    #  # Spatial frequency bins [Low, Mid, High, High+], unit = ppt/pm
-    #  # HZs of fiducial stars span 53.5 - 124.0 mas angular range
-    #  # For D=6 m, 6.2-14.4 wvl/D @250nm, 2.8-3.7 wvl/D @550nm, 0.92-2.1 wvl/D @1.7um
-    #    - [30, 30, 30, 30]  # 47 - 66 mas (2.5-3.5 wvl/D, wvl=550 nm, D=6 m)
-    #    - [30, 30, 30, 30]  # 66 - 85 mas (3.5-4.5 wvl/D, wvl=550 nm, D=6 m)
-    #    - [30, 30, 30, 30]  # 85 - 104 mas (4.5-5.5 wvl/D, wvl=550 nm, D=6 m)
-    #    - [30, 30, 30, 30]  # 104 - 123 mas (5.5-6.5 wvl/D, wvl=550 nm, D=6 m)
-    #    - [30, 30, 30, 30]  # 123 - 142 mas (6.5-7.5 wvl/D, wvl=550 nm, D=6 m)
-  
-  #  output_filename_prefix: mcmc
-
-#contrast: [1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10, 1.0E-10]
-
-#core_throughout: [0.15, 0.15, 0.15, 0.15, 0.15]
-
 
 initial_exosims: 
     skipSaturationCalcs: true
