@@ -511,6 +511,7 @@ class ErrorBudget2(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=True)
                 self.ppFact_filename = path
+                print(f"Wrote ppFact FITS file {path}")
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
@@ -532,7 +533,7 @@ class ErrorBudget2(object):
                            , header="r_as,core_contrast", comments='')
             if contrast_or_throughput == 'throughput':
                 arr = np.vstack((self.angles, self.throughput)).T
-                self.contrast_filename = path
+                self.throughput_filename = path
                 np.savetxt(path, arr, delimiter=',', header="r_as,thruput"
                            , comments='')
         else:  
@@ -571,7 +572,6 @@ class ErrorBudget2(object):
             , config['input_files']['sensitivity'])
             , skiprows=1
                                 )
-#        self.load_csv_contrast()
         self.target_list = ['HIP '+ str(config['targets'][star]['HIP'])
                                 for star in config['targets']]
         self.eeid = [config['targets'][star]['eeid']
@@ -581,9 +581,6 @@ class ErrorBudget2(object):
         self.exo_zodi = [config['targets'][star]['exo_zodi']
                                 for star in config['targets']]
         self.exosims_pars_dict = config['initial_exosims']
-#        self.wfe = np.array(config['wfsc_args']['wfe'])
-#        self.wfsc_factor = np.array(config['wfsc_args']['wfsc_factor'])
-#        self.sensitivity = np.array(config['wfsc_args']['sensitivity'])
         self.write_ppFact_fits()
         self.exosims_pars_dict['ppFact'] = self.ppFact_filename
         self.exosims_pars_dict['cherryPickStars'] = self.target_list
@@ -636,10 +633,22 @@ class ErrorBudget2(object):
                 if type(arr) == float or type(arr)==np.float64:
                     arr = use_values[0]
                 else:
+                    print(f"arr[indices]: {arr[indices]}")
+                    print(f"use_values: {use_values}")
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
-                if var_name == 'contrast'  or var_name == 'throughput':
+                if var_name == 'contrast'  or var_name == 'core_thruput':
                     self.write_csv(var_name)
+                    self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+                        ['core_contrast'] = self.contrast_filename
+                    self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+                        ['core_thruput'] = self.throughput_filename
+                elif var_name == 'wfsc_factor' or var_name == 'wfe'\
+                        or var_name == "sensitivity":  
+                    self.ppFact
+                    print(f"ppFact2: {self.ppFact}")
+                    self.write_ppFact_fits()
+                    self.exosims_pars_dict['ppFact'] = self.ppFact_filename
             else:
                 print(key+" not found in attributes list")
 
@@ -672,7 +681,9 @@ class ErrorBudget2(object):
 
     def log_merit(self, values):
         self.initialize_for_exosims()
+        print(f"ppFact1: {self.ppFact}")
         self.update_attributes(values)
+        print(f"ppFact3: {self.ppFact}")
         int_time = self.run_exosims()[0]
         print(f"integration time: {int_time}")
         if np.isnan(int_time.value).any():
@@ -712,7 +723,7 @@ class ErrorBudget2(object):
         sampler.run_mcmc(pos, nsteps, progress=True)
         return sampler
 
-    def run_exosims(self, file_cleanup=True):
+    def run_exosims(self, file_cleanup=False):
         """
         Run EXOSIMS to generate results, including exposure times
         required for reaching specified SNR.
@@ -732,6 +743,7 @@ class ErrorBudget2(object):
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
+        print(f"exosims_pars_dict:ppFact: {self.exosims_pars_dict['ppFact']}")
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
         
