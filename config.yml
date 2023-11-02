@@ -96,7 +96,7 @@ mcmc:
           - 2.000000000000000311e-12
           - 2.000000000000000311e-12
           - 2.000000000000000311e-12
-    core_thruput:  # core throughput
+    throughput:  # core throughput
       prior_ftn:
         - uniform
         - uniform
