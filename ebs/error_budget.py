@@ -50,8 +50,6 @@ class ErrorBudget(object):
         (i.e. contrast obtained on the reference star)
     target_list : list
         List of target-star HIP IDs
-    luminosity : list
-        Luminosity values of the target stars [log10(L*/L_sun)]
     eeid : list
         Earth-equivalent insolation distance values of the target stars 
         [as]
@@ -134,14 +132,12 @@ class ErrorBudget(object):
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
-                 , luminosity=[0.2615, -0.0788, 0.0391, -0.3209, -0.707]
                  , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
                  , exo_zodi=5*[0.0], npoints=3):
         self.input_dir = input_dir
         self.output_dir = output_dir
         self.target_list = [f"HIP {n}" for n in target_list]
-        self.luminosity = luminosity
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
@@ -412,7 +408,7 @@ class ErrorBudget(object):
                     os.remove(fname)
 
 
-class ErrorBudget2(object):
+class ErrorBudgetMcmc(object):
 
     def __init__(self, config_file="config.yml"):
         with open(config_file, 'r') as config:
@@ -690,7 +686,7 @@ class ErrorBudget2(object):
         log_probability = log_prior + log_merit
         return log_probability
 
-    def run_mcmc(self, parallel=True):
+    def run_mcmc(self, parallel=False):
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
@@ -705,7 +701,7 @@ class ErrorBudget2(object):
             sampler = emcee.EnsembleSampler(nwalkers, ndim
                           , self.log_probability, backend=backend)
         nsteps = self.config['mcmc']['nsteps']
-        sampler.run_mcmc(pos, nsteps, progress=True)
+        sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         return sampler
 
     def run_exosims(self, file_cleanup=True):
