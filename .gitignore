@@ -1,7 +1,7 @@
 
 # repository-specific
-output
-outputs
+output/
+outputs/
 inputs/temp*.json
 inputs/*pp.json
 inputs/ppFact.fits
