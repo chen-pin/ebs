@@ -1,8 +1,8 @@
 # MCMC Paramters
 mcmc: 
-  nwalkers: 400
+  nwalkers: 304
   nsteps: 5000
-  backend_path: ./output/backend_20231112t1350hdf
+  backend_path: ./output/backend_202311121737.hdf
   merit:
     ftn: inverse_bounded
     args:
@@ -98,12 +98,12 @@ mcmc:
           - .NAN
     throughput:  # core throughput
       prior_ftn:
-        - 
-        - 
+        - .NAN
+        - .NAN 
         - uniform
         - uniform
         - uniform
-        - 
+        - .NAN 
       prior_args:
         lower_bound:
           - .NAN
