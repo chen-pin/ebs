@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="ebs",
-    version="0.0.2",
+    version="0.5",
     author="Pin Chen",
     author_email="pin.chen@jpl.nasa.gov",
     description="Software for running error budget calculations for HWO using EXOSIMS",
