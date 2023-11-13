@@ -231,3 +231,19 @@ initial_exosims:
     minComp: 0
     modules:
       BackgroundSources: ' '
+# MCMC Paramters
+mcmc: 
+  nwalkers: 100
+  nsteps: 5000
+  backend_path: ./output/backend_20231101t1541.hdf
+  merit:
+    ftn: uniform
+    args:
+      lower_bound: 0.0
+      upper_bound: 30.0
+
+  variables:
+    idark: 
+      prior_ftn: [uniform]  # Must be a list
+      prior_args:
+        lower_bound: [1.0e-6]
