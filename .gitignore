@@ -1,9 +1,13 @@
 
 # repository-specific
 output
+outputs
 inputs/temp*.json
 inputs/*pp.json
 inputs/ppFact.fits
+inputs/ppFact_*.fits
+inputs/contrast_*.csv
+inputs/throughput_*.csv
 inputs/*.swx
 inputs/obsolete/
 test/temp*.json
