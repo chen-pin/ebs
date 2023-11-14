@@ -10,7 +10,6 @@ dependencies:
   - graphviz
   - pydot
   - jupyter
-  - hjson
   - matplotlib
   - chardet
   - openpyxl

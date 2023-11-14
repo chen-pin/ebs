@@ -2,7 +2,7 @@
 mcmc: 
   nwalkers: 152
   nsteps: 5000
-  backend_path: ./outputs/backend_20231112t1756.hdf
+  backend_path: ./outputs/backend_20231112t1931.hdf
   merit:
     ftn: inverse_bounded
     args:
