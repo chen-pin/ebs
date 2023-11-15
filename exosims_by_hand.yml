@@ -1,0 +1,20 @@
+name: exosims
+channels:
+  - http://ssb.stsci.edu/astroconda
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.2
+  - pylint=2.16.2
+  - graphviz=2.50.0
+  - pydot=1.4.2
+  - jupyter=1.0.0
+#  - hjson
+  - matplotlib=3.7.1
+  - chardet=4.0.0
+  - openpyxl=3.0.10
+  - pytest=7.4.0
+  - emcee=3.1.4
+  - corner=2.2.2
+#  - celerite
+#prefix: /home/pinchen/anaconda3/envs/exosims

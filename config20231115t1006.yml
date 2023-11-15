@@ -1,8 +1,8 @@
 # MCMC Paramters
 mcmc: 
   nwalkers: 152
-  nsteps: 5000
-  backend_path: ./outputs/backend_20231112t1931.hdf
+  nsteps: 10000
+  backend_path: ./outputs/backend_20231115t1006.hdf
   merit:
     ftn: inverse_bounded
     args:

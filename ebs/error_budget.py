@@ -676,15 +676,15 @@ class ErrorBudgetMcmc(object):
             mean_int_time = np.array(int_time.value).mean()
             return ftn(mean_int_time, *args)
 
-    def log_probability(self, values):
-        log_prior = self.log_prior(values)
-        if np.isinf(log_prior):
-            return -np.inf
-        log_merit = self.log_merit(values)
-        if np.isinf(log_merit):
-            return -np.inf
-        log_probability = log_prior + log_merit
-        return log_probability
+#    def log_probability(self, values):
+#        log_prior = self.log_prior(values)
+#        if np.isinf(log_prior):
+#            return -np.inf
+#        log_merit = self.log_merit(values)
+#        if np.isinf(log_merit):
+#            return -np.inf
+#        log_probability = log_prior + log_merit
+#        return log_probability
 
     def run_mcmc(self, parallel=False):
         self.initialize_for_exosims()
@@ -696,10 +696,10 @@ class ErrorBudgetMcmc(object):
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
-                            , self.log_probability, backend=backend, pool=pool)
+                            , log_probability, backend=backend, pool=pool, args=self)
         else:
             sampler = emcee.EnsembleSampler(nwalkers, ndim
-                          , self.log_probability, backend=backend)
+                          , log_probability, backend=backend, args=[self])
         nsteps = self.config['mcmc']['nsteps']
         sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         return sampler
@@ -793,6 +793,18 @@ class ErrorBudgetMcmc(object):
         for path in self.trash_can:
             if os.path.isfile(path):
                 os.remove(path)
+
+
+def log_probability(values, error_budget):
+    log_prior = error_budget.log_prior(values)
+    if np.isinf(log_prior):
+        return -np.inf
+    log_merit = error_budget.log_merit(values)
+    if np.isinf(log_merit):
+        return -np.inf
+    log_probability = log_prior + log_merit
+    return log_probability
+
 
 
 class ParameterSweep:
@@ -914,5 +926,8 @@ class ParameterSweep:
                 self.result_dict[key] = arr
 
         return self.result_dict
+
+
+
 
 
