@@ -694,16 +694,18 @@ class ErrorBudgetMcmc(object):
         nwalkers, ndim = pos.shape
         backend = emcee.backends.HDFBackend(self.config['mcmc']['backend_path'])
         backend.reset(nwalkers, ndim)
+        nsteps = self.config['mcmc']['nsteps']
         if parallel:
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
-                            , log_probability, backend=backend, pool=pool, args=self)
+                            , log_probability, backend=backend, pool=pool
+                            , args=[self])
+                sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         else:
             sampler = emcee.EnsembleSampler(nwalkers, ndim
                           , log_probability, backend=backend, args=[self])
-        nsteps = self.config['mcmc']['nsteps']
-        sampler.run_mcmc(pos, nsteps, progress=True, store=True)
+            sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         return sampler
 
     def run_exosims(self, file_cleanup=True):
