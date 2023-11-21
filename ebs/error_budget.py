@@ -329,44 +329,39 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, wfe, wfsc_factor, sensitivity
-                , output_filename_prefix
-                ,var_par, *args):
+    def run_etc(self, config, wfe, wfsc_factor, sensitivity, output_filename_prefix='output_',
+                var_par=False, subsystem=None, name=None, value=None, remove_temp_jsons=True):
         """
-        Run end-to-end sequence of methods to produce results written to 
-        output JSON file. 
+        Run end-to-end sequence of methods to produce results written to
+        output JSON file.
 
         Parameters
         ----------
         wfe : array or list
-            Wavefront changes specified in spatio-temporal bins, loaded from 
-            the input JSON file, in pm units.  
+            Wavefront changes specified in spatio-temporal bins, loaded from
+            the input JSON file, in pm units.
             Dimensions:  (num_temporal_modes, num_spatial_modes).
         wfsc_factor : array or list
-            Wavefront-change-mitigation factors, loaded from the input JSON 
-            file.  Values should be between 0 and 1.    
+            Wavefront-change-mitigation factors, loaded from the input JSON
+            file.  Values should be between 0 and 1.
             Dimensions:  same as `wfe`
         sensitivity : array or list
-            Coefficients of contrast sensitivity w.r.t. wavefront changes, 
-            in ppt/pm units.  
+            Coefficients of contrast sensitivity w.r.t. wavefront changes,
+            in ppt/pm units.
             Dimensions:  (num_angles, num_spatial_modes)
         output_filename_prefix: str
             prefix for the output file name.
         var_par : bool
-            Whether or not the user wants to input a range of values for an 
-            EXOSIMS 'scienceInstruments', 'starlightSuppressionSystems', or 
+            Whether the user wants to input a range of values for an
+            EXOSIMS 'scienceInstruments', 'starlightSuppressionSystems', or
             'observingModes' parameter.
-        *args 
-            If `var_par` == True, enter 3 additional arguments:  
-                1. String indicating the EXOSIMS subsystem.  Possible values 
-                comprise the following 
-                    - 'scienceInstruments'
-                    - 'starlightSuppressionSystems' 
-                    - 'observingModes'
-                2. String indicating the EXOSIMS paramter (e.g. 'optics', 
-                'QE', or 'SNR')
-                3. List_like data providing the range of parameter values
-
+        subsystem: str
+            subsystem of the parameter being swept over e.g. 'scienceInstruments, 'starlightSuppressionSystems', or
+            'observingModes'.
+        name: str
+            Name of the parameter being swept over under the given subsystem e.g. 'QE', 'idark', 'IWA, etc.
+        value: float
+            Value for the parameter subsystem, name to take for this run of EXOSIMS.
         Note
         ----
         - If `var_par`==True, the EXOSIMS parameter name and the iterated 
@@ -376,6 +371,14 @@ class ErrorBudget(object):
 
 
         """
+
+        if isinstance(wfe, list):
+            wfe = np.array(wfe)
+        if isinstance(wfsc_factor, list):
+            wfsc_factor = np.array(wfsc_factor)
+        if isinstance(sensitivity, list):
+            sensitivity = np.array(sensitivity)
+
         update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), config=config, wfe=wfe, wfsc=wfsc_factor,
                        sensitivity=sensitivity)
         self.load_json()
