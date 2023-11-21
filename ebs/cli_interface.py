@@ -45,7 +45,7 @@ def main():
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
                                pp_json_filename=config['json_files']['pp_json'],
                                contrast_filename=config['input_files']['contrast'],
-                               target_list=hip_numbers, luminosity=luminosities, eeid=eeids, eepsr=eepsrs,
+                               target_list=hip_numbers, eeid=eeids, eepsr=eepsrs,
                                exo_zodi=exo_zodis)
 
     sweep = ParameterSweep(config, parameter=args.param, values=values, error_budget=error_budget, wfe=wfe,
