@@ -31,6 +31,7 @@ from ebs.utils import update_pp_json
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 
+
 class ErrorBudget(object):
     """
     Exposure time calculator incorporating dynamical wavefront errors and 
@@ -776,6 +777,408 @@ class ErrorBudgetMcmc(object):
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
                 [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles
+                    * sim.ZodiacalLight.fEZ0.unit,
+                dMags,
+                WA * u.arcsec,
+                mode,
+                True
+            )
+            C_p.append(counts[0])
+
+            C_b.append(counts[1])
+            C_sp.append(counts[2])
+            C_sr.append(counts[3]["C_sr"])
+            C_z.append(counts[3]["C_z"])
+            C_ez.append(counts[3]["C_ez"])
+            C_dc.append(counts[3]["C_dc"])
+            C_rn.append(counts[3]["C_rn"])
+            C_star.append(counts[3]["C_star"])
+        if file_cleanup:
+            self.clean_files()
+        return int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+
+    def clean_files(self):
+        for path in self.trash_can:
+            if os.path.isfile(path):
+                os.remove(path)
+
+
+def log_probability(values, error_budget):
+    log_prior = error_budget.log_prior(values)
+    if np.isinf(log_prior):
+        return -np.inf
+    log_merit = error_budget.log_merit(values)
+    if np.isinf(log_merit):
+        return -np.inf
+    log_probability = log_prior + log_merit
+    return log_probability
+
+
+class ErrorBudgetMcmc(object):
+
+    def __init__(self, config_file="config.yml"):
+        with open(config_file, 'r') as config:
+            self.config = yaml.load(config, Loader=yaml.FullLoader)
+        self.target_list = None
+        self.exo_zodi = None
+        self.eeid = None
+        self.eepsr = None 
+        self.wfe = None
+        self.wfsc_factor = None
+        self.sensitivity = None
+        self.post_wfsc_wfe = None
+        self.angles = None
+        self.contrast = None
+        self.working_angles = []
+        self.QE = None
+        self.sread = None
+        self.idark = None
+        self.Rs = None
+        self.lensSamp = None
+        self.pixelNumber = None
+        self.pixelSize = None
+        self.optics = None
+        self.BW = None
+        self.IWA = None
+        self.throughput = None
+        self.core_mean_intensity = None
+        self.SNR = None
+        self.ppFact_filename = None
+        self.contrast_filename = None
+        self.throughput_filename = None
+        self.ppFact_filename = None
+        self.exosims_pars_dict = None
+        self.trash_can = []
+
+    @property
+    def delta_contrast(self):
+        """
+        Compute change in contrast due to residual WFE and assign the array to 
+        `self.ppFact`. 
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        if (self.wfe is not None and self.wfsc_factor is not None 
+            and self.sensitivity is not None and self.contrast is not None):
+            self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
+            delta_contrast = np.empty(self.contrast.shape[0])
+            for n in range(len(delta_contrast)):
+                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
+                                         , self.post_wfsc_wfe)**2).sum()
+                                           ) 
+            return 1E-12*delta_contrast
+        else: 
+            print("Need to assign wfe, wfsc_factor, sensitivity, " + 
+                  "and contrast values before determining delta_contrast") 
+
+    @property
+    def ppFact(self):
+        """
+        Compute the post-processing factor and assign the array to 
+        `self.ppFact`. 
+
+        Reference
+        ---------
+        - See <Post-Processing Factor> document for mathematical description
+
+        """
+        ppFact = self.delta_contrast/self.contrast
+        return np.where(ppFact>1.0, 1.0, ppFact)
+
+    
+    def write_ppFact_fits(self):
+        """
+        Create FITS file of ppFact array with randomized filename.  
+
+        """
+        input_dir = self.config['paths']['input']
+        if self.angles is not None:
+            rng = np.random.default_rng()
+            random_string = str(rng.integers(1E9))
+            filename = "ppFact_"+random_string+".fits"
+            path = os.path.join(input_dir, filename)
+            with open(path, 'wb') as f:
+                arr = np.vstack((self.angles, self.ppFact)).T
+                fits.writeto(f, arr, overwrite=False)
+                self.ppFact_filename = path
+            self.trash_can.append(path)
+        else:  
+            print("Need to assign angle values to write ppFact FITS file")
+    
+    def write_csv(self, contrast_or_throughput):
+        """
+        Create csv file of contrast or throughput  array with randomized 
+        filename.  
+
+        """
+        input_dir = self.config['paths']['input']
+        if self.angles is not None:
+            rng = np.random.default_rng()
+            random_string = str(rng.integers(1E9))
+            filename = contrast_or_throughput+'_'+random_string+".csv"
+            path = os.path.join(input_dir, filename)
+            if contrast_or_throughput == 'contrast':
+                arr = np.vstack((self.angles, self.contrast)).T
+                self.contrast_filename = path
+                np.savetxt(path, arr, delimiter=','
+                           , header="r_as,core_contrast", comments='')
+            if contrast_or_throughput == 'throughput':
+                arr = np.vstack((self.angles, self.throughput)).T
+                self.throughput_filename = path
+                np.savetxt(path, arr, delimiter=',', header="r_as,core_thruput"
+                           , comments='')
+            self.trash_can.append(path)
+        else:  
+            print("Need to assign angle values to write CSV file")
+
+    def initialize_for_exosims(self):
+        config = self.config
+        input_path = self.config['paths']['input']
+        contrast_path = os.path.join(input_path, config['input_files']\
+                ['contrast'])
+        throughput_path = os.path.join(
+                input_path, config['input_files']['throughput'])
+        self.angles = read_csv(
+                filename=contrast_path
+                , skiprows=1
+                )[:,0]
+        self.contrast = read_csv(
+                filename=contrast_path
+                , skiprows=1
+                )[:,1]
+        self.throughput = read_csv(
+                filename=throughput_path
+                , skiprows=1
+                )[:, 1]
+        self.wfe = read_csv(
+                filename=os.path.join(input_path, config['input_files']['wfe'])
+                , skiprows=1
+                                )
+        self.wfsc_factor = read_csv(
+            filename=os.path.join(input_path
+            , config['input_files']['wfsc_factor'])
+            , skiprows=1
+                                )
+        self.sensitivity = read_csv(
+            filename=os.path.join(input_path
+            , config['input_files']['sensitivity'])
+            , skiprows=1
+                                )
+        self.target_list = ['HIP '+ str(config['targets'][star]['HIP'])
+                                for star in config['targets']]
+        self.eeid = [config['targets'][star]['eeid'] 
+                                for star in config['targets']]
+        self.eepsr = [config['targets'][star]['eepsr'] 
+                                for star in config['targets']]
+        self.exo_zodi = [config['targets'][star]['exo_zodi'] 
+                                for star in config['targets']]
+        self.exosims_pars_dict = config['initial_exosims']
+        self.write_ppFact_fits()
+        self.exosims_pars_dict['ppFact'] = self.ppFact_filename
+        self.exosims_pars_dict['cherryPickStars'] = self.target_list
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_contrast'] = contrast_path
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_thruput'] = throughput_path
+        for key in self.exosims_pars_dict['scienceInstruments'][0].keys():
+            if key != 'optics' in dir(self):
+                setattr(self, key
+                        , self.exosims_pars_dict['scienceInstruments'][0][key])
+        for key \
+             in self.exosims_pars_dict['starlightSuppressionSystems'][0] \
+                 .keys():
+            if key in dir(self):
+                setattr(self, key
+                        , self.exosims_pars_dict['starlightSuppressionSystems']
+                                                [0][key])
+
+    def initialize_walkers(self):
+        center = []
+        [center.append(np.array(val).ravel())  
+         for var_name in self.config['mcmc']['variables'] 
+         for val in self.config['mcmc']['variables'][var_name]['ini_pars']
+                               ['center']]
+        center = np.concatenate(center)
+        center = center[np.where(np.isfinite(center))]
+        spread = []
+        [spread.append(np.array(val).ravel())  
+         for var_name in self.config['mcmc']['variables'] 
+         for val in self.config['mcmc']['variables'][var_name]['ini_pars']
+                               ['spread']]
+        spread = np.concatenate(spread)
+        spread= spread[np.where(np.isfinite(spread))]
+        ndim = center.shape[0]
+        nwalkers = self.config['mcmc']['nwalkers']
+        walker_pos = center + np.random.uniform(-spread/2.0, spread/2.0
+                                                , (nwalkers, ndim))
+        return walker_pos
+
+    def update_attributes(self, values):
+        for var_name in self.config['mcmc']['variables']:
+            if var_name in dir(self):
+                template = np.array(self.config['mcmc']['variables'][var_name]
+                                               ['ini_pars']['center'])
+                indices = np.where(np.isfinite(template))
+                use_values, values = np.split(values, [indices[0].size])
+                arr = getattr(self, var_name)
+                if type(arr) == float or type(arr)==np.float64:
+                    arr = use_values[0]
+                else:
+                    arr[indices] = use_values
+                setattr(self, var_name, arr)
+                if var_name in ['contrast', 'wfe', 'wfsc_factor'
+                                , 'sensitivity']:
+                    if var_name == 'contrast':
+                        self.write_csv(var_name)
+                        self.exosims_pars_dict['starlightSuppressionSystems']\
+                                [0]['core_contrast'] = self.contrast_filename
+                    self.write_ppFact_fits()
+                    self.exosims_pars_dict['ppFact'] = self.ppFact_filename
+                if var_name == 'throughput':
+                    self.write_csv(var_name)
+                    self.exosims_pars_dict['starlightSuppressionSystems']\
+                            [0]['core_thruput'] = self.throughput_filename
+            else:
+                print(key+" not found in attributes list")
+
+    def log_prior(self, values):
+        joint_prob = 0.0
+        counter = 0
+        for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
+            prior_ftn = np.array(
+                    self.config['mcmc']['variables'][var_name]['prior_ftn']
+                                )
+            index = np.where(prior_ftn!='nan')
+            all_args = [np.array(item) for item in 
+                    self.config['mcmc']['variables'][var_name]['prior_args']
+                        .values()]
+            for m, row_index in enumerate(index[0]):
+                if len(index) > 1:
+                    col_index = index[1][m]
+                    ftn = getattr(pdf, prior_ftn[row_index, col_index])
+                    args = [page[row_index][col_index] for page in all_args]
+                else:
+                    ftn = getattr(pdf, prior_ftn[row_index])
+                    args = [page[row_index] for page in all_args]
+                prob = ftn(values[counter], *args)
+                counter += 1
+                if np.isinf(prob):
+                    return prob
+                else: 
+                    joint_prob += prob
+        return joint_prob 
+
+    def log_merit(self, values):
+        self.update_attributes(values)
+        int_time = self.run_exosims()[0]
+        if np.isnan(int_time.value).any():
+            return -np.inf
+        else:
+            ftn_name = self.config['mcmc']['merit']['ftn']
+            args = [arg for arg in self.config['mcmc']['merit']['args']\
+                    .values()]
+            ftn = getattr(pdf, ftn_name)
+            mean_int_time = np.array(int_time.value).mean() 
+            return ftn(mean_int_time, *args)
+
+#    def log_probability(self, values):
+#        log_prior = self.log_prior(values)
+#        if np.isinf(log_prior):
+#            return -np.inf
+#        log_merit = self.log_merit(values)
+#        if np.isinf(log_merit):
+#            return -np.inf
+#        log_probability = log_prior + log_merit
+#        return log_probability
+
+    def run_mcmc(self, parallel=False):
+        self.initialize_for_exosims()
+        pos = self.initialize_walkers()
+        nwalkers, ndim = pos.shape
+        backend = emcee.backends.HDFBackend(self.config['mcmc']['backend_path'])
+        backend.reset(nwalkers, ndim)
+        nsteps = self.config['mcmc']['nsteps']
+        if parallel:
+            os.environ["OMP_NUM_THREADS"] = "1"
+            with Pool() as pool:
+                sampler = emcee.EnsembleSampler(nwalkers, ndim
+                            , log_probability, backend=backend, pool=pool
+                            , args=[self])
+                sampler.run_mcmc(pos, nsteps, progress=True, store=True)
+        else:
+            sampler = emcee.EnsembleSampler(nwalkers, ndim
+                          , log_probability, backend=backend, args=[self])
+            sampler.run_mcmc(pos, nsteps, progress=True, store=True)
+        return sampler
+
+    def run_exosims(self, file_cleanup=True):
+        """
+        Run EXOSIMS to generate results, including exposure times 
+        required for reaching specified SNR.  
+
+        """
+        C_p = []
+        C_b = []
+        C_sp = []
+        C_sr = []
+        C_z = []
+        C_ez = []
+        C_dc = []
+        C_rn = []
+        C_star = []
+        n_angles = 3
+        target_list = self.target_list
+        eeid = self.eeid
+        eepsr = self.eepsr
+        exo_zodi = self.exo_zodi
+        sim = ems.MissionSim(use_core_thruput_for_ez=False
+                             , **deepcopy(self.exosims_pars_dict))
+        
+        # identify targets of interest
+        sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
+                         in target_list])
+        
+        # assemble information needed for integration time calculation:
+        
+        # we have only one observing mode defined, so use that
+        mode = sim.OpticalSystem.observingModes[0]
+        
+        # use the nominal local zodi and exozodi values
+        fZ = sim.ZodiacalLight.fZ0
+        
+        # now we loop through the targets of interest and compute integration 
+        # times for each:
+        int_time = np.empty((len(target_list), n_angles))*u.d
+        for j, sInd in enumerate(sInds):
+            # choose angular separation for coronagraph performance
+            # this doesn't matter for a flat contrast/throughput, but
+            # matters a lot when you have real performane curves
+            WA_inner = 0.95*eeid[j]
+            WA_outer = 1.67*eeid[j]
+            WA = [WA_inner, eeid[j], WA_outer]
+            self.working_angles.append(WA)
+            # target planet deltaMag (evaluate for a range):
+            dMag0 = -2.5*np.log10(eepsr[j])
+            dMags = np.array([(dMag0-2.5*np.log10(eeid[j]/WA_inner))
+                     , dMag0, (dMag0-2.5*np.log10(eeid[j]/WA_outer))])
+            int_time[j] = sim.OpticalSystem.calc_intTime(
+                sim.TargetList,
+                [sInd] * n_angles,
+                [fZ.value] * n_angles * fZ.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
+                    * sim.ZodiacalLight.fEZ0.unit,
+                dMags,
+                WA * u.arcsec,
+                mode
+            )
+            counts = sim.OpticalSystem.Cp_Cb_Csp(
+                sim.TargetList,
+                [sInd] * n_angles,
+                [fZ.value] * n_angles * fZ.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
                     * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
