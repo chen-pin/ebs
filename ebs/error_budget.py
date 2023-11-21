@@ -490,12 +490,12 @@ class ErrorBudgetMcmc(object):
         """
         input_dir = self.config['paths']['input']
         if self.angles is not None:
-            random_string = str(int(1e10*np.random.rand()))
+            random_string = str(int(np.random.randint(0, 1E9)))
             filename = "ppFact_"+random_string+".fits"
             path = os.path.join(input_dir, filename)
             with open(path, 'wb') as f:
                 arr = np.vstack((self.angles, self.ppFact)).T
-                fits.writeto(f, arr, overwrite=True)
+                fits.writeto(f, arr, overwrite=False)
                 self.ppFact_filename = path
             self.trash_can.append(path)
         else:  
