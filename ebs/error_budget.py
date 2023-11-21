@@ -74,15 +74,16 @@ class ExosimsWrapper:
         self.C_ez = []
         self.C_dc = []
         self.C_rn = []
+        self.working_angles = []
         self.int_time = None
 
-    def run_exosims(self, temp_json_filename, target_list, eeid, eepsr, exo_zodi, npoints, working_angles,
-                    return_outputs=False):
+    def run_exosims(self, temp_json_filename, target_list, eeid, eepsr, exo_zodi, npoints, return_outputs=False):
         """
         Run EXOSIMS to generate results, including exposure times
         required for reaching specified SNR.
 
         """
+
         # build sim object:
         self.int_time = np.zeros((len(target_list), npoints)) * u.d
 
@@ -113,7 +114,7 @@ class ExosimsWrapper:
             WA_inner = 0.95 * eeid[j]
             WA_outer = 1.67 * eeid[j]
             WA = [WA_inner, eeid[j], WA_outer]
-            working_angles.append(WA)
+            self.working_angles.append(WA)
             # target planet deltaMag (evaluate for a range):
             dMag0 = -2.5 * np.log10(eepsr[j])
             dMags = np.array([(dMag0 - 2.5 * np.log10(eeid[j] / WA_inner))
@@ -122,8 +123,7 @@ class ExosimsWrapper:
                 sim.TargetList,
                 [sInd] * npoints,
                 [fZ.value] * npoints * fZ.unit,
-                [exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * npoints
-                * sim.ZodiacalLight.fEZ0.unit,
+                [exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * npoints * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
                 mode
@@ -132,8 +132,7 @@ class ExosimsWrapper:
                 sim.TargetList,
                 [sInd] * npoints,
                 [fZ.value] * npoints * fZ.unit,
-                [exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * npoints
-                * sim.ZodiacalLight.fEZ0.unit,
+                [exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * npoints * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
                 mode,
@@ -164,7 +163,7 @@ class ExosimsWrapper:
             js.dump(exosims_dict, f)
         return filename
 
-    def output_to_json(self, output_json_filename, ppFact, working_angles):
+    def output_to_json(self, output_json_filename, ppFact):
 
         """
         Write EXOSIMS results to a JSON file.
@@ -181,7 +180,7 @@ class ExosimsWrapper:
         output_dict = {
             "int_time": [x.value.tolist() for x in self.int_time],
             "ppFact": ppFact.tolist(),
-            "working_angles": working_angles,
+            "working_angles": self.working_angles,
             "C_p": [x.value.tolist() for x in self.C_p],
             "C_b": [x.value.tolist() for x in self.C_b],
             "C_sp": [x.value.tolist() for x in self.C_sp],
@@ -280,7 +279,7 @@ class ErrorBudget(ExosimsWrapper):
                  , exo_zodi=5*[0.0],
                  npoints=3):
 
-        super().__init__(input_dir=self.input_dir, output_dir=self.output_dir)
+        super().__init__(input_dir=input_dir, output_dir=output_dir)
 
         self.input_dir = input_dir
         self.output_dir = output_dir
@@ -299,7 +298,6 @@ class ErrorBudget(ExosimsWrapper):
         self.angles = None
         self.contrast = None
         self.ppFact = None
-        self.working_angles = []
         self.npoints=npoints
 
     def load_json(self):
@@ -398,7 +396,8 @@ class ErrorBudget(ExosimsWrapper):
 
 
         """
-        generate_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor, sensitivity=sensitivity)
+        generate_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor,
+                         sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
@@ -412,10 +411,10 @@ class ErrorBudget(ExosimsWrapper):
                                              +'.json'
                                                                  )
                         self.run_exosims(temp_json_filename, self.target_list, self.eeid, self.eepsr, self.exo_zodi,
-                                         self.npoints, self.working_angles)
+                                         self.npoints)
                         filename = (output_filename_prefix+'_'+args[1]+'_'
                                     +str(value))
-                        self.output_to_json(filename)
+                        self.output_to_json(filename, self.ppFact)
                 else:
                     print("Error in specifying EXOSIMS parameter to be varied")
             else:
@@ -425,15 +424,14 @@ class ErrorBudget(ExosimsWrapper):
                                          'temp_'+args[1]+'_'+str(value)
                                          +'.json')
                     self.run_exosims(temp_json_filename, self.target_list, self.eeid, self.eepsr, self.exo_zodi,
-                                     self.npoints, self.working_angles)
+                                     self.npoints)
                     filename = (output_filename_prefix+'_'+args[1]+'_'
                                 +str(value)+'.json')
-                    self.output_to_json(filename)
+                    self.output_to_json(filename, self.ppFact)
         else:
             temp_json_filename = self.write_temp_input_json(self.input_dict)
-            self.run_exosims(temp_json_filename, self.target_list, self.eeid, self.eepsr, self.exo_zodi, self.npoints,
-                             self.working_angles)
-            self.output_to_json(output_filename_prefix+'.json')
+            self.run_exosims(temp_json_filename, self.target_list, self.eeid, self.eepsr, self.exo_zodi, self.npoints)
+            self.output_to_json(output_filename_prefix+'.json', self.ppFact)
 
 
 class ErrorBudgetMcmc(ExosimsWrapper):
@@ -454,7 +452,6 @@ class ErrorBudgetMcmc(ExosimsWrapper):
         self.post_wfsc_wfe = None
         self.angles = None
         self.contrast = None
-        self.working_angles = []
         self.QE = None
         self.sread = None
         self.idark = None
@@ -701,7 +698,7 @@ class ErrorBudgetMcmc(ExosimsWrapper):
         self.update_attributes(values)
         temp_json_filename = self.write_temp_input_json(self.exosims_pars_dict)
         int_time = self.run_exosims(temp_json_filename, self.target_list, self.eeid, self.eepsr, self.exo_zodi,
-                                    self.npoints, self.working_angles, return_outputs=True)[0]
+                                    self.npoints, return_outputs=True)[0]
         if self.file_cleanup:
             self.clean_files()
         if np.isnan(int_time.value).any():
