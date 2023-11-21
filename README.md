@@ -4,6 +4,62 @@ The Error Budget Software (EBS) package is an error-budgeting toolkit to aid the
 * Please use Git branching for code development to keep the main branch in a working state (ref. [Git Feature-Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)).
   * If you would like to push branches to the repository, please request to become a collaborator.      
 
+## Getting Started 
+### Setting up a conda environment 
+
+from the root directory in a terminal run
+
+`conda env create -f environment.yml`
+
+activate the environment by running
+
+`conda activate ebs`
+
+you should now have access to all of the dependencies necessary to run the EBS package, including EXOSIMS. 
+### Installing EBS
+From the command line in the root directory run
+
+`python setup.py install`
+
+### Running EBS from the command line 
+
+EBS is run by formatting and generating input JSON files that are processed by EXOSIMS to yield exposure times for a 
+variety of observing scenarios. These parameters are split between a `parameters.yml` file and .csv files containing the 
+wavefront error, wavefront sensing and control factors, sensitivity factors, throughputs, and contrasts. Example files 
+can be found and modified in the `inputs` folder.
+
+It should be noted that any parameter which is not specified in the input JSON file that EBS passes to EXOSIMS will 
+automatically receive the default EXOSIMS values and so users should familiarize themselves with all relevant EXOSIMS
+variables or potentially receive unexpected results. 
+
+To run ebs from the command line, users should first ensure that all of the previously described parameter files contain 
+the desired values. Command line usage for parameter searches is supported for all EXOSIMS variables that can be
+found in the pp_json file, as well as `contrast` and `throughput`. EXOSIMS parameters should be specified by both the 
+subsystem they are a part of, as well as the parameter name (e.g. `scienceInstrument` and `QE`). The values that will 
+be swept over should be specified in the `parameters.yml` file under `iter_paramaters`. All other values will be kept 
+fixed. Performing sweeps over multiple parameters simultaneously will be added in a future version update.  
+
+For example, to sweep over contrast you would use the following syntax:
+
+`run_ebs <subsystem> -sub <parameter> -c <path/to/config.yml>`
+
+e.g. 
+
+`run_ebs scienceInstruments -sub QE -c inputs/parameters.yml`
+
+Here `-sub` refers to the fact that this is a sub-parameter (i.e. nested) and should not be confused with the subsystem 
+name.
+
+`contrast` and `throughput` are special cases where these should just be given as the `subsystem` parameter with the 
+second field left blank, e.g. 
+
+`run_ebs contrast -c inputs/parameters.yml`
+
+When completed this will display a plot of the expected exposure times for each of the observing scenarios in the 
+`parameters.yml` as a function of the selected `iter_parameter`.
+
+
+
 # Legal Notices
 Copyright (c) 2023-24 California Institute of Technology (“Caltech”). U.S. Government
 sponsorship acknowledged.  

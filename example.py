@@ -14,7 +14,7 @@ def nemati2020_vvc6():
 
     """
     # Load the config containing relevant parameters for running FREAK
-    with open('parameters.yml', 'r') as config:
+    with open('inputs/parameters.yml', 'r') as config:
         config = yaml.load(config, Loader=yaml.FullLoader)
 
     # load relevant parameters for the ErrorBudget class from the config

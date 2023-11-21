@@ -3,7 +3,7 @@
 output/
 outputs/
 inputs/temp*.json
-inputs/*pp.json
+#inputs/*pp.json
 inputs/ppFact.fits
 inputs/ppFact_*.fits
 inputs/contrast_*.csv
