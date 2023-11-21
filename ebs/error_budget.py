@@ -157,7 +157,6 @@ class ExosimsWrapper:
         Write `exosims_dict` to temporary JSON file for running EXOSIMS.
 
         """
-        # exosims_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
         path = os.path.join(self.input_dir, filename)
         with open(path, 'w') as f:
             js.dump(exosims_dict, f)
@@ -346,6 +345,7 @@ class ErrorBudget(ExosimsWrapper):
         ppFact = self.delta_contrast/self.contrast
         self.ppFact = np.where(ppFact>1.0, 1.0, ppFact)
         path = os.path.join(self.input_dir, "ppFact.fits")
+        self.input_dict["ppFact"] = path
         with open(path, 'wb') as f:
             arr = np.vstack((self.angles, self.ppFact)).T
             fits.writeto(f, arr, overwrite=True)
