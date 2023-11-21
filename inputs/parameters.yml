@@ -1,0 +1,53 @@
+paths:
+  output: ./outputs
+  input: ./inputs
+
+input_files:
+  contrast: example_contrast.csv
+  throughput: example_throughput.csv
+  wfe: example_wfe.csv
+  wfsc_factor: example_wfsc.csv
+  sensitivity: example_sensitivity.csv
+
+json_files:
+  ref_json: example_ref.json  # An input specifiying the 'unaberrated' observatory
+  pp_json: example_pp.json  # An intermediate file read in by EXOSIMS
+
+iter_parameters: [1e-10, 5e-5]
+
+targets:
+  star1:
+    HIP: 32439 A
+    spec_type: F8V
+    luminosity: 0.2615
+    eeid: 0.07423
+    eepsr: 6.34e-11
+    exo_zodi: 3.0
+  star2:
+    HIP: 77052 A
+    spec_type: G5V
+    luminosity: -0.0788
+    eeid: 0.06174
+    eepsr: 1.39e-10
+    exo_zodi: 3.0
+  star3:
+    HIP: 79672 
+    spec_type: G2Va
+    luminosity: 0.0391
+    eeid: 0.07399
+    eepsr: 1.06e-10
+    exo_zodi: 3.0
+  star4:
+    HIP: 26779
+    spec_type: K1V
+    luminosity: -0.3209
+    eeid: 0.05633
+    eepsr: 2.42e-10
+    exo_zodi: 3.0
+  star5:
+    HIP: 113283
+    spec_type: K4Ve
+    luminosity: -0.70
+    eeid: 0.05829
+    eepsr: 5.89e-10
+    exo_zodi: 3.0
