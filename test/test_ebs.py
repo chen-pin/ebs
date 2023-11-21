@@ -16,7 +16,7 @@ def obs():
 
     """
     t = ErrorBudget(input_dir='./'
-                    , pp_json_filename="test_pp.json"
+                    , pp_json_filename="./inputs/test_pp.json"
                     , contrast_filename="test_contrast.csv"
                     , target_list=[57443, 15457, 72659]
                     , eeid=[0.09858, 0.09981, 0.11012]
