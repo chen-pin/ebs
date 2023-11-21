@@ -814,7 +814,6 @@ def log_probability(values, error_budget):
     return log_probability
 
 
-
 class ErrorBudgetMcmc(object):
 
     def __init__(self, config_file="config.yml"):
@@ -1217,10 +1216,9 @@ def log_probability(values, error_budget):
     return log_probability
 
 
-
 class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
-                 fixed_throughput, contrast_filename, throughput_filename, angles, output_file_name='',
+                 fixed_throughput, contrast_filename, throughput_filename, output_file_name='',
                  is_exosims_param=False):
         '''
 
@@ -1246,8 +1244,6 @@ class ParameterSweep:
             The filename where the contrast information is stored.
         :param throughput_filename: str
             The filename where the throughput information is stored.
-        :param angles: array
-            Angular separation values [arcsec]
         :param output_file_name: str
             name of the output file
         :param is_exosims_param: bool
@@ -1258,6 +1254,7 @@ class ParameterSweep:
         self.values = values
         self.result_dict = {}
         self.error_budget = error_budget
+        self.error_budget.load_csv_contrast()
         self.is_exosims_param = is_exosims_param
         self.wfe = wfe
         self.wfsc_factor = wfsc_factor
@@ -1267,7 +1264,7 @@ class ParameterSweep:
         self.fixed_throughput = fixed_throughput
         self.contrast_filename = contrast_filename
         self.throughput_filename = throughput_filename
-        self.angles = angles
+        self.angles = self.error_budget.angles
         self.var_par = True
         self.result_dict = {
             'C_p': np.empty((len(values), len(config['targets']), 3)),
