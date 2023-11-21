@@ -329,7 +329,7 @@ class ErrorBudget(object):
         with open(path, 'w') as f:
             js.dump(output_dict, f, indent=4)
 
-    def run_etc(self, config, wfe, wfsc_factor, sensitivity, output_filename_prefix='output_',
+    def run_etc(self, wfe, wfsc_factor, sensitivity, output_filename_prefix='output_',
                 var_par=False, subsystem=None, name=None, value=None, remove_temp_jsons=True):
         """
         Run end-to-end sequence of methods to produce results written to
@@ -379,7 +379,7 @@ class ErrorBudget(object):
         if isinstance(sensitivity, list):
             sensitivity = np.array(sensitivity)
 
-        update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), config=config, wfe=wfe, wfsc=wfsc_factor,
+        update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor,
                        sensitivity=sensitivity)
         self.load_json()
         self.load_csv_contrast()
@@ -405,7 +405,7 @@ class ErrorBudget(object):
         # Remove temp files to run EXOSIMS to prevent clutter. If these want to be maintained they should be renamed and
         # potentially reformatted
         if remove_temp_jsons:
-            for fname in glob.glob(config['paths']['input'] + '/*'):
+            for fname in glob.glob(self.input_dir + '/*'):
                 if 'temp_' in fname:
                     print(f'Removing {fname}')
                     os.remove(fname)
@@ -921,7 +921,7 @@ class ParameterSweep:
 
             # TODO change mutable parameters in ErrorBudget class and remove this deep copy
             error_budget = deepcopy(self.error_budget)
-            error_budget.run_etc(self.config, self.wfe, self.wfsc_factor, self.sensitivity,
+            error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity,
                                  f'example_{self.parameter}', var_par=self.var_par, subsystem=self.parameter,
                                  name=self.subparameter, value=value)
 
