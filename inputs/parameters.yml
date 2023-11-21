@@ -1,19 +1,22 @@
 paths:
-  output: ./outputs
-  input: ./inputs
+  output: ./output
+  input: ../inputs
+
+fixed_throughput: 0.15
+fixed_contrast: 1.0e-10
 
 input_files:
   contrast: example_contrast.csv
   throughput: example_throughput.csv
   wfe: example_wfe.csv
-  wfsc_factor: example_wfsc.csv
+  wfsc: example_wfsc.csv
   sensitivity: example_sensitivity.csv
 
 json_files:
   ref_json: example_ref.json  # An input specifiying the 'unaberrated' observatory
   pp_json: example_pp.json  # An intermediate file read in by EXOSIMS
 
-iter_parameters: [1e-10, 5e-5]
+iter_values: [1.0e-10, 5.0e-5]
 
 targets:
   star1:
@@ -51,3 +54,6 @@ targets:
     eeid: 0.05829
     eepsr: 5.89e-10
     exo_zodi: 3.0
+
+plotting:
+  force_linear: false
