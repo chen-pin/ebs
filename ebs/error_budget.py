@@ -468,7 +468,6 @@ class ErrorBudgetMcmc(ExosimsWrapper):
         self.throughput = None
         self.core_mean_intensity = None
         self.SNR = None
-        self.ppFact_filename = None
         self.contrast_filename = None
         self.throughput_filename = None
         self.ppFact_filename = None
