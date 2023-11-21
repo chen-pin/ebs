@@ -490,7 +490,8 @@ class ErrorBudgetMcmc(object):
         """
         input_dir = self.config['paths']['input']
         if self.angles is not None:
-            random_string = str(int(np.random.randint(0, 1E9)))
+            rng = np.random.default_rng()
+            random_string = str(rng.integers(1E9))
             filename = "ppFact_"+random_string+".fits"
             path = os.path.join(input_dir, filename)
             with open(path, 'wb') as f:
@@ -509,7 +510,8 @@ class ErrorBudgetMcmc(object):
         """
         input_dir = self.config['paths']['input']
         if self.angles is not None:
-            random_string = str(int(1e10*np.random.rand()))
+            rng = np.random.default_rng()
+            random_string = str(rng.integers(1E9))
             filename = contrast_or_throughput+'_'+random_string+".csv"
             path = os.path.join(input_dir, filename)
             if contrast_or_throughput == 'contrast':
