@@ -36,7 +36,6 @@ def main():
     subparameter = args.sub_param
     values = config['iter_values']
     hip_numbers = [config['targets'][star]['HIP'] for star in config['targets']]
-    luminosities = [config['targets'][star]['luminosity'] for star in config['targets']]
     eeids = [config['targets'][star]['eeid'] for star in config['targets']]
     eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
