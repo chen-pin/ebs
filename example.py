@@ -25,14 +25,15 @@ def nemati2020_vvc6():
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
     # Instantiate the ErrorBudget object
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
-                                   ref_json_filename=config['json_files']['ref_json'],
-                                   pp_json_filename=config['json_files']['pp_json'],
-                                   contrast_filename=config['input_files']['contrast'],
-                                   target_list=hip_numbers,
-                                   luminosity=luminosities,
-                                   eeid=eeids,
-                                   eepsr=eepsrs,
-                                   exo_zodi=exo_zodis)
+                                ref_json_filename=config['json_files']['ref_json'],
+                                pp_json_filename=config['json_files']['pp_json'],
+                                contrast_filename=config['input_files']['contrast'],
+                                throughput_filename=config['input_files']['throughput'],
+                                target_list=hip_numbers,
+                                luminosity=luminosities,
+                                eeid=eeids,
+                                eepsr=eepsrs,
+                                exo_zodi=exo_zodis)
     
     # Specify Spectral Type of stars in target_list
     spectral_dict = {}

@@ -47,6 +47,7 @@ def main():
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
                                pp_json_filename=config['json_files']['pp_json'],
                                contrast_filename=config['input_files']['contrast'],
+                               throughput_filename=config['input_files']['throughput'],
                                target_list=hip_numbers, eeid=eeids, eepsr=eepsrs,
                                exo_zodi=exo_zodis)
 

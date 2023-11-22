@@ -47,7 +47,7 @@ class ErrorBudget(object):
         Name of JSON file that has WFE, WFS&C factors, and sensitivity 
         coefficients appended to the reference EXOSIMS parameters.
     contrast_filename : str
-        Name of CSV file specifying contrast of th reference dark hole 
+        Name of CSV file specifying contrast of the reference dark hole
         (i.e. contrast obtained on the reference star)
     target_list : list
         List of target-star HIP IDs
@@ -132,6 +132,7 @@ class ErrorBudget(object):
                  , output_dir=os.path.join(".", "output")
                  , pp_json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
+                 , throughput_filename="throughput.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
                  , eeid=[0.07423, 0.06174, 0.07399, 0.05633, 0.05829]
                  , eepsr=[6.34e-11, 1.39e-10, 1.06e-10, 2.42e-10, 5.89e-10]
@@ -144,13 +145,15 @@ class ErrorBudget(object):
         self.eepsr = eepsr
         self.pp_json_filename = pp_json_filename
         self.contrast_filename = contrast_filename
+        self.throughput_filename = throughput_filename
         self.input_dict = None
         self.wfe = None
         self.wfsc_factor = None
         self.sensitivity = None
         self.post_wfsc_wfe = None
         self.delta_contrast = None
-        self.angles = None
+        contrast_path = os.path.join(self.input_dir, contrast_filename)
+        self.angles = read_csv(filename=contrast_path, skiprows=1)[:,0]
         self.contrast = None
         self.ppFact = None
         self.working_angles = []
@@ -381,10 +384,12 @@ class ErrorBudget(object):
             sensitivity = np.array(sensitivity)
 
         update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor,
-                       sensitivity=sensitivity)
+                       sensitivity=sensitivity, throughput_path=os.path.join(self.input_dir, self.throughput_filename),
+                       contrast_path=os.path.join(self.input_dir, self.contrast_filename))
         self.load_json()
         self.load_csv_contrast()
         self.compute_ppFact()
+
         if var_par:
             try:
                 self.input_dict[subsystem][0][name] = value

@@ -18,6 +18,7 @@ def obs():
     t = ErrorBudget(input_dir='./inputs'
                     , pp_json_filename="test_pp.json"
                     , contrast_filename="test_contrast.csv"
+                    , throughput_filename='test_throughput.csv'
                     , target_list=[57443, 15457, 72659]
                     , eeid=[0.09858, 0.09981, 0.11012]
                     , eepsr=[1.37e-10, 1.35e-10, 2.09e-10]
