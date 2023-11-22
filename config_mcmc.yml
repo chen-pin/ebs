@@ -147,7 +147,7 @@ input_files:
   wfsc_factor: mcmc_wfsc.csv
   sensitivity: mcmc_sensitivity.csv
 
-parallel: true # True: multiprocess. False: single process
+parallel: true  # True: multiprocess. False: single process
 
 save: true  # Automatically save key I/O files for the run
 
