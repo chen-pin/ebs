@@ -680,15 +680,16 @@ class ErrorBudgetMcmc(object):
         int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
                 = self.run_exosims()
         if np.isnan(int_time.value).any():
-            return -np.inf, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+            return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
+                   , C_rn, C_star
         else:
             ftn_name = self.config['mcmc']['merit']['ftn']
             args = [arg for arg in self.config['mcmc']['merit']['args']\
                     .values()]
             ftn = getattr(pdf, ftn_name)
             mean_int_time = np.array(int_time.value).mean() 
-            return ftn(mean_int_time, *args), C_p, C_b, C_sp, C_sr, C_z, C_ez,\
-                    C_dc, C_rn, C_star 
+            return ftn(mean_int_time, *args), int_time, C_p, C_b, C_sp, C_sr, \
+                    C_z, C_ez, C_dc, C_rn, C_star 
 
     def run_mcmc(self):
         self.initialize_for_exosims()
@@ -696,6 +697,12 @@ class ErrorBudgetMcmc(object):
         nwalkers, ndim = pos.shape
         nsteps = self.config['mcmc']['nsteps']
         if self.config['save']:
+            dtype = [('int_time', float, (1, 3))
+                    , ('C_p', float, (1, 3)), ('C_b', float, (1, 3))
+                    , ('C_sp', float, (1, 3)), ('C_sr', float, (1, 3))
+                    , ('C_z', float, (1, 3)), ('C_ez', float, (1, 3))
+                    , ('C_dc', float, (1, 3)), ('C_rn', float, (1, 3))
+                    , ('C_star', float, (1, 3)) ]
             time_stamp = time.strftime('%Y%m%dt%H%M%S')
             save_path = os.path.join(self.config['paths']['output']
                                      , 'saved_run_'+time_stamp)
@@ -709,17 +716,19 @@ class ErrorBudgetMcmc(object):
                                           , filename), save_path)
             backend.reset(nwalkers, ndim)
         else:
-            backend = None 
+            backend = None
+            dtype = None
         if self.config['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
                             , log_probability, backend=backend, pool=pool
-                            , args=[self])
+                            , args=[self], blobs_dtype=dtype)
                 sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         else:
             sampler = emcee.EnsembleSampler(nwalkers, ndim
-                          , log_probability, backend=backend, args=[self])
+                          , log_probability, backend=backend, args=[self]
+                          , blobs_dtype=dtype)
             sampler.run_mcmc(pos, nsteps, progress=True, store=True)
         return sampler
 
@@ -811,15 +820,18 @@ class ErrorBudgetMcmc(object):
 
 
 def log_probability(values, error_budget):
-    log_merit, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
+    log_merit, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
             = error_budget.log_merit(values)
     if np.isinf(log_merit):
-        return -np.inf, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+        return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn\
+                , C_star
     log_prior = error_budget.log_prior(values)
     if np.isinf(log_prior):
-        return -np.inf, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+        return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn\
+                , C_star
     log_probability = log_prior + log_merit
-    return log_probability, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+    return log_probability, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
+            , C_rn, C_star
 
 
 class ParameterSweep:
