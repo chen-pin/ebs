@@ -923,9 +923,10 @@ class ParameterSweep:
 
             # TODO change mutable parameters in ErrorBudget class and remove this deep copy
             error_budget = deepcopy(self.error_budget)
+
             error_budget.run_etc(self.wfe, self.wfsc_factor, self.sensitivity,
-                                 f'example_{self.parameter}', var_par=self.var_par, subsystem=self.parameter,
-                                 name=self.subparameter, value=value)
+                                 self.output_file_name + f'_{self.parameter}', var_par=self.var_par,
+                                 subsystem=self.parameter, name=self.subparameter, value=value)
 
             for key in self.result_dict.keys():
                 arr = self.result_dict[key]

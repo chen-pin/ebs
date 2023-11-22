@@ -45,6 +45,7 @@ def main():
     sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']))
 
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
+                               output_dir=config['paths']['output'],
                                pp_json_filename=config['json_files']['pp_json'],
                                contrast_filename=config['input_files']['contrast'],
                                throughput_filename=config['input_files']['throughput'],
