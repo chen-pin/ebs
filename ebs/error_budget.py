@@ -688,16 +688,6 @@ class ErrorBudgetMcmc(object):
             mean_int_time = np.array(int_time.value).mean() 
             return ftn(mean_int_time, *args)
 
-#    def log_probability(self, values):
-#        log_prior = self.log_prior(values)
-#        if np.isinf(log_prior):
-#            return -np.inf
-#        log_merit = self.log_merit(values)
-#        if np.isinf(log_merit):
-#            return -np.inf
-#        log_probability = log_prior + log_merit
-#        return log_probability
-
     def run_mcmc(self):
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
