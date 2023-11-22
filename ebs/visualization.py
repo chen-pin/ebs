@@ -43,7 +43,8 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
 
     """
     fig, ax = plt.subplots(figsize=(16, 9))
-    plt.title(f"Required Integration Time (hr, SNR=7) vs. {parameter.capitalize()}", fontsize=26)
+    plt.title(f"Required Integration Time (hr, SNR={error_budget.input_dict['observingModes'][0]['SNR']}) vs. "
+              f"{parameter.capitalize()}", fontsize=26)
 
     colors = ['#01a075','#00cc9e','#6403fa', '#ff9400', '#cf5f00']
 

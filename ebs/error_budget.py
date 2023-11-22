@@ -147,6 +147,7 @@ class ErrorBudget(object):
         self.contrast_filename = contrast_filename
         self.throughput_filename = throughput_filename
         self.input_dict = None
+        self.load_json()
         self.wfe = None
         self.wfsc_factor = None
         self.sensitivity = None
