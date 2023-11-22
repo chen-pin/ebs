@@ -15,8 +15,7 @@ module.
 """
 
 
-import os, glob
-import pprint
+import os, glob, time, shutil
 import numpy as np
 import json as js
 import yaml 
@@ -421,6 +420,7 @@ class ErrorBudget(object):
 class ErrorBudgetMcmc(object):
 
     def __init__(self, config_file):
+        self.config_file = config_file
         with open(config_file, 'r') as config:
             self.config = yaml.load(config, Loader=yaml.FullLoader)
         self.target_list = None
@@ -698,14 +698,27 @@ class ErrorBudgetMcmc(object):
 #        log_probability = log_prior + log_merit
 #        return log_probability
 
-    def run_mcmc(self, parallel=False):
+    def run_mcmc(self):
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
-        backend = emcee.backends.HDFBackend(self.config['mcmc']['backend_path'])
-        backend.reset(nwalkers, ndim)
         nsteps = self.config['mcmc']['nsteps']
-        if parallel:
+        if self.config['save']:
+            time_stamp = time.strftime('%Y%m%dt%H%M%S')
+            save_path = os.path.join(self.config['paths']['output']
+                                     , 'saved_run_'+time_stamp)
+            os.mkdir(save_path)
+            backend = emcee.backends.HDFBackend(os.path.join(save_path
+                                                , 'backend.hdf'))
+            shutil.copy2(self.config_file, save_path)
+            for key in self.config['input_files']:
+                filename = self.config['input_files'][key]
+                shutil.copy2(os.path.join(self.config['paths']['input']
+                                          , filename), save_path)
+            backend.reset(nwalkers, ndim)
+        else:
+            backend = None 
+        if self.config['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
