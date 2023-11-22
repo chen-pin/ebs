@@ -152,6 +152,12 @@ input_files:
 #  ref_json: mcmc_ref.json  # An input specifiying the 'unaberrated' observatory
 #  pp_json: mcmc_pp.json  # An intermediate file read in by EXOSIMS
 
+working_angles:  # In units of EEID (which is target dependent).  
+  # HZ is defined as (0.95 - 1.67)*EEID
+  - 0.95
+  - 1.35
+  - 1.67
+
 targets:
 #  star1:
 #    HIP: 32439 A
@@ -188,7 +194,6 @@ targets:
 #    eeid: 0.05829
 #    eepsr: 5.89e-10
 #    exo_zodi: 3.0
-    
 
 initial_exosims: 
     skipSaturationCalcs: true

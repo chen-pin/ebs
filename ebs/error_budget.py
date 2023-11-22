@@ -265,8 +265,8 @@ class ErrorBudget(object):
             self.working_angles.append(WA)
             # target planet deltaMag (evaluate for a range):
             dMag0 = -2.5*np.log10(self.eepsr[j])
-            dMags = np.array([(dMag0-2.5*np.log10(self.eeid[j]/WA_inner))
-                     , dMag0, (dMag0-2.5*np.log10(self.eeid[j]/WA_outer))]) 
+            dMags = np.array([(dMag0-5.0*np.log10(self.eeid[j]/WA_inner))
+                     , dMag0, (dMag0-5.0*np.log10(self.eeid[j]/WA_outer))]) 
             self.int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * self.npoints,
@@ -414,7 +414,7 @@ class ErrorBudget(object):
 
 class ErrorBudgetMcmc(object):
 
-    def __init__(self, config_file="config.yml"):
+    def __init__(self, config_file):
         with open(config_file, 'r') as config:
             self.config = yaml.load(config, Loader=yaml.FullLoader)
         self.target_list = None
@@ -427,7 +427,7 @@ class ErrorBudgetMcmc(object):
         self.post_wfsc_wfe = None
         self.angles = None
         self.contrast = None
-        self.working_angles = []
+#        self.working_angles = []
         self.QE = None
         self.sread = None
         self.idark = None
@@ -727,7 +727,8 @@ class ErrorBudgetMcmc(object):
         C_dc = []
         C_rn = []
         C_star = []
-        n_angles = 3
+        wa_coefs = self.config["working_angles"]
+        n_angles = len(wa_coefs)
         target_list = self.target_list
         eeid = self.eeid
         eepsr = self.eepsr
@@ -754,14 +755,9 @@ class ErrorBudgetMcmc(object):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
             # matters a lot when you have real performane curves
-            WA_inner = 0.95*eeid[j]
-            WA_outer = 1.67*eeid[j]
-            WA = [WA_inner, eeid[j], WA_outer]
-            self.working_angles.append(WA)
             # target planet deltaMag (evaluate for a range):
-            dMag0 = -2.5*np.log10(eepsr[j])
-            dMags = np.array([(dMag0-2.5*np.log10(eeid[j]/WA_inner))
-                     , dMag0, (dMag0-2.5*np.log10(eeid[j]/WA_outer))])
+            WA = np.array(wa_coefs)*eeid[j]
+            dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
             int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * n_angles,

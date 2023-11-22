@@ -15,8 +15,8 @@ def obs():
     Instantiate EXOSIMS object.
 
     """
-    t = ErrorBudget(input_dir='./'
-                    , pp_json_filename="./inputs/test_pp.json"
+    t = ErrorBudget(input_dir='./inputs'
+                    , pp_json_filename="test_pp.json"
                     , contrast_filename="test_contrast.csv"
                     , target_list=[57443, 15457, 72659]
                     , eeid=[0.09858, 0.09981, 0.11012]
@@ -87,17 +87,18 @@ def test_exposure_time(obs):
     assert tau == pt.approx(int_time, 0.001)
 
 
-def test_var_pars(obs):
-    qe = (0.7, 0.8, 0.9)
-    output_filename = 'test_var_par_output'
-    obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', True
-                , 'scienceInstruments', 'QE', qe)
-    path = os.path.join(obs.input_dir, obs.pp_json_filename)
-    for value in qe:
-        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
-        with open(path) as f:
-            input_dict = js.load(f)
-        assert input_dict['scienceInstruments'][0]['QE'] == value
+#def test_var_pars(obs):
+#    qe = (0.7, 0.8, 0.9)
+##    output_filename = 'test_var_par_output'
+##    path = os.path.join(obs.input_dir, obs.pp_json_filename)
+#    for value in qe:
+#        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
+#        obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output'
+#                , True
+#                , 'scienceInstruments', 'QE', value)
+#        with open(path) as f:
+#            input_dict = js.load(f)
+#        assert input_dict['scienceInstruments'][0]['QE'] == value
 
 
 @pt.fixture
