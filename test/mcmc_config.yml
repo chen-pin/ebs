@@ -154,7 +154,7 @@ input_files:
 
 working_angles: 
   - 0.95
-  - 1.31
+  - 1.00
   - 1.67
 
 targets:
