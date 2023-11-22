@@ -87,18 +87,17 @@ def test_exposure_time(obs):
     assert tau == pt.approx(int_time, 0.001)
 
 
-#def test_var_pars(obs):
-#    qe = (0.7, 0.8, 0.9)
-##    output_filename = 'test_var_par_output'
-##    path = os.path.join(obs.input_dir, obs.pp_json_filename)
-#    for value in qe:
-#        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
-#        obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output'
-#                , True
-#                , 'scienceInstruments', 'QE', value)
-#        with open(path) as f:
-#            input_dict = js.load(f)
-#        assert input_dict['scienceInstruments'][0]['QE'] == value
+def test_var_pars(obs):
+    qe = (0.7, 0.8, 0.9)
+    output_filename = 'test_var_par_output'
+    path = os.path.join(obs.input_dir, obs.pp_json_filename)
+    for value in qe:
+        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
+        obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', var_par=True,
+                    subsystem='scienceInstruments', name='QE', value=value, remove_temp_jsons=False)
+        with open(path) as f:
+            input_dict = js.load(f)
+        assert input_dict['scienceInstruments'][0]['QE'] == value
 
 
 @pt.fixture
