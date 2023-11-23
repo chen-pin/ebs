@@ -829,13 +829,13 @@ class ErrorBudgetMcmc(object):
 
 
 def log_probability(values, error_budget):
+    log_prior = error_budget.log_prior(values)
+    if np.isinf(log_prior):
+        return -np.inf, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0\
+                , -1.0
     log_merit, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
             = error_budget.log_merit(values)
     if np.isinf(log_merit):
-        return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn\
-                , C_star
-    log_prior = error_budget.log_prior(values)
-    if np.isinf(log_prior):
         return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn\
                 , C_star
     log_probability = log_prior + log_merit
