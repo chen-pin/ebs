@@ -229,7 +229,7 @@ initial_exosims:
     scienceInstruments:
     - CIC: 0.0021  # Ref Roman_Coronagraph_ETC
       ENF: 1.0  # Parameter specific to EMCCDs
-      FoV: 9.5
+      FoV: 4.75  
       QE: 0.835  # ibid
       idark: 3.0e-05  # ibid
       name: CONS_NF_Imager
