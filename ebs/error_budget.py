@@ -445,7 +445,6 @@ class ErrorBudgetMcmc(object):
         self.BW = None
         self.IWA = None
         self.throughput = None
-        self.core_mean_intensity = None
         self.SNR = None
         self.ppFact_filename = None
         self.contrast_filename = None
@@ -633,6 +632,16 @@ class ErrorBudgetMcmc(object):
                 else:
                     arr[indices] = use_values
                 setattr(self, var_name, arr)
+                if var_name == 'SNR':
+                    self.exosims_pars_dict['observingModes'][0][var_name] = arr
+                if var_name in ['QE', 'sread', 'idark', 'Rs', 'lenslSamp', 
+                                'pixelNumber', 'pixelSize']:
+                    print(f"{var_name} FOUND!")
+                    self.exosims_pars_dict['scienceInstruments'][0][var_name]\
+                            = arr
+                if var_name in ['optics', 'BW', 'IWA', 'OWA']:
+                    self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+                            ['var_name'] = arr
                 if var_name in ['contrast', 'wfe', 'wfsc_factor'
                                 , 'sensitivity']:
                     if var_name == 'contrast':
