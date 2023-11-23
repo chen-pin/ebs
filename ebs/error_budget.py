@@ -433,7 +433,6 @@ class ErrorBudgetMcmc(object):
         self.post_wfsc_wfe = None
         self.angles = None
         self.contrast = None
-#        self.working_angles = []
         self.QE = None
         self.sread = None
         self.idark = None
@@ -627,22 +626,22 @@ class ErrorBudgetMcmc(object):
                                                ['ini_pars']['center'])
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
-                arr = getattr(self, var_name)
-                if type(arr) == float or type(arr)==np.float64:
-                    arr = use_values[0]
+                attr_val = getattr(self, var_name)
+                if type(attr_val) == float or type(attr_val)==np.float64:
+                    attr_val = use_values[0]
                 else:
-                    arr[indices] = use_values
-                setattr(self, var_name, arr)
+                    attr_val[indices] = use_values
+                setattr(self, var_name, attr_val)
                 if var_name == 'SNR':
-                    self.exosims_pars_dict['observingModes'][0][var_name] = arr
+                    self.exosims_pars_dict['observingModes'][0][var_name]\
+                            = attr_val
                 if var_name in ['QE', 'sread', 'idark', 'Rs', 'lenslSamp', 
                                 'pixelNumber', 'pixelSize']:
-                    print(f"{var_name} FOUND!")
                     self.exosims_pars_dict['scienceInstruments'][0][var_name]\
-                            = arr
+                            = attr_val
                 if var_name in ['optics', 'BW', 'IWA', 'OWA']:
                     self.exosims_pars_dict['starlightSuppressionSystems'][0]\
-                            ['var_name'] = arr
+                            ['var_name'] = attr_val
                 if var_name in ['contrast', 'wfe', 'wfsc_factor'
                                 , 'sensitivity']:
                     if var_name == 'contrast':
@@ -763,8 +762,6 @@ class ErrorBudgetMcmc(object):
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
-#        print(f"exosims_pars_dict: {self.exosims_pars_dict}")
-        print(f"idark: {self.exosims_pars_dict['scienceInstruments'][0]['idark']}")
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
         
