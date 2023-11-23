@@ -753,6 +753,8 @@ class ErrorBudgetMcmc(object):
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
+#        print(f"exosims_pars_dict: {self.exosims_pars_dict}")
+        print(f"idark: {self.exosims_pars_dict['scienceInstruments'][0]['idark']}")
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
         
