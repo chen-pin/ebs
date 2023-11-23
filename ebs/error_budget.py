@@ -444,6 +444,7 @@ class ErrorBudgetMcmc(object):
         self.optics = None
         self.BW = None
         self.IWA = None
+        self.OWA = None 
         self.throughput = None
         self.SNR = None
         self.ppFact_filename = None
