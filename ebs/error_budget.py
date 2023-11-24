@@ -492,7 +492,7 @@ class ErrorBudgetMcmc(object):
         return np.where(ppFact>1.0, 1.0, ppFact)
 
     
-    def write_ppFact_fits(self):
+    def write_ppFact_fits(self, trash):
         """
         Create FITS file of ppFact array with randomized filename.  
 
@@ -507,7 +507,8 @@ class ErrorBudgetMcmc(object):
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=False)
                 self.ppFact_filename = path
-            self.trash_can.append(path)
+            if trash:
+                self.trash_can.append(path)
         else:  
             print("Need to assign angle values to write ppFact FITS file")
     
@@ -579,7 +580,7 @@ class ErrorBudgetMcmc(object):
         self.exo_zodi = [config['targets'][star]['exo_zodi'] 
                                 for star in config['targets']]
         self.exosims_pars_dict = config['initial_exosims']
-        self.write_ppFact_fits()
+        self.write_ppFact_fits(trash=False)
         self.exosims_pars_dict['ppFact'] = self.ppFact_filename
         self.exosims_pars_dict['cherryPickStars'] = self.target_list
         self.exosims_pars_dict['starlightSuppressionSystems'][0]\
@@ -648,7 +649,7 @@ class ErrorBudgetMcmc(object):
                         self.write_csv(var_name)
                         self.exosims_pars_dict['starlightSuppressionSystems']\
                                 [0]['core_contrast'] = self.contrast_filename
-                    self.write_ppFact_fits()
+                    self.write_ppFact_fits(trash=True)
                     self.exosims_pars_dict['ppFact'] = self.ppFact_filename
                 if var_name == 'throughput':
                     self.write_csv(var_name)
