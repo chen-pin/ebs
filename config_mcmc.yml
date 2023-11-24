@@ -1,5 +1,12 @@
 # MCMC Paramters
-mcmc: 
+mcmc:
+  parallel: true # True: multiprocess. False: single process
+  save: true # Automatically save key I/O files for the run
+  new_run:  false  # If false, <save> above must be set to true.  
+                   # If false, the run is a contiuation of a previous run, 
+                   # and the user must specify below the full path to the 
+                   # emcee.Backend file.
+  previous_backend_path: outputs/saved_run_20231123t120523/backend.hdf
   nwalkers: 152
   nsteps: 10000
   merit:

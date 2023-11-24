@@ -706,7 +706,7 @@ class ErrorBudgetMcmc(object):
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
         nsteps = self.config['mcmc']['nsteps']
-        if self.config['save']:
+        if self.config['mcmc']['save']:
             dtype = [('int_time', float, (1, 3))
                     , ('C_p', float, (1, 3)), ('C_b', float, (1, 3))
                     , ('C_sp', float, (1, 3)), ('C_sr', float, (1, 3))
@@ -717,18 +717,22 @@ class ErrorBudgetMcmc(object):
             save_path = os.path.join(self.config['paths']['output']
                                      , 'saved_run_'+time_stamp)
             os.mkdir(save_path)
-            backend = emcee.backends.HDFBackend(os.path.join(save_path
-                                                , 'backend.hdf'))
+            if self.config['mcmc']['new_run']:
+                backend = emcee.backends.HDFBackend(os.path.join(save_path
+                                                    , 'backend.hdf'))
+                backend.reset(nwalkers, ndim)
+            else:
+                backend = emcee.backends.HDFBackend(
+                        self.config['mcmc']['previous_backend_path'])
             shutil.copy2(self.config_file, save_path)
             for key in self.config['input_files']:
                 filename = self.config['input_files'][key]
                 shutil.copy2(os.path.join(self.config['paths']['input']
                                           , filename), save_path)
-            backend.reset(nwalkers, ndim)
         else:
             backend = None
             dtype = None
-        if self.config['parallel']:
+        if self.config['mcmc']['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
             with Pool() as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
