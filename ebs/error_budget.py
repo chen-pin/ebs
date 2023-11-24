@@ -497,12 +497,12 @@ class ErrorBudgetMcmc(object):
         Create FITS file of ppFact array with randomized filename.  
 
         """
-        input_dir = self.config['paths']['input']
+        temporary_dir = self.config['paths']['temporary']
         if self.angles is not None:
             rng = np.random.default_rng()
             random_string = str(rng.integers(1E9))
             filename = "ppFact_"+random_string+".fits"
-            path = os.path.join(input_dir, filename)
+            path = os.path.join(temporary_dir, filename)
             with open(path, 'wb') as f:
                 arr = np.vstack((self.angles, self.ppFact)).T
                 fits.writeto(f, arr, overwrite=False)
@@ -518,12 +518,12 @@ class ErrorBudgetMcmc(object):
         filename.  
 
         """
-        input_dir = self.config['paths']['input']
+        temporary_dir = self.config['paths']['temporary']
         if self.angles is not None:
             rng = np.random.default_rng()
             random_string = str(rng.integers(1E9))
             filename = contrast_or_throughput+'_'+random_string+".csv"
-            path = os.path.join(input_dir, filename)
+            path = os.path.join(temporary_dir, filename)
             if contrast_or_throughput == 'contrast':
                 arr = np.vstack((self.angles, self.contrast)).T
                 self.contrast_filename = path
