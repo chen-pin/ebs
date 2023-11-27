@@ -1,17 +1,5 @@
-"""<error_budget> module
+"""Exposure-time calculations based on coronagraphic input parameters
 
-- Need to first install EXOSIMS, see Refs 2 & 3 below
-- Also need 2 CSV files and 1 JSON input file.  The CSV files specify 
-reference contrast and throughput values as functions of angular separation.  
-The JSON file specifies instrument and observational parameter for the 
-reference exposure, followed by  WFE, contrast sensitivity, and WFS&C factors.  
-These files need to reside in the path "./inputs".  See doc strings 
-for arugments `contrast_filename`, and
-`pp_json_filename` below.  One can create arrays of WFE, sensitivity, and 
-WFS&C values, and then use the `create_pp_json()` method to create the JSON 
-file.  
-- See <example.py> in the parent directory for an example on how to use this 
-module.
 """
 
 
@@ -418,6 +406,20 @@ class ErrorBudget(object):
 
 
 class ErrorBudgetMcmc(object):
+    """Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
+
+    Attributes:
+        config_file: Name of the configuration file. 
+        target_list: Target stars' HIP names.
+        eeid:  Earth-equivalent-insolation distances [arcsec].
+        eepsr:  Earth-equivalent planet-star flux ratios.
+        wfe:  Wavefront errors [pm].
+        wfsc_factor: Wavefront-sensing-and-control factors 
+        sensitivity: contrast sensitivity to wavefront errors [1E-12/pm]
+        post_wfsc_wfe
+
+
+    """
 
     def __init__(self, config_file):
         self.config_file = config_file
