@@ -2,18 +2,18 @@
 mcmc:
   parallel: true # True: multiprocess. False: single process
   save: true # Automatically save key I/O files for the run
-  new_run:  false  # If false, <save> above must be set to true.  
-                   # If false, the run is a contiuation of a previous run, 
-                   # and the user must specify below the full path to the 
-                   # emcee.Backend file.
-  previous_backend_path: outputs/saved_run_20231123t120523/backend.hdf
-  nwalkers: 152
+  new_run: true  # If false, <save> above must be set to true.  
+                 # If false, the run is a contiuation of a previous run, 
+                 # and the user must specify below the full path to the 
+                 # emcee.Backend file.
+  previous_backend_path: null 
+  nwalkers: 368
   nsteps: 10000
   merit:
-    ftn: inverse_bounded
+    ftn: chi_square
     args:
-      lower_bound: 3.4E-5
-      upper_bound: 41.7
+      center: 1.0
+      scale: 2.0
 
   variables:
     idark: 
@@ -67,79 +67,79 @@ mcmc:
     contrast:  # raw contrast
       prior_ftn:
         - .NAN
-        - .NAN
         - uniform
         - uniform
         - uniform
-        - .NAN
+        - uniform
+        - uniform
       prior_args:
         lower_bound:
           - .NAN
-          - .NAN
           - 1.0e-11
           - 1.0e-11
           - 1.0e-11
-          - .NAN
+          - 1.0e-11
+          - 1.0e-11
         upper_bound:
           - .NAN
-          - .NAN
           - 1.0e-9
           - 1.0e-9
           - 1.0e-9
-          - .NAN
+          - 1.0e-9
+          - 1.0e-9
       ini_pars:
         center:
           - .NAN
-          - .NAN
           - 1.0e-10
           - 1.0e-10
           - 1.0e-10
-          - .NAN
+          - 1.0e-10
+          - 1.0e-10
         spread:
           - .NAN
-          - .NAN
           - 2.0e-12
           - 2.0e-12
           - 2.0e-12
-          - .NAN
+          - 2.0e-12
+          - 2.0e-12
     throughput:  # core throughput
       prior_ftn:
         - .NAN
-        - .NAN 
         - uniform
         - uniform
         - uniform
-        - .NAN 
+        - uniform
+        - uniform
       prior_args:
         lower_bound:
           - .NAN
-          - .NAN
           - 0.01
           - 0.01
           - 0.01
-          - .NAN
+          - 0.01
+          - 0.01
         upper_bound:
           - .NAN
-          - .NAN
           - 0.6
           - 0.6
           - 0.6
-          - .NAN
+          - 0.6
+          - 0.6
       ini_pars:
         center:
           - .NAN
-          - .NAN
           - 0.15
           - 0.15
           - 0.15
-          - .NAN
+          - 0.15
+          - 0.15
         spread:
           - .NAN
-          - .NAN
           - 0.0015
           - 0.0015
           - 0.0015
-          - .NAN
+          - 0.0015
+          - 0.0015
       
 # Basic Run Parameters
 
@@ -187,7 +187,7 @@ targets:
     luminosity: 0.0391
     eeid: 0.07399
     eepsr: 1.06e-10
-    exo_zodi: 3.0
+    exo_zodi: 1.0
 #  star4:
 #    HIP: 26779 
 #    spec_type: K1V
@@ -251,7 +251,7 @@ initial_exosims:
 #      lensSamp: 4  # parameter specific to spectrometers
     starlightSuppressionSystems:
     - BW: 0.2
-      IWA: 0.05
+      IWA: 0.04
       OWA: 0.5
       core_area: 0.000552
 #      core_contrast: ./test/test_contrast.csv
