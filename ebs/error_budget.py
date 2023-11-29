@@ -708,13 +708,18 @@ class ErrorBudgetMcmc(object):
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
         nsteps = self.config['mcmc']['nsteps']
+        ntargets = len(self.config['targets'])
         if self.config['mcmc']['save']:
-            dtype = [('int_time', float, (1, 3))
-                    , ('C_p', float, (1, 3)), ('C_b', float, (1, 3))
-                    , ('C_sp', float, (1, 3)), ('C_sr', float, (1, 3))
-                    , ('C_z', float, (1, 3)), ('C_ez', float, (1, 3))
-                    , ('C_dc', float, (1, 3)), ('C_rn', float, (1, 3))
-                    , ('C_star', float, (1, 3)) ]
+            dtype = [('int_time', float, (ntargets, 3))
+                    , ('C_p', float, (ntargets, 3))
+                    , ('C_b', float, (ntargets, 3))
+                    , ('C_sp', float, (ntargets, 3))
+                    , ('C_sr', float, (ntargets, 3))
+                    , ('C_z', float, (ntargets, 3))
+                    , ('C_ez', float, (ntargets, 3))
+                    , ('C_dc', float, (ntargets, 3))
+                    , ('C_rn', float, (ntargets, 3))
+                    , ('C_star', float, (ntargets, 3)) ]
             time_stamp = time.strftime('%Y%m%dt%H%M%S')
             save_path = os.path.join(self.config['paths']['output']
                                      , 'saved_run_'+time_stamp)
