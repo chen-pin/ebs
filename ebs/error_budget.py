@@ -728,7 +728,8 @@ class ErrorBudgetMcmc(object):
                 backend = emcee.backends.HDFBackend(os.path.join(save_path
                                                     , 'backend.hdf'))
                 backend.reset(nwalkers, ndim)
-            else:
+            elif self.config['mcmc']['new_run'] == False:
+                pos = None
                 backend = emcee.backends.HDFBackend(
                         self.config['mcmc']['previous_backend_path'])
             shutil.copy2(self.config_file, save_path)
