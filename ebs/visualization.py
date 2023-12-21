@@ -53,24 +53,31 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
     :param save_name: str
         Name to save the output plot under.
     :return: None
-
     """
-    spec_types = set([i[0] for i in spectral_dict.values()])
-    num_types = len(spec_types)
+    spec_types = np.array(list(set([i[0] for i in spectral_dict.values()])))
 
-    if plot_by_spectype:
+    unique_types_to_plot = []
+    for i, key in enumerate(spectral_dict.keys()):
+        if key in plot_stars:
+            unique_types_to_plot.append(spectral_dict[key][0])
+
+    unique_types_to_plot = np.array(list(set(unique_types_to_plot)))
+    num_types = len(unique_types_to_plot)
+
+    if plot_by_spectype and num_types > 1:
         fig, axes = plt.subplots(num_types, 1, figsize=(14, 18), sharex=False)
     else:
         fig, axes = plt.subplots(1, 1, figsize=(16, 9))
+        axes = [axes]
 
-    if plot_by_spectype:
-        for i in range(num_types):
+    if plot_by_spectype and num_types > 1:
+        for i, type in enumerate(unique_types_to_plot):
             use_stars = [key for key in spectral_dict.keys() if
-                         spectral_dict[key].startswith(spec_types[i])]
+                         spectral_dict[key].startswith(unique_types_to_plot[i])]
             plot_panel(axes[i], error_budget, spectral_dict, values, int_times, force_linear=force_linear,
-                       plot_stars=use_stars, fill=fill)
+                       plot_stars=list(set(use_stars) & set(plot_stars)), fill=fill)
     else:
-        plot_panel(axes, error_budget, spectral_dict, values, int_times, force_linear=force_linear,
+        plot_panel(axes[0], error_budget, spectral_dict, values, int_times, force_linear=force_linear,
                    plot_stars=plot_stars, fill=fill)
 
     plt.suptitle(f"Required Integration Time (hr, SNR={error_budget.input_dict['observingModes'][0]['SNR']}) vs. "
@@ -79,8 +86,8 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
     fig.supxlabel(f'{parameter.capitalize()}', fontsize=20)
     fig.supylabel('Integration Time (hours)', fontsize=20)
 
-    axes[0].set_xticks([])
-    axes[1].set_xticks([])
+    for ax in axes:
+        ax.set_xticks([])
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, save_name))
