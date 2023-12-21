@@ -40,9 +40,9 @@ def main():
     eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
-    wfe = read_csv(os.path.join(input_path, config['input_files']['wfe']))
-    wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']))
-    sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']))
+    wfe = read_csv(os.path.join(input_path, config['input_files']['wfe']), skiprows=1)
+    wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']), skiprows=1)
+    sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']), skiprows=1)
 
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
                                output_dir=config['paths']['output'],
