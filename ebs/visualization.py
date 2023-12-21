@@ -54,7 +54,6 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
         Name to save the output plot under.
     :return: None
     """
-    spec_types = np.array(list(set([i[0] for i in spectral_dict.values()])))
 
     unique_types_to_plot = []
     for i, key in enumerate(spectral_dict.keys()):
