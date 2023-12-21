@@ -192,8 +192,8 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=
     # place a text box in upper left in axes coords
     if plot_text:
         props = dict(boxstyle='round', facecolor='white', alpha=0.5)
-        ax.text(0.23, 0.08, f'$O_2$ detection @ $\lambda$ = 760 nm, R=140 \n Noiseless Detectors, Exozodi = 0.0', transform=ax.transAxes, fontsize=20,
-                     verticalalignment='bottom', horizontalalignment='center', bbox=props)
+        ax.text(0.23, 0.08, plot_text, transform=ax.transAxes, fontsize=20, verticalalignment='bottom',
+                horizontalalignment='center', bbox=props)
 
     legend_elements = []
     for i, (k, v) in enumerate(spectral_dict.items()):
