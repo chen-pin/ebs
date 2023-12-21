@@ -12,9 +12,7 @@ input_files:
   wfsc: example_wfsc.csv
   sensitivity: example_sensitivity.csv
 
-json_files:
-  ref_json: example_ref.json  # An input specifiying the 'unaberrated' observatory
-  pp_json: example_pp.json  # An intermediate file read in by EXOSIMS
+json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
 
 iter_values: [1.0e-10, 5.0e-5]
 
