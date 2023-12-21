@@ -30,7 +30,7 @@ class ErrorBudget(object):
         Directory path where the above-listed input files reside
     output_dir : `os.path`
         Directory path where the output files will be saved
-    pp_json_filename : str
+    json_filename : str
         Name of JSON file that has WFE, WFS&C factors, and sensitivity 
         coefficients appended to the reference EXOSIMS parameters.
     contrast_filename : str
@@ -50,7 +50,7 @@ class ErrorBudget(object):
     Attributes
     ----------
     input_dict : dict
-        Dictionary of parameters loaded from `pp_json_filename` file
+        Dictionary of parameters loaded from `json_filename` file
     wfe : array 
         Wavefront changes specified in spatio-temporal bins, loaded from the 
         input JSON file, in pm units.  
@@ -117,7 +117,7 @@ class ErrorBudget(object):
     def __init__(self
                  , input_dir=os.path.join(".", "inputs")
                  , output_dir=os.path.join(".", "output")
-                 , pp_json_filename="test_pp.json"
+                 , json_filename="test_pp.json"
                  , contrast_filename="contrast.csv"
                  , throughput_filename="throughput.csv"
                  , target_list=[32439, 77052, 79672, 26779, 113283]
@@ -130,11 +130,11 @@ class ErrorBudget(object):
         self.exo_zodi = exo_zodi
         self.eeid = eeid
         self.eepsr = eepsr
-        self.pp_json_filename = pp_json_filename
+        self.json_filename = json_filename
         self.contrast_filename = contrast_filename
         self.throughput_filename = throughput_filename
         self.input_dict = None
-        self.load_json()
+        self.load_json(os.path.join(self.input_dir, self.json_filename))
         self.wfe = None
         self.wfsc_factor = None
         self.sensitivity = None
@@ -157,14 +157,14 @@ class ErrorBudget(object):
         self.C_rn = []
         self.int_time = np.zeros((len(self.target_list), self.npoints)) * u.d
 
-    def load_json(self):
+    def load_json(self, json_name):
         """
         Load the JSON input file, which contains reference EXOSIMS parameters 
         as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter 
         dictionary to `self.input_dict`. 
 
         """
-        input_path = os.path.join(self.input_dir, self.pp_json_filename)
+        input_path = json_name
         with open(os.path.join(input_path)) as input_json:
             input_dict = js.load(input_json)
         self.input_dict = input_dict
@@ -371,10 +371,11 @@ class ErrorBudget(object):
         if isinstance(sensitivity, list):
             sensitivity = np.array(sensitivity)
 
-        update_pp_json(os.path.join(self.input_dir, self.pp_json_filename), wfe=wfe, wfsc=wfsc_factor,
-                       sensitivity=sensitivity, throughput_path=os.path.join(self.input_dir, self.throughput_filename),
-                       contrast_path=os.path.join(self.input_dir, self.contrast_filename))
-        self.load_json()
+        pp_json_name = update_json(os.path.join(self.input_dir, self.json_filename), wfe=wfe, wfsc=wfsc_factor,
+                                   sensitivity=sensitivity,
+                                   throughput_path=os.path.join(self.input_dir, self.throughput_filename),
+                                   contrast_path=os.path.join(self.input_dir, self.contrast_filename))
+        self.load_json(pp_json_name)
         self.load_csv_contrast()
         self.compute_ppFact()
 
