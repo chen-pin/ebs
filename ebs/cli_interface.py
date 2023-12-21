@@ -40,13 +40,13 @@ def main():
     eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
-    wfe = read_csv(os.path.join(input_path, config['input_files']['wfe']))
-    wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']))
-    sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']))
+    wfe = read_csv(os.path.join(input_path, config['input_files']['wfe']), skiprows=1)
+    wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']), skiprows=1)
+    sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']), skiprows=1)
 
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
                                output_dir=config['paths']['output'],
-                               pp_json_filename=config['json_files']['pp_json'],
+                               json_filename=config['json_file'],
                                contrast_filename=config['input_files']['contrast'],
                                throughput_filename=config['input_files']['throughput'],
                                target_list=hip_numbers, eeid=eeids, eepsr=eepsrs,
@@ -68,5 +68,6 @@ def main():
 
     save_name = f'inttime_vs_{subparameter if subparameter else parameter}.pdf'
     plot_ebs_output(error_budget, spectral_dict, parameter if not subparameter else subparameter, values,
-                    result_dict['int_time'], force_linear=config['plotting']['force_linear'], save_dir=output_path,
-                    save_name=save_name)
+                    result_dict['int_time'], force_linear=config['plotting']['force_linear'],
+                    plot_stars=config["plotting"]["plot_stars"], fill=config["plotting"]["fill"], save_dir=output_path,
+                    save_name=save_name, plot_by_spectype=config["plotting"]["plot_by_spectype"])
