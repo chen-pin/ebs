@@ -4,16 +4,22 @@ from matplotlib.lines import Line2D
 import numpy as np
 
 # Update rcParams for all visualizations
-plt.rcParams.update({'font.size': 16})
-plt.rcParams.update({'lines.linewidth': 3})
-plt.rcParams.update({'axes.linewidth': 3})
-plt.rcParams.update({'ytick.major.size': 8})
-plt.rcParams.update({'ytick.major.width': 2})
-plt.rcParams.update({'xtick.major.size': 8})
-plt.rcParams.update({'xtick.major.width': 2})
-plt.rcParams.update({'xtick.labelsize': 'large'})
-plt.rcParams.update({'ytick.labelsize': 'large'})
+plt.rcParams.update({'font.size': 12})
+plt.rcParams.update({'lines.linewidth': 2})
+plt.rcParams.update({'axes.linewidth': 2})
 
+plt.rcParams.update({'ytick.major.size': 8})
+plt.rcParams.update({'ytick.major.width': 3})
+plt.rcParams.update({'ytick.minor.width': 2})
+plt.rcParams.update({'ytick.minor.size': 4})
+
+plt.rcParams.update({'xtick.major.size': 8})
+plt.rcParams.update({'xtick.major.width': 3})
+plt.rcParams.update({'xtick.minor.width': 2})
+plt.rcParams.update({'xtick.minor.size': 4})
+
+plt.rcParams.update({'xtick.labelsize': 16})
+plt.rcParams.update({'ytick.labelsize': 16})
 
 def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, force_linear=False, save_dir='',
                     save_name=''):
