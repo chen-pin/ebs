@@ -68,5 +68,6 @@ def main():
 
     save_name = f'inttime_vs_{subparameter if subparameter else parameter}.pdf'
     plot_ebs_output(error_budget, spectral_dict, parameter if not subparameter else subparameter, values,
-                    result_dict['int_time'], force_linear=config['plotting']['force_linear'], save_dir=output_path,
+                    result_dict['int_time'], force_linear=config['plotting']['force_linear'],
+                    plot_stars=config["plotting"]["plot_stars"], fill=config["plotting"]["fill"], save_dir=output_path,
                     save_name=save_name)
