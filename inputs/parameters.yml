@@ -57,3 +57,5 @@ targets:
 
 plotting:
   force_linear: false
+  plot_stars: [26779, 113283] # only plot K stars
+  fill: true
