@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import emcee
 import EXOSIMS.MissionSim as ems
 from copy import deepcopy
-from ebs.utils import update_pp_json
+from ebs.utils import update_json
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 
