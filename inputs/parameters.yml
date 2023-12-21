@@ -1,18 +1,9 @@
 paths:
   output: ./output
-  input: ./inputs
+  input: ../inputs
 
-fixed_throughput: 0.08
+fixed_throughput: 0.15
 fixed_contrast: 1.0e-10
-
-num_spatial_modes: 13
-num_temporal_modes: 6
-angles:
-  num_angles: 5
-  start: 0.055 # as
-  stop: 0.5 # as
-
-iter_values: [0.6, 0.7, 0.8, 0.9, 1.0]
 
 input_files:
   contrast: example_contrast.csv
@@ -22,25 +13,28 @@ input_files:
   sensitivity: example_sensitivity.csv
 
 json_files:
-  pp_json: example_pp.json
+  ref_json: example_ref.json  # An input specifiying the 'unaberrated' observatory
+  pp_json: example_pp.json  # An intermediate file read in by EXOSIMS
+
+iter_values: [1.0e-10, 5.0e-5]
 
 targets:
   star1:
-    HIP: 32439
+    HIP: 32439 A
     spec_type: F8V
     luminosity: 0.2615
     eeid: 0.07423
     eepsr: 6.34e-11
     exo_zodi: 3.0
   star2:
-    HIP: 77052
+    HIP: 77052 A
     spec_type: G5V
     luminosity: -0.0788
     eeid: 0.06174
     eepsr: 1.39e-10
     exo_zodi: 3.0
   star3:
-    HIP: 79672
+    HIP: 79672 
     spec_type: G2Va
     luminosity: 0.0391
     eeid: 0.07399
@@ -62,4 +56,4 @@ targets:
     exo_zodi: 3.0
 
 plotting:
-  force_linear: False
+  force_linear: false

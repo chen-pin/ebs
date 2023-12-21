@@ -5,7 +5,8 @@ from ebs.error_budget import ParameterSweep, ErrorBudget
 import numpy as np
 import yaml
 import os
-from .visualization import plot_ebs_output
+from ebs.visualization import plot_ebs_output
+
 
 def parse():
     # read in command line arguments
@@ -35,7 +36,6 @@ def main():
     subparameter = args.sub_param
     values = config['iter_values']
     hip_numbers = [config['targets'][star]['HIP'] for star in config['targets']]
-    luminosities = [config['targets'][star]['luminosity'] for star in config['targets']]
     eeids = [config['targets'][star]['eeid'] for star in config['targets']]
     eepsrs = [config['targets'][star]['eepsr'] for star in config['targets']]
     exo_zodis = [config['targets'][star]['exo_zodi'] for star in config['targets']]
@@ -43,13 +43,13 @@ def main():
     wfe = read_csv(os.path.join(input_path, config['input_files']['wfe']))
     wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']))
     sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']))
-    num_angles = config['angles']['num_angles']
-    angles = np.linspace(config['angles']['start'], config['angles']['stop'], num_angles)
 
     error_budget = ErrorBudget(input_dir=config['paths']['input'],
+                               output_dir=config['paths']['output'],
                                pp_json_filename=config['json_files']['pp_json'],
                                contrast_filename=config['input_files']['contrast'],
-                               target_list=hip_numbers, luminosity=luminosities, eeid=eeids, eepsr=eepsrs,
+                               throughput_filename=config['input_files']['throughput'],
+                               target_list=hip_numbers, eeid=eeids, eepsr=eepsrs,
                                exo_zodi=exo_zodis)
 
     sweep = ParameterSweep(config, parameter=(parameter, subparameter), values=values, error_budget=error_budget, wfe=wfe,
@@ -58,7 +58,7 @@ def main():
                            fixed_throughput=config['fixed_throughput'] if parameter != 'throughput' else None,
                            contrast_filename=os.path.join(input_path, config['input_files']['contrast']),
                            throughput_filename=os.path.join(input_path, config['input_files']['throughput']),
-                           angles=angles, output_file_name='out')
+                           output_file_name='out')
 
     result_dict = sweep.run_sweep()
     # Specify Spectral Type of stars in target_list
@@ -68,4 +68,5 @@ def main():
 
     save_name = f'inttime_vs_{subparameter if subparameter else parameter}.pdf'
     plot_ebs_output(error_budget, spectral_dict, parameter if not subparameter else subparameter, values,
-                    result_dict['int_time'], force_linear = config['plotting']['force_linear'], save_dir=output_path, save_name=save_name)
+                    result_dict['int_time'], force_linear=config['plotting']['force_linear'], save_dir=output_path,
+                    save_name=save_name)

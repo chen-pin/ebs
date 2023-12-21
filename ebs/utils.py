@@ -16,7 +16,7 @@ def read_csv(filename, skiprows=0):
     return data
 
 
-def update_pp_json(json_file, config, wfe, wfsc, sensitivity):
+def update_pp_json(json_file, wfe, wfsc, sensitivity, contrast_path, throughput_path):
     """
     appends the wavefront error, sensitivity, and sensing and control coefficient to an existing JSON file. Also makes
     sure file paths in the JSON file are correct.
@@ -31,10 +31,8 @@ def update_pp_json(json_file, config, wfe, wfsc, sensitivity):
     with open(json_file) as f:
         input_dict = js.load(f)
 
-    input_dict['starlightSuppressionSystems'][0]['core_thruput'] = os.path.join(config['paths']['input'],
-                                                                                config['input_files']['throughput'])
-    input_dict['starlightSuppressionSystems'][0]['core_contrast'] = os.path.join(config['paths']['input'],
-                                                                                 config['input_files']['contrast'])
+    input_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
+    input_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
     input_dict['wfe'] = wfe.tolist()
     input_dict['wfsc_factor'] = wfsc.tolist()
     input_dict['sensitivity'] = sensitivity.tolist()
