@@ -1,6 +1,6 @@
 paths:
   output: ./output
-  input: ../inputs
+  input: ./inputs
 
 fixed_throughput: 0.15
 fixed_contrast: 1.0e-10
