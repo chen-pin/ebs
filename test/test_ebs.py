@@ -16,7 +16,6 @@ def obs():
 
     """
     t = ErrorBudget(input_dir='./inputs'
-                    , pp_json_filename="test_pp.json"
                     , contrast_filename="test_contrast.csv"
                     , throughput_filename='test_throughput.csv'
                     , target_list=[57443, 15457, 72659]
@@ -91,7 +90,6 @@ def test_exposure_time(obs):
 def test_var_pars(obs):
     qe = (0.7, 0.8, 0.9)
     output_filename = 'test_var_par_output'
-    path = os.path.join(obs.input_dir, obs.pp_json_filename)
     for value in qe:
         path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
         obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', var_par=True,
