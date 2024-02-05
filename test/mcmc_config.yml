@@ -140,6 +140,7 @@ mcmc:
 paths:
   output: ./
   input: ./
+  temporary:  ./temporary
 
 input_files:
   contrast: mcmc_contrast.csv

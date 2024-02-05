@@ -220,7 +220,7 @@ def test_mcmc_log_probability(obs_mcmc):
     states = [accept_state, prior_reject_state, merit_reject_state]
     for i, state in enumerate(states):
         log_prior = obs_mcmc.log_prior(state)
-        log_merit = obs_mcmc.log_merit(state)
+        log_merit = obs_mcmc.log_merit(state)[0]
         log_probability = log_prior + log_merit
         if i == 0:
             assert log_prior == 0.0
