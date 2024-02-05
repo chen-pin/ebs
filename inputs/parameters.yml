@@ -14,7 +14,8 @@ input_files:
 
 json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
 
-iter_values: [1.0e-10, 5.0e-5]
+# iter_values: [1.0e-10, 5.0e-5]
+iter_values: [0.1, 1.0]
 
 targets:
   star1:
