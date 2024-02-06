@@ -204,7 +204,7 @@ class ErrorBudget(ExosimsWrapper):
         ndarray and assign to `self.contrast`.
 
         """
-        path = os.path.join(self.input_dir, self.config["input_files"]["contrast"])
+        path = os.path.join(self.input_dir, self.contrast_filename)
         self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
@@ -222,7 +222,7 @@ class ErrorBudget(ExosimsWrapper):
         Write `self.input_dict` to temporary JSON file for running EXOSIMS.
 
         """
-        self.exosims_pars_dict["ppFact"] = os.path.join(self.input_dir, "ppFact.fits")
+        self.exosims_pars_dict["ppFact"] = self.ppFact_filename
         path = os.path.join(self.temp_dir, filename)
         with open(path, 'w') as f:
             js.dump(self.exosims_pars_dict, f)
