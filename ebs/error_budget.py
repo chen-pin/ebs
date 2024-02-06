@@ -33,9 +33,7 @@ class ExosimsWrapper:
 
         self.working_angles = config["working_angles"]
         hip_numbers = [str(config['targets'][star]['HIP']) for star in config['targets']]
-        print([n for n in hip_numbers])
         self.target_list = [f"HIP {n}" for n in hip_numbers]
-        print(self.target_list)
         self.eeid = [config['targets'][star]['eeid'] for star in config['targets']]
         self.eepsr = [config['targets'][star]['eepsr'] for star in config['targets']]
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
@@ -50,7 +48,6 @@ class ExosimsWrapper:
         """
         n_angles = len(self.working_angles)
         sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
-        print(self.target_list)
         for j, t in enumerate(self.target_list):
             if t not in sim.TargetList.Name:
                 self.target_list[j] += " A"
