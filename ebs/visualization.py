@@ -79,7 +79,7 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
         plot_panel(axes[0], error_budget, spectral_dict, values, int_times, force_linear=force_linear,
                    plot_stars=plot_stars, fill=fill)
 
-    plt.suptitle(f"Required Integration Time (hr, SNR={error_budget.input_dict['observingModes'][0]['SNR']}) vs. "
+    plt.suptitle(f"Required Integration Time (hr, SNR={error_budget.exosims_pars_dict['observingModes'][0]['SNR']}) vs. "
                  f"{parameter.capitalize()}", fontsize=24)
 
     fig.supxlabel(f'{parameter.capitalize()}', fontsize=20)
