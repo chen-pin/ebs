@@ -56,6 +56,9 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
     """
 
     unique_types_to_plot = []
+    if not plot_stars:
+        plot_stars = [star for star in spectral_dict.keys()]
+
     for i, key in enumerate(spectral_dict.keys()):
         if key in plot_stars:
             unique_types_to_plot.append(spectral_dict[key][0])
@@ -84,9 +87,6 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
 
     fig.supxlabel(f'{parameter.capitalize()}', fontsize=20)
     fig.supylabel('Integration Time (hours)', fontsize=20)
-
-    for ax in axes:
-        ax.set_xticks([])
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, save_name))
