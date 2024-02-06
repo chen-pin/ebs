@@ -3,9 +3,6 @@ paths:
   input: ./inputs
   temporary: ./temp
 
-fixed_throughput: 0.15
-fixed_contrast: 1.0e-10
-
 input_files:
   contrast: example_contrast.csv
   throughput: example_throughput.csv
