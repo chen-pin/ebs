@@ -518,6 +518,8 @@ class ParameterSweep:
             If True will feed the parameter into EXOSIMS to be swept over
         '''
         self.config = config
+        self.input_dir = self.config["paths"]["input"]
+
         self.parameter, self.subparameter = parameter
         self.values = values
         self.result_dict = {}
