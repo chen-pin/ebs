@@ -110,16 +110,7 @@ class ErrorBudget(ExosimsWrapper):
     """Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
 
     Attributes:
-        config_file: Name of the configuration file. 
-        target_list: Target stars' HIP names.
-        eeid:  Earth-equivalent-insolation distances [arcsec].
-        eepsr:  Earth-equivalent planet-star flux ratios.
-        wfe:  Wavefront errors [pm].
-        wfsc_factor: Wavefront-sensing-and-control factors 
-        sensitivity: contrast sensitivity to wavefront errors [1E-12/pm]
-        post_wfsc_wfe
-
-
+        config_file: Name of the configuration file.
     """
 
     def __init__(self, config_file):
@@ -507,9 +498,7 @@ def log_probability(values, error_budget):
 
 
 class ParameterSweep:
-    def __init__(self, config, parameter, values, error_budget, wfe, wfsc_factor, sensitivity, fixed_contrast,
-                 fixed_throughput, contrast_filename, throughput_filename, output_file_name='',
-                 is_exosims_param=False):
+    def __init__(self, config, parameter, values, error_budget, output_file_name=''):
         '''
 
         :param config: dict
@@ -520,20 +509,6 @@ class ParameterSweep:
             The values of the parameter to be swept over
         :param error_budget: ErrorBudget
             ErrorBudget object to use for the sweep.
-        :param wfe: array
-            Wavefront changes specified in spatio-temporal bins, loaded from the input JSON file, in pm units.
-        :param wfsc_factor: array
-            Wavefront-change-mitigation factors, loaded from the input JSON file. Values should be between 0 and 1.
-        :param sensitivity: array
-            Coefficients of contrast sensitivity w.r.t. wavefront changes, in ppt/pm units.
-        :param fixed_contrast: float
-            If contrast is not being swept over, the fixed value at which to keep it.
-        :param fixed_throughput: float
-            If throughput is not being swept over, the fixed value at which to keep it.
-        :param contrast_filename: str
-            The filename where the contrast information is stored.
-        :param throughput_filename: str
-            The filename where the throughput information is stored.
         :param output_file_name: str
             name of the output file
         :param is_exosims_param: bool
@@ -545,17 +520,8 @@ class ParameterSweep:
         self.result_dict = {}
         self.error_budget = error_budget
         self.error_budget.load_csv_contrast()
-        self.is_exosims_param = is_exosims_param
-        self.wfe = wfe
-        self.wfsc_factor = wfsc_factor
-        self.sensitivity = sensitivity
         self.output_file_name = output_file_name
-        self.fixed_contrast = fixed_contrast
-        self.fixed_throughput = fixed_throughput
-        self.contrast_filename = contrast_filename
-        self.throughput_filename = throughput_filename
         self.angles = self.error_budget.angles
-        self.var_par = True
         self.result_dict = {
             'C_p': np.empty((len(values), len(config['targets']), 3)),
             'C_b': np.empty((len(values), len(config['targets']), 3)),
