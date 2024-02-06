@@ -142,8 +142,10 @@ class ErrorBudget(ExosimsWrapper):
         self.throughput = None
         self.SNR = None
         self.ppFact_filename = None
-        self.contrast_filename = None
-        self.throughput_filename = None
+
+        self.contrast_filename = self.config["input_files"]["contrast"]
+        self.throughput_filename = self.config["input_files"]["throughput"]
+
         self.exosims_pars_dict = None
         self.trash_can = []
 
