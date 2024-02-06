@@ -44,13 +44,7 @@ def main():
     wfsc_factor = read_csv(os.path.join(input_path, config['input_files']['wfsc']), skiprows=1)
     sensitivity = read_csv(os.path.join(input_path, config['input_files']['sensitivity']), skiprows=1)
 
-    error_budget = ErrorBudget(input_dir=config['paths']['input'],
-                               output_dir=config['paths']['output'],
-                               json_filename=config['json_file'],
-                               contrast_filename=config['input_files']['contrast'],
-                               throughput_filename=config['input_files']['throughput'],
-                               target_list=hip_numbers, eeid=eeids, eepsr=eepsrs,
-                               exo_zodi=exo_zodis)
+    error_budget = ErrorBudget(args.config)
 
     sweep = ParameterSweep(config, parameter=(parameter, subparameter), values=values, error_budget=error_budget, wfe=wfe,
                            sensitivity=sensitivity, wfsc_factor=wfsc_factor,
@@ -60,7 +54,7 @@ def main():
                            throughput_filename=os.path.join(input_path, config['input_files']['throughput']),
                            output_file_name='out')
 
-    result_dict = sweep.run_sweep()
+    result_dict, error_budget = sweep.run_sweep()
     # Specify Spectral Type of stars in target_list
     spectral_dict = {}
     for i, star in enumerate(config['targets']):
