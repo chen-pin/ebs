@@ -326,10 +326,11 @@ class ErrorBudget(ExosimsWrapper):
         return walker_pos
 
     def update_attributes(self, subsystem=None, name=None, value=None):
-        try:
-            self.exosims_pars_dict[subsystem][0][name] = value
-        except KeyError:
-            self.exosims_pars_dict[name][0] = value
+        if name is not None:
+            try:
+                self.exosims_pars_dict[subsystem][0][name] = value
+            except KeyError:
+                self.exosims_pars_dict[name][0] = value
 
     def update_attributes_mcmc(self, values):
         for var_name in self.config['mcmc']['variables']:
