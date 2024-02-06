@@ -163,7 +163,7 @@ class ErrorBudget(ExosimsWrapper):
         if (self.wfe is not None and self.wfsc_factor is not None 
             and self.sensitivity is not None and self.contrast is not None):
             self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
-            delta_contrast = np.empty(self.contrast.shape[0])
+            delta_contrast = np.empty(self.sensitivity.shape[0])
             for n in range(len(delta_contrast)):
                 delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
                                          , self.post_wfsc_wfe)**2).sum()
