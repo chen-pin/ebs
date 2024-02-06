@@ -279,8 +279,8 @@ class ErrorBudget(ExosimsWrapper):
     def initialize_for_exosims(self):
         config = self.config
 
-        contrast_path = os.path.join(self.input_dir, config['input_files']['contrast'])
-        throughput_path = os.path.join(self.input_dir, config['input_files']['throughput'])
+        contrast_path = os.path.join(self.input_dir, self.contrast_filename)
+        throughput_path = os.path.join(self.input_dir, self.throughput_filename)
 
         self.angles = read_csv(filename=contrast_path, skiprows=1)[:, 0]
         self.contrast = read_csv(filename=contrast_path, skiprows=1)[:, 1]
