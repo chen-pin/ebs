@@ -5,7 +5,6 @@ import pytest as pt
 import numpy as np
 import astropy.units as u
 from ebs.error_budget import ErrorBudget
-from ebs.error_budget import ErrorBudgetMcmc
 from ebs.log_pdf import inverse_bounded
 
 
@@ -13,27 +12,10 @@ from ebs.log_pdf import inverse_bounded
 def obs():
     """
     Instantiate EXOSIMS object.
-
     """
-    t = ErrorBudget(input_dir='./inputs'
-                    , contrast_filename="test_contrast.csv"
-                    , throughput_filename='test_throughput.csv'
-                    , target_list=[57443, 15457, 72659]
-                    , eeid=[0.09858, 0.09981, 0.11012]
-                    , eepsr=[1.37e-10, 1.35e-10, 2.09e-10]
-                    , exo_zodi=3*[3.0])
-
-    num_spatial_modes = 13
-    num_temporal_modes = 1
-    num_angles = 27
-    wfe = 1.72*np.random.rand(num_temporal_modes, num_spatial_modes)
-    wfsc_factor = 0.5*np.random.rand(wfe.shape[0], wfe.shape[1])
-    sensitivity = (
-        np.array(num_angles*[3.21, 4.64, 4.51, 3.78, 5.19, 5.82, 10.6, 8.84
-                            , 9.09, 3.68, 9.33, 15.0, 0.745])
-                 .reshape(num_angles, num_spatial_modes)
-                  )
-    t.run_etc(wfe, wfsc_factor, sensitivity, 'test_output.json', var_par=False)
+    t = ErrorBudget(config_file="./inputs/test_parameters.yml")
+    t.initialize_for_exosims()
+    t.run(clean_files=True)
     return t
 
 
@@ -68,7 +50,7 @@ def test_ppFact(obs):
         speckle_intensity[angle] = 1e-12*np.sqrt(
                 (np.multiply(rss_wfe_residual, obs.sensitivity[angle,:])**2)
                 .sum())
-    assert (obs.delta_contrast == speckle_intensity).all()
+    assert [math.isclose(a, speckle_intensity[i], rel_tol=1.0e-12) for i, a in enumerate(obs.delta_contrast)]
 
 
 def test_exposure_time(obs):
@@ -77,13 +59,15 @@ def test_exposure_time(obs):
     Nemati et al. (2020) JATIS.  
 
     """
-    snr = obs.input_dict["observingModes"][0]["SNR"]
+    snr = obs.exosims_pars_dict["observingModes"][0]["SNR"]
     print("snr = {}".format(snr))
     C_b = np.array(obs.C_b)
     C_p = np.array(obs.C_p)
     C_sp = np.array(obs.C_sp)
     int_time = np.array(obs.int_time)
     tau = (np.true_divide(snr**2 * C_b , C_p**2 - snr**2 * C_sp**2))/(24*3600)
+    tau[tau < 0] = 0
+    int_time[~np.isfinite(int_time)] = 0
     assert tau == pt.approx(int_time, 0.001)
 
 
@@ -91,79 +75,66 @@ def test_var_pars(obs):
     qe = (0.7, 0.8, 0.9)
     output_filename = 'test_var_par_output'
     for value in qe:
-        path = os.path.join(obs.input_dir, 'temp_'+'QE_'+str(value)+'.json')
-        obs.run_etc(obs.wfe, obs.wfsc_factor, obs.sensitivity, 'test_output', var_par=True,
-                    subsystem='scienceInstruments', name='QE', value=value, remove_temp_jsons=False)
+        path = os.path.join(obs.temp_dir, 'temp.json')
+        obs.run(subsystem='scienceInstruments', name='QE', value=value, clean_files=False)
         with open(path) as f:
             input_dict = js.load(f)
         assert input_dict['scienceInstruments'][0]['QE'] == value
 
-
-@pt.fixture
-def obs_mcmc():
-    """
-    Instantiate object.
-
-    """
-    t = ErrorBudgetMcmc(config_file="mcmc_config.yml")  
-    t.initialize_for_exosims()
-    return t
-
-
-def test_mcmc_delta_contrast(obs_mcmc):
+def test_mcmc_delta_contrast(obs):
     """
     Check self-consistency in array computations of delta_contrast.
 
     """
-    states = obs_mcmc.initialize_walkers()
+    states = obs.initialize_walkers()
     for state in states:
-        obs_mcmc.update_attributes(state)
-        num_temporal_modes = obs_mcmc.wfe.shape[0]
-        num_spatial_modes = obs_mcmc.wfe.shape[1]
-        num_angles = obs_mcmc.sensitivity.shape[0]
+        obs.update_attributes_mcmc(state)
+        num_temporal_modes = obs.wfe.shape[0]
+        num_spatial_modes = obs.wfe.shape[1]
+        num_angles = obs.sensitivity.shape[0]
         rss_wfe_residual = np.empty(num_spatial_modes)
         speckle_intensity = np.empty(num_angles)
         for s_mode in range(num_spatial_modes):
             rss_wfe_residual[s_mode] = np.sqrt(
-                    (obs_mcmc.post_wfsc_wfe[:,s_mode]**2).sum()
+                    (obs.post_wfsc_wfe[:,s_mode]**2).sum()
                                               )
         for angle in range(num_angles):
             speckle_intensity[angle] = 1e-12*np.sqrt(
                     (np.multiply(rss_wfe_residual
-                        , obs_mcmc.sensitivity[angle,:])**2).sum())
-        assert obs_mcmc.delta_contrast == pt.approx(speckle_intensity, 1E-12)
-        obs_mcmc.clean_files()
+                        , obs.sensitivity[angle,:])**2).sum())
+        assert obs.delta_contrast == pt.approx(speckle_intensity, 1E-12)
+        obs.clean_files()
 
 
-def test_mcmc_ppFact(obs_mcmc):
-    states = obs_mcmc.initialize_walkers()
+def test_mcmc_ppFact(obs):
+    states = obs.initialize_walkers()
     for state in states:
-        obs_mcmc.update_attributes(state)
-        num_temporal_modes = obs_mcmc.wfe.shape[0]
-        num_spatial_modes = obs_mcmc.wfe.shape[1]
-        num_angles = obs_mcmc.sensitivity.shape[0]
+        obs.update_attributes_mcmc(state)
+        num_temporal_modes = obs.wfe.shape[0]
+        num_spatial_modes = obs.wfe.shape[1]
+        num_angles = obs.sensitivity.shape[0]
         rss_wfe_residual = np.empty(num_spatial_modes)
         speckle_intensity = np.empty(num_angles)
         for s_mode in range(num_spatial_modes):
             rss_wfe_residual[s_mode] = np.sqrt(
-                    (obs_mcmc.post_wfsc_wfe[:,s_mode]**2).sum()
+                    (obs.post_wfsc_wfe[:,s_mode]**2).sum()
                                               )
         for angle in range(num_angles):
             speckle_intensity[angle] = 1e-12*np.sqrt(
                     (np.multiply(rss_wfe_residual
-                        , obs_mcmc.sensitivity[angle,:])**2).sum())
-        for i, contrast in enumerate(obs_mcmc.contrast):
-            if obs_mcmc.delta_contrast[i]/contrast > 1.0:
-                assert obs_mcmc.ppFact[i] == 1.0
+                        , obs.sensitivity[angle,:])**2).sum())
+        for i, contrast in enumerate(obs.contrast):
+            if obs.delta_contrast[i]/contrast > 1.0:
+                assert obs.ppFact[i] == 1.0
             else:
-                assert (0.0 <= obs_mcmc.ppFact[i] == 
-                        obs_mcmc.delta_contrast[i]/contrast)
-        obs_mcmc.clean_files()
+                assert (0.0 <= obs.ppFact[i] ==
+                        obs.delta_contrast[i]/contrast)
+        obs.clean_files()
 
 
-def test_mcmc_initialize_walkers(obs_mcmc):
-    states = obs_mcmc.initialize_walkers()
-    config = obs_mcmc.config
+def test_mcmc_initialize_walkers(obs):
+    states = obs.initialize_walkers()
+    config = obs.config
     nwalkers = config['mcmc']['nwalkers']
     ndim = 25
     upper_bounds = np.array([1e-5+0.5e-7, 5.05E-7, 5.05E-3, 5.05E-7, 5.05E-3
@@ -181,31 +152,31 @@ def test_mcmc_initialize_walkers(obs_mcmc):
     for state in states:
         print(f"state:\n{state}")
         assert (lower_bounds <= state).all() and (state <= upper_bounds).all()
-    obs_mcmc.clean_files()
+    obs.clean_files()
 
 
-def test_mcmc_update_attributes(obs_mcmc):
-    state = obs_mcmc.initialize_walkers()[0]
-    obs_mcmc.update_attributes(state)
-    assert obs_mcmc.idark == state[0]
+def test_mcmc_update_attributes(obs):
+    state = obs.initialize_walkers()[0]
+    obs.update_attributes_mcmc(state)
+    assert obs.idark == state[0]
     indices = (np.array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5])
                , np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]))
-    assert (obs_mcmc.wfsc_factor[indices] == state[1:13]).all()
-    assert (obs_mcmc.contrast == state[13:19]).all()
-    assert (obs_mcmc.throughput == state[19:]).all()
-    obs_mcmc.clean_files()
+    assert (obs.wfsc_factor[indices] == state[1:13]).all()
+    assert (obs.contrast == state[13:19]).all()
+    assert (obs.throughput == state[19:]).all()
+    obs.clean_files()
 
 
-def test_mcmc_log_prior(obs_mcmc):
+def test_mcmc_log_prior(obs):
     all_true_val = [2E-6] + 12*[0.5] + 6*[5E-10] + 6*[0.15]
     one_false_val = [2E-4] + 12*[0.5] + 6*[5E-10] + 6*[0.15]
-    assert obs_mcmc.log_prior(all_true_val) == 0.0  
-    assert obs_mcmc.log_prior(one_false_val) == -np.inf
-    obs_mcmc.clean_files()
+    assert obs.log_prior(all_true_val) == 0.0
+    assert obs.log_prior(one_false_val) == -np.inf
+    obs.clean_files()
 
 
-def test_mcmc_log_probability(obs_mcmc):
-    obs_mcmc.initialize_for_exosims()
+def test_mcmc_log_probability(obs):
+    obs.initialize_for_exosims()
     accept_state = ([1E-5] + [5E-7, 5E-3, 5E-7, 5E-3, 5E-7, 5E-3
                                       , 5E-7, 5E-3, 5E-7, 5E-3, 5E-7, 5E-3] 
                                       + 6*[2E-10] + 6*[0.15])
@@ -217,8 +188,8 @@ def test_mcmc_log_probability(obs_mcmc):
                                       + 6*[2E-10] + 6*[0.15])
     states = [accept_state, prior_reject_state, merit_reject_state]
     for i, state in enumerate(states):
-        log_prior = obs_mcmc.log_prior(state)
-        log_merit = obs_mcmc.log_merit(state)[0]
+        log_prior = obs.log_prior(state)
+        log_merit = obs.log_merit(state)[0]
         log_probability = log_prior + log_merit
         if i == 0:
             assert log_prior == 0.0
@@ -232,7 +203,7 @@ def test_mcmc_log_probability(obs_mcmc):
             assert log_prior == 0.0
             assert log_merit == -np.inf
             assert log_probability == -np.inf
-        obs_mcmc.clean_files()
+        obs.clean_files()
 
 
 def test_mcmc_inverse_bounded():

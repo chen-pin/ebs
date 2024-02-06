@@ -1,61 +1,186 @@
-angles:
-  num_angles: 27
-  start: 0.055
-  stop: 0.5
-fixed_contrast: 1.0e-10
-fixed_throughput: 0.08
+paths:
+  output: ./output
+  input: ./inputs
+  temporary: ./temp
+
 input_files:
   contrast: test_contrast.csv
-  sensitivity: test_sensitivity.csv
   throughput: test_throughput.csv
   wfe: test_wfe.csv
   wfsc: test_wfsc.csv
-iter_values:
-- 0.6
-- 0.7
-- 0.8
-- 0.9
-- 1.0
-json_files:
-  pp_json: test_pp.json
-num_spatial_modes: 13
-num_temporal_modes: 1
-paths:
-  input: ./inputs
-  output: ./outputs
+  sensitivity: test_sensitivity.csv
+
+json_file: test_ref.json  # An input specifying the 'unaberrated' observatory
+
+# iter_values: [1.0e-10, 5.0e-5]
+iter_values: [0.8, 0.9]
+
+working_angles:  # In units of EEID (which is target dependent).
+  # HZ is defined as (0.95 - 1.67)*EEID
+  - 0.95
+  - 1.0
+  - 1.67
+
 targets:
   star1:
-    HIP: 32439
-    eeid: 0.07423
-    eepsr: 6.34e-11
+    HIP: 57443
+    spec_type: G2V
+    eeid: 0.09858
+    eepsr: 1.37e-10
     exo_zodi: 3.0
-    luminosity: 0.2615
-    spec_type: F8V
   star2:
-    HIP: 77052
-    eeid: 0.06174
-    eepsr: 1.39e-10
-    exo_zodi: 3.0
-    luminosity: -0.0788
+    HIP: 15457
     spec_type: G5V
+    eeid: 0.09981
+    eepsr: 1.35e-10
+    exo_zodi: 3.0
   star3:
-    HIP: 79672
-    eeid: 0.07399
-    eepsr: 1.06e-10
+    HIP: 72659
+    spec_type: G7Ve
+    eeid: 0.11012
+    eepsr: 2.09e-10
     exo_zodi: 3.0
-    luminosity: 0.0391
-    spec_type: G2Va
-  star4:
-    HIP: 26779
-    eeid: 0.05633
-    eepsr: 2.42e-10
-    exo_zodi: 3.0
-    luminosity: -0.3209
-    spec_type: K1V
-  star5:
-    HIP: 113283
-    eeid: 0.05829
-    eepsr: 5.89e-10
-    exo_zodi: 3.0
-    luminosity: -0.7
-    spec_type: K4Ve
+
+
+plotting:
+  force_linear: false
+  plot_stars: [] # only plot K stars
+  fill: true
+  plot_by_spectype: true
+
+# MCMC Paramters
+mcmc:
+  nwalkers: 100
+  nsteps: 5000
+  #  backend_path: ./output/backend_202311031628.hdf
+  merit:
+    ftn: uniform
+    args:
+      lower_bound: 0.0
+      upper_bound: 40.0
+
+  variables:
+    idark:
+      prior_ftn: [uniform]  # Must be a list
+      prior_args:
+        lower_bound: [1.0e-6]
+        upper_bound: [1.0e-4]
+      ini_pars:
+        center: [1.0e-5]
+        spread: [1.0e-7]
+    wfsc_factor:
+      prior_ftn:
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+        - [uniform, uniform, .NAN, .NAN]
+      prior_args:
+        lower_bound:
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+          - [1.0E-7, 1.0E-3, .NAN, .NAN]
+        upper_bound:
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+          - [1.0, 1.0, .NAN, .NAN]
+      ini_pars:
+        center:
+          # Center values for initializing walkers
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+          - [5.0E-7, 5.0E-3, .NAN, .NAN]
+        spread:
+          # Spread for initializing walkers
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+          - [1.0E-8, 1.0E-4, .NAN, .NAN]
+    contrast:  # raw contrast
+      prior_ftn:
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+      prior_args:
+        lower_bound:
+          - 1.0e-10
+          - 1.0e-10
+          - 1.0e-10
+          - 1.0e-10
+          - 1.0e-10
+          - 1.0e-10
+        upper_bound:
+          - 1.0e-9
+          - 1.0e-9
+          - 1.0e-9
+          - 1.0e-9
+          - 1.0e-9
+          - 1.0e-9
+      ini_pars:
+        center:
+          - 2.000000000000000311e-10
+          - 2.000000000000000311e-10
+          - 2.000000000000000311e-10
+          - 2.000000000000000311e-10
+          - 2.000000000000000311e-10
+          - 2.000000000000000311e-10
+        spread:
+          - 2.000000000000000311e-12
+          - 2.000000000000000311e-12
+          - 2.000000000000000311e-12
+          - 2.000000000000000311e-12
+          - 2.000000000000000311e-12
+          - 2.000000000000000311e-12
+    throughput:  # core throughput
+      prior_ftn:
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+        - uniform
+      prior_args:
+        lower_bound:
+          - 0.03
+          - 0.03
+          - 0.03
+          - 0.03
+          - 0.03
+          - 0.03
+        upper_bound:
+          - 0.3
+          - 0.3
+          - 0.3
+          - 0.3
+          - 0.3
+          - 0.3
+      ini_pars:
+        center:
+          - 0.15
+          - 0.15
+          - 0.15
+          - 0.15
+          - 0.15
+          - 0.15
+        spread:
+          - 0.0015
+          - 0.0015
+          - 0.0015
+          - 0.0015
+          - 0.0015
+          - 0.0015
