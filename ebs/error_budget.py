@@ -562,26 +562,18 @@ class ParameterSweep:
         # 3 contrasts, 5 stars, 3 zones
         for i, value in enumerate(self.values):
             if self.parameter == 'contrast':
-                np.savetxt(self.contrast_filename, np.column_stack((self.angles, value * np.ones(len(self.angles))))
+                new_file = f"contrast_{value}.csv"
+                np.savetxt(self.input_dir + "/" + new_file, np.column_stack((self.angles, value * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_contrast')
                            , comments="")
-                self.var_par = False
-            else:
-                np.savetxt(self.contrast_filename, np.column_stack((self.angles,
-                                                                    self.fixed_contrast * np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_contrast')
-                           , comments="")
+                self.error_budget.contrast_filename = new_file
             if self.parameter == 'throughput':
-                np.savetxt(self.throughput_filename
+                new_file = f"throughput_{value}.csv"
+                np.savetxt(self.input_dir + "/" + new_file
                            , np.column_stack((self.angles, value * np.ones(len(self.angles))))
                            , delimiter=",", header=('r_as,core_thruput')
                            , comments="")
-                self.var_par = False
-            else:
-                np.savetxt(self.throughput_filename
-                           , np.column_stack((self.angles, self.fixed_throughput * np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_thruput')
-                           , comments="")
+                self.error_budget.throughput_filename = new_file
 
             # TODO change mutable parameters in ErrorBudget class and remove this deep copy
             error_budget = deepcopy(self.error_budget)
