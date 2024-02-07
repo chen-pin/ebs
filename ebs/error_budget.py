@@ -17,7 +17,8 @@ import ebs.log_pdf as pdf
 
 class ExosimsWrapper:
     """
-    Takes in a config dict specifying desired targets and their corresponding eeids, eeprss and exo-zodi levels.
+    Takes in a config dict specifying desired targets and their corresponding earth equivalent
+    insolation distances (eeid), Earth-equivalent planet-star flux ratios (eepsr) and exo-zodi levels.
     Main function is run_exosims which given an input json file returns the necessary integration times and various
     output count rates.
 
@@ -48,10 +49,16 @@ class ExosimsWrapper:
         self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
     def run_exosims(self, json_file):
-        """
+        """ runs EXOSIMS using the parameters in the json_file.
 
-        :param json_file:
-        :return:
+        Parameters
+        ----------
+        json_file: str
+            fully qualified file path to a JSON file containing all EXOSIMS input parameters.
+
+        Returns
+        -------
+
         """
         n_angles = len(self.working_angles)
         sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
@@ -114,12 +121,15 @@ class ExosimsWrapper:
 
 
 class ErrorBudget(ExosimsWrapper):
-    """Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
-
-    Attributes:
-        config_file: Name of the configuration file.
     """
+    Exposure time calculator incorporating dynamical wavefront errors and
+    WFS&C. Also can implement the Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
 
+    Parameters
+    ----------
+    config_file: str
+        Name of the YAML configuration file.
+    """
     def __init__(self, config_file):
         self.config_file = config_file
         with open(config_file, 'r') as config:
@@ -158,10 +168,7 @@ class ErrorBudget(ExosimsWrapper):
 
     @property
     def delta_contrast(self):
-        """
-        Compute change in contrast due to residual WFE and assign the array to 
-        `self.ppFact`. 
-
+        """Compute change in contrast due to residual WFE and assign the array to `self.ppFact`.
         Reference
         ---------
         - See <Post-Processing Factor> document for mathematical description
@@ -180,9 +187,7 @@ class ErrorBudget(ExosimsWrapper):
 
     @property
     def ppFact(self):
-        """
-        Compute the post-processing factor and assign the array to 
-        `self.ppFact`. 
+        """Compute the post-processing factor and assign the array to `self.ppFact`.
 
         Reference
         ---------
@@ -206,30 +211,31 @@ class ErrorBudget(ExosimsWrapper):
     def load_csv_contrast(self):
         """
         Load CSV file containing contrast vs. angular separation values into
-        ndarray and assign to `self.contrast`.
+        ndarray and assign to `self.contrast' and `self.angles'.
 
         """
         path = os.path.join(self.input_dir, self.contrast_filename)
         self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
-    def update_dict(self, thorughput_path, contrast_path, wfe, wfsc, sensitivity):
-        """
+    def update_dict(self, throughput_path, contrast_path, wfe, wfsc, sensitivity):
+        """Updates self.exosims_pars_dict with the appropriate values from the input CSV files.
 
         Parameters
         ----------
-        thorughput_path
-        contrast_path
-        wfe
-        wfsc
-        sensitivity
-
-        Returns
-        -------
-
+        throughput_path: str
+            fully qualified file path to the throughput CSV.
+        contrast_path: str
+            fully qualified file path to the contrast CSV.
+        wfe: list or numpy array
+            wavefront error values.
+        wfsc: list or numpy array
+            wavefront sensing and control values.
+        sensitivity: list or numpy array
+            sensitivity values.
         """
 
-        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput'] = thorughput_path
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
         self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
 
         self.exosims_pars_dict['wfe'] = wfe.tolist()
@@ -237,15 +243,19 @@ class ErrorBudget(ExosimsWrapper):
         self.exosims_pars_dict['sensitivity'] = sensitivity.tolist()
 
     def write_temp_json(self, filename='temp.json'):
-        """
+        """Writes a temporary JSON file with the current values in self.exosims_pars_dict.
+
+        Intended to be the input JSON for running EXOSIMS.
 
         Parameters
         ----------
-        filename
+        filename: str
+            name of the temporary JSON file
 
         Returns
         -------
-
+        path: str
+            fully qualified path to the temporary JSON file.
         """
         self.exosims_pars_dict["ppFact"] = self.ppFact_filename
         path = os.path.join(self.temp_dir, filename)
@@ -254,15 +264,12 @@ class ErrorBudget(ExosimsWrapper):
         return path
 
     def write_ppFact_fits(self, trash=False):
-        """
+        """Writes the post-processing factor to a FITS file to be saved in self.temp_dir.
 
         Parameters
         ----------
-        trash
-
-        Returns
-        -------
-
+        trash: bool
+            If True, will add the FITS file to self.trash_can to be cleaned.
         """
         if self.angles is not None:
 
@@ -287,11 +294,8 @@ class ErrorBudget(ExosimsWrapper):
 
         Parameters
         ----------
-        contrast_or_throughput
-
-        Returns
-        -------
-
+        contrast_or_throughput: str
+            "contrast" or "throughput" - specifies which type of file to write.
         """
         if self.angles is not None:
             rng = np.random.default_rng()
