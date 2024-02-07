@@ -21,15 +21,6 @@ import ebs.log_pdf as pdf
 
 class ExosimsWrapper:
     def __init__(self, config):
-        self.C_p = []
-        self.C_b = []
-        self.C_sp = []
-        self.C_sr = []
-        self.C_z = []
-        self.C_ez = []
-        self.C_dc = []
-        self.C_rn = []
-        self.C_star = []
 
         self.working_angles = config["working_angles"]
         hip_numbers = [str(config['targets'][star]['HIP']) for star in config['targets']]
@@ -37,6 +28,16 @@ class ExosimsWrapper:
         self.eeid = [config['targets'][star]['eeid'] for star in config['targets']]
         self.eepsr = [config['targets'][star]['eepsr'] for star in config['targets']]
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
+
+        self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_sr = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_z = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
 
         self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
@@ -92,15 +93,15 @@ class ExosimsWrapper:
                 mode,
                 True
             )
-            self.C_p.append(counts[0])
-            self.C_b.append(counts[1])
-            self.C_sp.append(counts[2])
-            self.C_sr.append(counts[3]["C_sr"])
-            self.C_z.append(counts[3]["C_z"])
-            self.C_ez.append(counts[3]["C_ez"])
-            self.C_dc.append(counts[3]["C_dc"])
-            self.C_rn.append(counts[3]["C_rn"])
-            self.C_star.append(counts[3]["C_star"])
+            self.C_p[j] = counts[0]
+            self.C_b[j] = counts[1]
+            self.C_sp[j] = counts[2]
+            self.C_sr[j] = counts[3]["C_sr"]
+            self.C_z[j] = counts[3]["C_z"]
+            self.C_ez[j] = counts[3]["C_ez"]
+            self.C_dc[j] = counts[3]["C_dc"]
+            self.C_rn[j] = counts[3]["C_rn"]
+            self.C_star[j] = counts[3]["C_star"]
 
         return (self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn,
                 self.C_star)
@@ -567,7 +568,7 @@ class ParameterSweep:
                            , delimiter=",", header=('r_as,core_contrast')
                            , comments="")
                 self.error_budget.contrast_filename = new_file
-            if self.parameter == 'throughput':
+            elif self.parameter == 'throughput':
                 new_file = f"throughput_{value}.csv"
                 np.savetxt(self.input_dir + "/" + new_file
                            , np.column_stack((self.angles, value * np.ones(len(self.angles))))
@@ -575,14 +576,11 @@ class ParameterSweep:
                            , comments="")
                 self.error_budget.throughput_filename = new_file
 
-            # TODO change mutable parameters in ErrorBudget class and remove this deep copy
-            error_budget = deepcopy(self.error_budget)
-
-            error_budget.run(subsystem=self.parameter, name=self.subparameter, value=value)
+            self.error_budget.run(subsystem=self.parameter, name=self.subparameter, value=value)
 
             for key in self.result_dict.keys():
                 arr = self.result_dict[key]
-                arr[i] = np.array(getattr(error_budget, key))
+                arr[i] = np.array(getattr(self.error_budget, key))
                 self.result_dict[key] = arr
 
-        return self.result_dict, error_budget
+        return self.result_dict, self.error_budget
