@@ -1,8 +1,6 @@
 """Exposure-time calculations based on coronagraphic input parameters
 
 """
-
-
 import os, glob, time, shutil
 import numpy as np
 import json as js
@@ -13,13 +11,21 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import emcee
 import EXOSIMS.MissionSim as ems
-from copy import deepcopy
-from ebs.utils import update_json
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 
 
 class ExosimsWrapper:
+    """
+    Takes in a config dict specifying desired targets and their corresponding eeids, eeprss and exo-zodi levels.
+    Main function is run_exosims which given an input json file returns the necessary integration times and various
+    output count rates.
+
+    Parameters
+    ----------
+    config: dict
+        dictionary of configuration parameters.
+    """
     def __init__(self, config):
 
         self.working_angles = config["working_angles"]
@@ -43,9 +49,9 @@ class ExosimsWrapper:
 
     def run_exosims(self, json_file):
         """
-        Run EXOSIMS to generate results, including exposure times
-        required for reaching specified SNR.
 
+        :param json_file:
+        :return:
         """
         n_angles = len(self.working_angles)
         sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
@@ -166,9 +172,7 @@ class ErrorBudget(ExosimsWrapper):
             self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
             delta_contrast = np.empty(self.sensitivity.shape[0])
             for n in range(len(delta_contrast)):
-                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n]
-                                         , self.post_wfsc_wfe)**2).sum()
-                                           ) 
+                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n], self.post_wfsc_wfe)**2).sum())
             return 1E-12*delta_contrast
         else: 
             print("Need to assign wfe, wfsc_factor, sensitivity, " + 
@@ -210,6 +214,20 @@ class ErrorBudget(ExosimsWrapper):
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
     def update_dict(self, thorughput_path, contrast_path, wfe, wfsc, sensitivity):
+        """
+
+        Parameters
+        ----------
+        thorughput_path
+        contrast_path
+        wfe
+        wfsc
+        sensitivity
+
+        Returns
+        -------
+
+        """
 
         self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput'] = thorughput_path
         self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
@@ -220,7 +238,13 @@ class ErrorBudget(ExosimsWrapper):
 
     def write_temp_json(self, filename='temp.json'):
         """
-        Write `self.input_dict` to temporary JSON file for running EXOSIMS.
+
+        Parameters
+        ----------
+        filename
+
+        Returns
+        -------
 
         """
         self.exosims_pars_dict["ppFact"] = self.ppFact_filename
@@ -231,7 +255,13 @@ class ErrorBudget(ExosimsWrapper):
 
     def write_ppFact_fits(self, trash=False):
         """
-        Create FITS file of ppFact array with randomized filename.  
+
+        Parameters
+        ----------
+        trash
+
+        Returns
+        -------
 
         """
         if self.angles is not None:
@@ -254,8 +284,13 @@ class ErrorBudget(ExosimsWrapper):
     
     def write_csv(self, contrast_or_throughput):
         """
-        Create csv file of contrast or throughput array with randomized
-        filename.  
+
+        Parameters
+        ----------
+        contrast_or_throughput
+
+        Returns
+        -------
 
         """
         if self.angles is not None:
@@ -278,6 +313,12 @@ class ErrorBudget(ExosimsWrapper):
             print("Need to assign angle values to write CSV file")
 
     def initialize_for_exosims(self):
+        """
+
+        Returns
+        -------
+
+        """
         config = self.config
 
         contrast_path = os.path.join(self.input_dir, self.contrast_filename)
@@ -307,6 +348,12 @@ class ErrorBudget(ExosimsWrapper):
                 setattr(self, key, self.exosims_pars_dict['starlightSuppressionSystems'][0][key])
 
     def initialize_walkers(self):
+        """
+
+        Returns
+        -------
+
+        """
         center = []
         [center.append(np.array(val).ravel())  
          for var_name in self.config['mcmc']['variables'] 
@@ -327,6 +374,18 @@ class ErrorBudget(ExosimsWrapper):
         return walker_pos
 
     def update_attributes(self, subsystem=None, name=None, value=None):
+        """
+
+        Parameters
+        ----------
+        subsystem
+        name
+        value
+
+        Returns
+        -------
+
+        """
         if name is not None:
             try:
                 self.exosims_pars_dict[subsystem][0][name] = value
@@ -334,6 +393,16 @@ class ErrorBudget(ExosimsWrapper):
                 self.exosims_pars_dict[name][0] = value
 
     def update_attributes_mcmc(self, values):
+        """
+
+        Parameters
+        ----------
+        values
+
+        Returns
+        -------
+
+        """
         for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
                 template = np.array(self.config['mcmc']['variables'][var_name]
@@ -372,6 +441,16 @@ class ErrorBudget(ExosimsWrapper):
                 print(var_name+" not found in attributes list")
 
     def log_prior(self, values):
+        """
+
+        Parameters
+        ----------
+        values
+
+        Returns
+        -------
+
+        """
         joint_prob = 0.0
         counter = 0
         for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
@@ -399,6 +478,16 @@ class ErrorBudget(ExosimsWrapper):
         return joint_prob 
 
     def log_merit(self, values):
+        """
+
+        Parameters
+        ----------
+        values
+
+        Returns
+        -------
+
+        """
         self.update_attributes_mcmc(values)
         run_json = self.write_temp_json()
         self.trash_can.append(run_json)
@@ -417,6 +506,19 @@ class ErrorBudget(ExosimsWrapper):
                     C_z, C_ez, C_dc, C_rn, C_star 
 
     def run(self, subsystem=None, name=None, value=None, clean_files=True):
+        """
+
+        Parameters
+        ----------
+        subsystem
+        name
+        value
+        clean_files
+
+        Returns
+        -------
+
+        """
         self.initialize_for_exosims()
         self.update_attributes(subsystem=subsystem, name=name, value=value)
 
@@ -430,6 +532,12 @@ class ErrorBudget(ExosimsWrapper):
             self.clean_files()
 
     def run_mcmc(self):
+        """
+
+        Returns
+        -------
+
+        """
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
@@ -481,12 +589,29 @@ class ErrorBudget(ExosimsWrapper):
         return sampler
 
     def clean_files(self):
+        """
+
+        Returns
+        -------
+
+        """
         for path in self.trash_can:
             if os.path.isfile(path):
                 os.remove(path)
 
 
 def log_probability(values, error_budget):
+    """
+
+    Parameters
+    ----------
+    values
+    error_budget
+
+    Returns
+    -------
+
+    """
     log_prior = error_budget.log_prior(values)
     if np.isinf(log_prior):
         return -np.inf, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0\
@@ -503,21 +628,16 @@ def log_probability(values, error_budget):
 
 class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget, output_file_name=''):
-        '''
+        """
 
-        :param config: dict
-            The configuration for the ebs run.
-        :param parameter: str
-            The name of the parameter being swept over.
-        :param values: array
-            The values of the parameter to be swept over
-        :param error_budget: ErrorBudget
-            ErrorBudget object to use for the sweep.
-        :param output_file_name: str
-            name of the output file
-        :param is_exosims_param: bool
-            If True will feed the parameter into EXOSIMS to be swept over
-        '''
+        Parameters
+        ----------
+        config
+        parameter
+        values
+        error_budget
+        output_file_name
+        """
         self.config = config
         self.input_dir = self.config["paths"]["input"]
 
@@ -542,6 +662,21 @@ class ParameterSweep:
         }
 
     def plot_output(self, spectral_dict, parameter, values, int_times, save_dir, save_name):
+        """
+
+        Parameters
+        ----------
+        spectral_dict
+        parameter
+        values
+        int_times
+        save_dir
+        save_name
+
+        Returns
+        -------
+
+        """
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
         plt.suptitle(f"Required Integration time (hr, SNR=7) vs. {parameter}", fontsize=20)
@@ -560,6 +695,12 @@ class ParameterSweep:
         plt.show()
 
     def run_sweep(self):
+        """
+
+        Returns
+        -------
+
+        """
         # 3 contrasts, 5 stars, 3 zones
         for i, value in enumerate(self.values):
             if self.parameter == 'contrast':
