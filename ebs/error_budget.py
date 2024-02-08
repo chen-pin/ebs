@@ -631,7 +631,7 @@ def log_probability(values, error_budget):
 
 
 class ParameterSweep:
-    def __init__(self, config, parameter, values, error_budget, output_file_name=''):
+    def __init__(self, config, parameter, values, error_budget, save_output_dict=False):
         """
 
         Parameters
@@ -644,6 +644,9 @@ class ParameterSweep:
         """
         self.config = config
         self.input_dir = self.config["paths"]["input"]
+        self.output_dir = self.config["paths"]["output"]
+
+        self.save_output_dict = save_output_dict
 
         self.parameter, self.subparameter = parameter
         self.values = values
@@ -728,4 +731,7 @@ class ParameterSweep:
                 arr[i] = np.array(getattr(self.error_budget, key))
                 self.result_dict[key] = arr
 
+        if self.save_output_dict:
+            with open(self.output_dir + '/' + f'{self.parameter}_sweep_results.pkl', 'wb') as f:
+                pickle.dump(self.result_dict, f)
         return self.result_dict, self.error_budget
