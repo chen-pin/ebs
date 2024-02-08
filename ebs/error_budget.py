@@ -29,7 +29,7 @@ class ExosimsWrapper:
         dictionary of configuration parameters.
     """
     def __init__(self, config):
-
+        # pull relevant values from the config
         self.working_angles = config["working_angles"]
         hip_numbers = [str(config['targets'][star]['HIP']) for star in config['targets']]
         self.target_list = [f"HIP {n}" for n in hip_numbers]
@@ -37,6 +37,7 @@ class ExosimsWrapper:
         self.eepsr = [config['targets'][star]['eepsr'] for star in config['targets']]
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
+        # intitialize output arrays
         self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
@@ -46,7 +47,6 @@ class ExosimsWrapper:
         self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
-
         self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
     def run_exosims(self, json_file):
@@ -59,7 +59,26 @@ class ExosimsWrapper:
 
         Returns
         -------
-
+        int_times: ndarray
+            integration times for each object at each working angle.
+        C_p: ndarray
+            Planet signal electron count rate (1/s).
+        C_b: ndarray
+            Background noise electron count rate (1/s).
+        C_sp: ndarray
+            Residual speckle spatial structure (systematic error) (1/s).
+        C_sr: ndarray
+            Starlight residual count rate (1/s).
+        C_z: ndarray
+            Local zodi count rate (1/s).
+        C_ez: ndarray
+            Exozodi count rate (1/s).
+        C_dc: ndarray
+            Dark current count rate (1/s).
+        C_rn: ndarray
+            Readout noise (1/s).
+        C_star: ndarray
+            Non-coronagraphic star count rate (1/s).
         """
         n_angles = len(self.working_angles)
         sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
@@ -124,7 +143,7 @@ class ExosimsWrapper:
 class ErrorBudget(ExosimsWrapper):
     """
     Exposure time calculator incorporating dynamical wavefront errors and
-    WFS&C. Also can implement the Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
+    WFS&C. Can also implement the Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
 
     Parameters
     ----------
@@ -170,6 +189,7 @@ class ErrorBudget(ExosimsWrapper):
     @property
     def delta_contrast(self):
         """Compute change in contrast due to residual WFE and assign the array to `self.ppFact`.
+
         Reference
         ---------
         - See <Post-Processing Factor> document for mathematical description
@@ -203,7 +223,6 @@ class ErrorBudget(ExosimsWrapper):
         Load the JSON input file, which contains reference EXOSIMS parameters
         as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter
         dictionary to `self.input_dict`.
-
         """
         with open(os.path.join(self.input_dir, json_file)) as input_json:
             input_dict = js.load(input_json)
@@ -213,7 +232,6 @@ class ErrorBudget(ExosimsWrapper):
         """
         Load CSV file containing contrast vs. angular separation values into
         ndarray and assign to `self.contrast' and `self.angles'.
-
         """
         path = os.path.join(self.input_dir, self.contrast_filename)
         self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
@@ -291,7 +309,9 @@ class ErrorBudget(ExosimsWrapper):
             print("Need to assign angle values to write ppFact FITS file")
     
     def write_csv(self, contrast_or_throughput):
-        """
+        """Write the contrast or throughput values to a CSV file.
+
+        This then allows these files to be saved for future reference or application.
 
         Parameters
         ----------
@@ -318,12 +338,8 @@ class ErrorBudget(ExosimsWrapper):
             print("Need to assign angle values to write CSV file")
 
     def initialize_for_exosims(self):
-        """
+        """Intitializes the EXOSIMS parameter dict with values from the config and reference JSON."""
 
-        Returns
-        -------
-
-        """
         config = self.config
 
         contrast_path = os.path.join(self.input_dir, self.contrast_filename)
@@ -357,7 +373,7 @@ class ErrorBudget(ExosimsWrapper):
 
         Returns
         -------
-
+        walker_pos:
         """
         center = []
         [center.append(np.array(val).ravel())  
@@ -379,17 +395,19 @@ class ErrorBudget(ExosimsWrapper):
         return walker_pos
 
     def update_attributes(self, subsystem=None, name=None, value=None):
-        """
+        """Updates the EXOSIMS parameter dict for the subsystem and name with the value.
+
+        For example if subsystem = scienceInstruments and name = QE then
+        self.exosims_pars_dict["scienceInstruments"]["QE] will take on the value.
 
         Parameters
         ----------
-        subsystem
-        name
-        value
-
-        Returns
-        -------
-
+        subsystem: str
+            Name of subsystem to update.
+        name: str
+            Name of the variable to update.
+        value: float or int or str or bool
+            Value to update the variable to.
         """
         if name is not None:
             try:
@@ -403,10 +421,6 @@ class ErrorBudget(ExosimsWrapper):
         Parameters
         ----------
         values
-
-        Returns
-        -------
-
         """
         for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
@@ -415,7 +429,7 @@ class ErrorBudget(ExosimsWrapper):
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
                 attr_val = getattr(self, var_name)
-                if type(attr_val) == float or type(attr_val)==np.float64:
+                if type(attr_val) == float or type(attr_val) == np.float64:
                     attr_val = use_values[0]
                 else:
                     attr_val[indices] = use_values
@@ -454,7 +468,7 @@ class ErrorBudget(ExosimsWrapper):
 
         Returns
         -------
-
+        joint_prob:
         """
         joint_prob = 0.0
         counter = 0
@@ -511,18 +525,23 @@ class ErrorBudget(ExosimsWrapper):
                     C_z, C_ez, C_dc, C_rn, C_star 
 
     def run(self, subsystem=None, name=None, value=None, clean_files=True):
-        """
+        """Main method for running EBS not in MCMC mode.
+
+        Updates the variable defined by the subsystem and name with the given value before
+        generating all the necessary files to run EXOSIMS as specified by the config and input
+        CSV files. If no subsystem or name is given then EXOSIMS is just run with the input CSV files and
+        config.
 
         Parameters
         ----------
-        subsystem
-        name
-        value
-        clean_files
-
-        Returns
-        -------
-
+        subsystem: str
+            Name of subsystem to update.
+        name: str
+            Name of the variable to update.
+        value: float or int or str or bool
+            Value to update the variable to.
+        clean_files: bool
+            If True will remove temporary intermediate files after they are used.
         """
         self.initialize_for_exosims()
         self.update_attributes(subsystem=subsystem, name=name, value=value)
@@ -537,11 +556,10 @@ class ErrorBudget(ExosimsWrapper):
             self.clean_files()
 
     def run_mcmc(self):
-        """
-
+        """Main method for running EBS in MCMC mode.
         Returns
         -------
-
+        sampler: emcee.EnsembleSampler
         """
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
@@ -594,12 +612,7 @@ class ErrorBudget(ExosimsWrapper):
         return sampler
 
     def clean_files(self):
-        """
-
-        Returns
-        -------
-
-        """
+        """Deletes all files in the trash_can"""
         for path in self.trash_can:
             if os.path.isfile(path):
                 os.remove(path)
@@ -637,11 +650,16 @@ class ParameterSweep:
 
         Parameters
         ----------
-        config
-        parameter
-        values
-        error_budget
-        output_file_name
+        config: dict
+            Config dict generated from the YAML.
+        parameter: (str, str)
+            (subsystem, name) of the parameter to be swept over.
+        values: ndarray or list
+            Values to sweep over.
+        error_budget: ErrorBudget
+            Initialized ErrorBudget object to use for the sweep. Only the parameter will be iterated over.
+        output_file_name: str
+            Name of the output file to store the
         """
         self.config = config
         self.input_dir = self.config["paths"]["input"]
@@ -654,7 +672,6 @@ class ParameterSweep:
         self.result_dict = {}
         self.error_budget = error_budget
         self.error_budget.load_csv_contrast()
-        self.output_file_name = output_file_name
         self.angles = self.error_budget.angles
         self.result_dict = {
             'C_p': np.empty((len(values), len(config['targets']), 3)),
@@ -670,20 +687,21 @@ class ParameterSweep:
         }
 
     def plot_output(self, spectral_dict, parameter, values, int_times, save_dir, save_name):
-        """
+        """Saves and displays a results plot of intergation times vs. sweep parameter
 
         Parameters
         ----------
-        spectral_dict
-        parameter
-        values
-        int_times
-        save_dir
-        save_name
-
-        Returns
-        -------
-
+        spectral_dict: dict
+        parameter: (str, str)
+            (subsystem, name) of the parameter that was swept over.
+        values: ndarray or list
+            Values that were swept over.
+        int_times: ndarray or list
+            Resulting integration time.
+        save_dir: str
+            Directory where to save the final plot.
+        save_name: str
+            Name of the final plot save file.
         """
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
@@ -703,11 +721,9 @@ class ParameterSweep:
         plt.show()
 
     def run_sweep(self):
-        """
+        """Runs the single parameter sweep
 
-        Returns
-        -------
-
+        Optionally saves the results dictionary to a pickle file.
         """
         # 3 contrasts, 5 stars, 3 zones
         for i, value in enumerate(self.values):
