@@ -13,6 +13,7 @@ import emcee
 import EXOSIMS.MissionSim as ems
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
+import pickle
 
 
 class ExosimsWrapper:
