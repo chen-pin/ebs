@@ -4,11 +4,11 @@ paths:
   temporary: ./temporary
 
 input_files:
-  contrast: test_contrast.csv
-  throughput: test_throughput.csv
-  wfe: test_wfe.csv
-  wfsc: test_wfsc.csv
-  sensitivity: test_sensitivity.csv
+  contrast: mcmc_contrast.csv
+  throughput: mcmc_throughput.csv
+  wfe: mcmc_wfe.csv
+  wfsc: mcmc_wfsc.csv
+  sensitivity: mcmc_sensitivity.csv
 
 json_file: test_ref.json  # An input specifying the 'unaberrated' observatory
 
