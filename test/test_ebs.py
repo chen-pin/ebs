@@ -24,7 +24,7 @@ def obs_mcmc():
     """
     Instantiate EXOSIMS object.
     """
-    t = ErrorBudget(config_file="./inputs/mcmc_config.yml")
+    t = ErrorBudget(config_file="./inputs/test_parameters_mcmc.yml")
     t.initialize_for_exosims()
     t.run(clean_files=True)
     return t

@@ -21,24 +21,61 @@ working_angles:  # In units of EEID (which is target dependent).
   - 1.0
   - 1.67
 
+#targets:
+#  star1:
+#    HIP: 57443
+#    spec_type: G2V
+#    eeid: 0.09858
+#    eepsr: 1.37e-10
+#    exo_zodi: 3.0
+#  star2:
+#    HIP: 15457
+#    spec_type: G5V
+#    eeid: 0.09981
+#    eepsr: 1.35e-10
+#    exo_zodi: 3.0
+#  star3:
+#    HIP: 72659
+#    spec_type: G7Ve
+#    eeid: 0.11012
+#    eepsr: 2.09e-10
+#    exo_zodi: 3.0 
+
 targets:
   star1:
-    HIP: 57443
-    spec_type: G2V
-    eeid: 0.09858
-    eepsr: 1.37e-10
+    HIP: 32439 A
+    spec_type: F8V
+    luminosity: 0.2615
+    eeid: 0.07423
+    eepsr: 6.34e-11
     exo_zodi: 3.0
   star2:
-    HIP: 15457
+    HIP: 77052 A
     spec_type: G5V
-    eeid: 0.09981
-    eepsr: 1.35e-10
+    luminosity: -0.0788
+    eeid: 0.06174
+    eepsr: 1.39e-10
     exo_zodi: 3.0
   star3:
-    HIP: 72659
-    spec_type: G7Ve
-    eeid: 0.11012
-    eepsr: 2.09e-10
+    HIP: 79672 
+    spec_type: G2Va
+    luminosity: 0.0391
+    eeid: 0.07399
+    eepsr: 1.06e-10
+    exo_zodi: 3.0
+  star4:
+    HIP: 26779 
+    spec_type: K1V
+    luminosity: -0.3209
+    eeid: 0.05633
+    eepsr: 2.42e-10
+    exo_zodi: 3.0
+  star5:
+    HIP: 113283
+    spec_type: K4Ve
+    luminosity: -0.70
+    eeid: 0.05829
+    eepsr: 5.89e-10
     exo_zodi: 3.0
 
 
