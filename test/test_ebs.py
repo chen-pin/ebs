@@ -71,7 +71,6 @@ def test_exposure_time(obs):
 
     """
     snr = obs.exosims_pars_dict["observingModes"][0]["SNR"]
-    print("snr = {}".format(snr))
     C_b = np.array(obs.C_b)
     C_p = np.array(obs.C_p)
     C_sp = np.array(obs.C_sp)
@@ -156,25 +155,19 @@ def test_mcmc_initialize_walkers(obs_mcmc):
                              , 4.95E-7, 4.95E-3, 4.95E-7, 4.95E-3
                              , 4.95E-7, 4.95E-3, 4.95E-7, 4.95E-3] 
                              + 6*[1.99E-10] + 6*[0.14925])
-    print(f"upper_bounds:\n{upper_bounds}")
-    print(f"lower_bounds:\n{lower_bounds}")
-
     assert states.shape == (nwalkers, ndim)
     for state in states:
-        print(f"state:\n{state}")
         assert (lower_bounds <= state).all() and (state <= upper_bounds).all()
     obs_mcmc.clean_files()
 
 
 def test_mcmc_update_attributes(obs_mcmc):
     state = obs_mcmc.initialize_walkers()[0]
-    print(f"STATE: {state}")
     obs_mcmc.update_attributes_mcmc(state)
     assert obs_mcmc.idark == state[0]
     indices = (np.array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5])
                , np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]))
     assert (obs_mcmc.wfsc_factor[indices] == state[1:13]).all()
-    print(f"CONTRAST:  {obs_mcmc.contrast}")
     assert (obs_mcmc.contrast == state[13:19]).all()
     assert (obs_mcmc.throughput == state[19:]).all()
     obs_mcmc.clean_files()
@@ -205,9 +198,6 @@ def test_mcmc_log_probability(obs_mcmc):
         log_merit = obs_mcmc.log_merit(state)[0]
         log_probability = log_prior + log_merit
         if i == 0:
-            print(f"LOG PRIOR:  {log_prior}")
-            print(f"LOG MERIT:  {log_merit}")
-            print(f"LOG PROBABILITY:  {log_probability}")
             assert log_prior == 0.0
             assert log_merit == 0.0
             assert log_probability == 0.0
