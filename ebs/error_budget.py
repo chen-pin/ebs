@@ -1,7 +1,7 @@
 """Exposure-time calculations based on coronagraphic input parameters
 
 """
-import os, glob, time, shutil
+import os, glob, time, shutil, datetime
 import numpy as np
 import json as js
 import yaml 
@@ -716,10 +716,13 @@ class ParameterSweep:
         plt.savefig(os.path.join(save_dir, save_name))
         plt.show()
 
-    def run_sweep(self):
+    def run_sweep(self, save_output_dict=True):
         """Runs the single parameter sweep
 
-        Optionally saves the results dictionary to a pickle file.
+        Parameters
+        ----------
+        save_output_dict: bool
+            If True saves the results dictionary to a pickle file.
         """
         # 3 contrasts, 5 stars, 3 zones
         for i, value in enumerate(self.values):
@@ -744,7 +747,13 @@ class ParameterSweep:
                 arr[i] = np.array(getattr(self.error_budget, key))
                 self.result_dict[key] = arr
 
-        if self.save_output_dict:
-            with open(self.output_dir + '/' + f'{self.parameter}_sweep_results.pkl', 'wb') as f:
+        if save_output_dict:
+            time_stamp = time.time()
+            dt_str = datetime.datetime.fromtimestamp(time_stamp).strftime("%Y-%m-%dT%H-%M-%S")
+            if self.subparameter is not None:
+                save_name = self.output_dir + '/' + f'{self.parameter}_{self.subparameter}_sweep_results_{dt_str}.pkl'
+            else:
+                save_name = self.output_dir + '/' + f'{self.parameter}_sweep_results_{dt_str}.pkl'
+            with open(save_name, 'wb') as f:
                 pickle.dump(self.result_dict, f)
         return self.result_dict, self.error_budget
