@@ -38,8 +38,7 @@ def main():
 
     error_budget = ErrorBudget(args.config)
 
-    sweep = ParameterSweep(config, parameter=(parameter, subparameter), values=values, error_budget=error_budget,
-                           output_file_name='out')
+    sweep = ParameterSweep(config, parameter=(parameter, subparameter), values=values, error_budget=error_budget)
 
     result_dict, error_budget = sweep.run_sweep()
     # Specify Spectral Type of stars in target_list

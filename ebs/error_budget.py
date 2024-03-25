@@ -645,7 +645,7 @@ def log_probability(values, error_budget):
 
 
 class ParameterSweep:
-    def __init__(self, config, parameter, values, error_budget, save_output_dict=False):
+    def __init__(self, config, parameter, values, error_budget):
         """
 
         Parameters
@@ -658,14 +658,10 @@ class ParameterSweep:
             Values to sweep over.
         error_budget: ErrorBudget
             Initialized ErrorBudget object to use for the sweep. Only the parameter will be iterated over.
-        output_file_name: str
-            Name of the output file to store the
         """
         self.config = config
         self.input_dir = self.config["paths"]["input"]
         self.output_dir = self.config["paths"]["output"]
-
-        self.save_output_dict = save_output_dict
 
         self.parameter, self.subparameter = parameter
         self.values = values
