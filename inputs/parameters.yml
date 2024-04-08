@@ -4,11 +4,11 @@ paths:
   temporary: ./temp
 
 input_files:
-  contrast: example_contrast.csv
-  throughput: example_throughput.csv
-  wfe: example_wfe.csv
-  wfsc: example_wfsc.csv
-  sensitivity: example_sensitivity.csv
+  contrast: baseline_contrast.csv
+  throughput: baseline_throughput.csv
+  wfe: baseline_wfe.csv
+  wfsc: baseline_wfsc.csv
+  sensitivity: baseline_sensitivity.csv
 
 json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
 
@@ -68,15 +68,15 @@ plotting:
 # MCMC Parameters
 mcmc:
   parallel: true  # True: multiprocess. False: single process
-  save: true  # Automatically save key I/O files for the run
-  new_run: false  # If false, <save> above must be set to true.
+  save: false  # Automatically save key I/O files for the run
+  new_run: true  # If false, <save> above must be set to true.
                   # If false, the run is a contiuation of a previous run,
                   # and the user must specify below the full path to the
                   # emcee.Backend file.
   previous_backend_path: ./outputs/saved_run_20231204t172750/backend.hdf
 #  previous_backend_: null
-  nwalkers: 368
-  nsteps: 10000
+  nwalkers: 46
+  nsteps: 3
   merit:
     ftn: chi_square
     args:
