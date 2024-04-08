@@ -3,6 +3,7 @@
 output/
 outputs/
 temporary/
+temp/
 inputs/temp*.json
 #inputs/*pp.json
 inputs/ppFact.fits
