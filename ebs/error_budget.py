@@ -49,68 +49,58 @@ class ExosimsWrapper:
         self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
         self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
-    def run_exosims(self, json_file):
-        """ runs EXOSIMS using the parameters in the json_file.
-
-        Parameters
-        ----------
-        json_file: str
-            fully qualified file path to a JSON file containing all EXOSIMS input parameters.
-
-        Returns
-        -------
-        int_times: ndarray
-            integration times for each object at each working angle.
-        C_p: ndarray
-            Planet signal electron count rate (1/s).
-        C_b: ndarray
-            Background noise electron count rate (1/s).
-        C_sp: ndarray
-            Residual speckle spatial structure (systematic error) (1/s).
-        C_sr: ndarray
-            Starlight residual count rate (1/s).
-        C_z: ndarray
-            Local zodi count rate (1/s).
-        C_ez: ndarray
-            Exozodi count rate (1/s).
-        C_dc: ndarray
-            Dark current count rate (1/s).
-        C_rn: ndarray
-            Readout noise (1/s).
-        C_star: ndarray
-            Non-coronagraphic star count rate (1/s).
+    def run_exosims(self, file_cleanup=True):
         """
-        n_angles = len(self.working_angles)
-        sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
-        for j, t in enumerate(self.target_list):
-            if t not in sim.TargetList.Name:
-                self.target_list[j] += " A"
-                assert self.target_list[j] in sim.TargetList.Name
-        sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t in self.target_list])
+        Run EXOSIMS to generate results, including exposure times 
+        required for reaching specified SNR.  
 
+        """
+        C_p = []
+        C_b = []
+        C_sp = []
+        C_sr = []
+        C_z = []
+        C_ez = []
+        C_dc = []
+        C_rn = []
+        C_star = []
+        wa_coefs = self.config["working_angles"]
+        n_angles = len(wa_coefs)
+        target_list = self.target_list
+        eeid = self.eeid
+        eepsr = self.eepsr
+        exo_zodi = self.exo_zodi
+        sim = ems.MissionSim(use_core_thruput_for_ez=False
+                             , **deepcopy(self.exosims_pars_dict))
+        
+        # identify targets of interest
+        sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
+                         in target_list])
+        
         # assemble information needed for integration time calculation:
-
+        
         # we have only one observing mode defined, so use that
         mode = sim.OpticalSystem.observingModes[0]
-
+        
         # use the nominal local zodi and exozodi values
         fZ = sim.ZodiacalLight.fZ0
-
-        # now we loop through the targets of interest and compute integration
+        
+        # now we loop through the targets of interest and compute integration 
         # times for each:
+        int_time = np.empty((len(target_list), n_angles))*u.d
         for j, sInd in enumerate(sInds):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
             # matters a lot when you have real performane curves
             # target planet deltaMag (evaluate for a range):
-            WA = np.array(self.working_angles) * self.eeid[j]
-            dMags = 5.0 * np.log10(np.array(self.working_angles)) - 2.5 * np.log10(self.eepsr[j])
-            self.int_time[j] = sim.OpticalSystem.calc_intTime(
+            WA = np.array(wa_coefs)*eeid[j]
+            dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
+            int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
-                [self.exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * n_angles
-                * sim.ZodiacalLight.fEZ0.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
+                    * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
                 mode
@@ -119,25 +109,116 @@ class ExosimsWrapper:
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
-                [self.exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * n_angles
-                * sim.ZodiacalLight.fEZ0.unit,
+                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
+                    * sim.ZodiacalLight.fEZ0.unit,
                 dMags,
                 WA * u.arcsec,
                 mode,
                 True
             )
-            self.C_p[j] = counts[0]
-            self.C_b[j] = counts[1]
-            self.C_sp[j] = counts[2]
-            self.C_sr[j] = counts[3]["C_sr"]
-            self.C_z[j] = counts[3]["C_z"]
-            self.C_ez[j] = counts[3]["C_ez"]
-            self.C_dc[j] = counts[3]["C_dc"]
-            self.C_rn[j] = counts[3]["C_rn"]
-            self.C_star[j] = counts[3]["C_star"]
+            C_p.append(counts[0])
 
-        return (self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn,
-                self.C_star)
+            C_b.append(counts[1])
+            C_sp.append(counts[2])
+            C_sr.append(counts[3]["C_sr"])
+            C_z.append(counts[3]["C_z"])
+            C_ez.append(counts[3]["C_ez"])
+            C_dc.append(counts[3]["C_dc"])
+            C_rn.append(counts[3]["C_rn"])
+            C_star.append(counts[3]["C_star"])
+        if file_cleanup:
+            self.clean_files()
+        return int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+
+    # def run_exosims(self, json_file):
+        # """ runs EXOSIMS using the parameters in the json_file.
+
+        # Parameters
+        # ----------
+        # json_file: str
+            # fully qualified file path to a JSON file containing all EXOSIMS input parameters.
+
+        # Returns
+        # -------
+        # int_times: ndarray
+            # integration times for each object at each working angle.
+        # C_p: ndarray
+            # Planet signal electron count rate (1/s).
+        # C_b: ndarray
+            # Background noise electron count rate (1/s).
+        # C_sp: ndarray
+            # Residual speckle spatial structure (systematic error) (1/s).
+        # C_sr: ndarray
+            # Starlight residual count rate (1/s).
+        # C_z: ndarray
+            # Local zodi count rate (1/s).
+        # C_ez: ndarray
+            # Exozodi count rate (1/s).
+        # C_dc: ndarray
+            # Dark current count rate (1/s).
+        # C_rn: ndarray
+            # Readout noise (1/s).
+        # C_star: ndarray
+            # Non-coronagraphic star count rate (1/s).
+        # """
+        # n_angles = len(self.working_angles)
+        # sim = ems.MissionSim(json_file, use_core_thruput_for_ez=False)
+        # for j, t in enumerate(self.target_list):
+            # if t not in sim.TargetList.Name:
+                # self.target_list[j] += " A"
+                # assert self.target_list[j] in sim.TargetList.Name
+        # sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t in self.target_list])
+
+        # # assemble information needed for integration time calculation:
+
+        # # we have only one observing mode defined, so use that
+        # mode = sim.OpticalSystem.observingModes[0]
+
+        # # use the nominal local zodi and exozodi values
+        # fZ = sim.ZodiacalLight.fZ0
+
+        # # now we loop through the targets of interest and compute integration
+        # # times for each:
+        # for j, sInd in enumerate(sInds):
+            # # choose angular separation for coronagraph performance
+            # # this doesn't matter for a flat contrast/throughput, but
+            # # matters a lot when you have real performane curves
+            # # target planet deltaMag (evaluate for a range):
+            # WA = np.array(self.working_angles) * self.eeid[j]
+            # dMags = 5.0 * np.log10(np.array(self.working_angles)) - 2.5 * np.log10(self.eepsr[j])
+            # self.int_time[j] = sim.OpticalSystem.calc_intTime(
+                # sim.TargetList,
+                # [sInd] * n_angles,
+                # [fZ.value] * n_angles * fZ.unit,
+                # [self.exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * n_angles
+                # * sim.ZodiacalLight.fEZ0.unit,
+                # dMags,
+                # WA * u.arcsec,
+                # mode
+            # )
+            # counts = sim.OpticalSystem.Cp_Cb_Csp(
+                # sim.TargetList,
+                # [sInd] * n_angles,
+                # [fZ.value] * n_angles * fZ.unit,
+                # [self.exo_zodi[j] * sim.ZodiacalLight.fEZ0.value] * n_angles
+                # * sim.ZodiacalLight.fEZ0.unit,
+                # dMags,
+                # WA * u.arcsec,
+                # mode,
+                # True
+            # )
+            # self.C_p[j] = counts[0]
+            # self.C_b[j] = counts[1]
+            # self.C_sp[j] = counts[2]
+            # self.C_sr[j] = counts[3]["C_sr"]
+            # self.C_z[j] = counts[3]["C_z"]
+            # self.C_ez[j] = counts[3]["C_ez"]
+            # self.C_dc[j] = counts[3]["C_dc"]
+            # self.C_rn[j] = counts[3]["C_rn"]
+            # self.C_star[j] = counts[3]["C_star"]
+
+        # return (self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn,
+                # self.C_star)
 
 
 class ErrorBudget(ExosimsWrapper):
