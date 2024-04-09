@@ -11,6 +11,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import emcee
 import EXOSIMS.MissionSim as ems
+from copy import deepcopy
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 import pickle
@@ -38,16 +39,16 @@ class ExosimsWrapper:
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
         # intitialize output arrays
-#        self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_sr = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_z = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
-#        self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
+        self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_sr = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_z = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
+        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
+        self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
     def run_exosims(self, file_cleanup=True):
         """
@@ -55,15 +56,15 @@ class ExosimsWrapper:
         required for reaching specified SNR.  
 
         """
-        C_p = []
-        C_b = []
-        C_sp = []
-        C_sr = []
-        C_z = []
-        C_ez = []
-        C_dc = []
-        C_rn = []
-        C_star = []
+        # C_p = []
+        # C_b = []
+        # C_sp = []
+        # C_sr = []
+        # C_z = []
+        # C_ez = []
+        # C_dc = []
+        # C_rn = []
+        # C_star = []
         wa_coefs = self.config["working_angles"]
         n_angles = len(wa_coefs)
         target_list = self.target_list
@@ -95,7 +96,7 @@ class ExosimsWrapper:
             # target planet deltaMag (evaluate for a range):
             WA = np.array(wa_coefs)*eeid[j]
             dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
-            int_time[j] = sim.OpticalSystem.calc_intTime(
+            self.int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
@@ -116,19 +117,28 @@ class ExosimsWrapper:
                 mode,
                 True
             )
-            C_p.append(counts[0])
-
-            C_b.append(counts[1])
-            C_sp.append(counts[2])
-            C_sr.append(counts[3]["C_sr"])
-            C_z.append(counts[3]["C_z"])
-            C_ez.append(counts[3]["C_ez"])
-            C_dc.append(counts[3]["C_dc"])
-            C_rn.append(counts[3]["C_rn"])
-            C_star.append(counts[3]["C_star"])
+#            self.C_p.append(counts[0])
+#
+#            self.C_b.append(counts[1])
+#            self.C_sp.append(counts[2])
+#            self.C_sr.append(counts[3]["C_sr"])
+#            self.C_z.append(counts[3]["C_z"])
+#            self.C_ez.append(counts[3]["C_ez"])
+#            self.C_dc.append(counts[3]["C_dc"])
+#            self.C_rn.append(counts[3]["C_rn"])
+#            self.C_star.append(counts[3]["C_star"])
+            self.C_p[j] = counts[0]
+            self.C_b[j] = counts[1]
+            self.C_sp[j] = counts[2]
+            self.C_sr[j] = counts[3]["C_sr"]
+            self.C_z = counts[3]["C_z"]
+            self.C_ez = counts[3]["C_ez"]
+            self.C_dc= counts[3]["C_dc"]
+            self.C_rn = counts[3]["C_rn"]
+            self.C_star = counts[3]["C_star"]
         if file_cleanup:
             self.clean_files()
-        return int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star
+        return self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn, self.C_star
 
     # def run_exosims(self, json_file):
         # """ runs EXOSIMS using the parameters in the json_file.
