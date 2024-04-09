@@ -38,16 +38,16 @@ class ExosimsWrapper:
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
         # intitialize output arrays
-        self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_sr = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_z = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
-        self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
+#        self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_sr = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_z = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
+#        self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
 
     def run_exosims(self, file_cleanup=True):
         """
@@ -299,15 +299,15 @@ class ErrorBudget(ExosimsWrapper):
         ppFact = self.delta_contrast/self.contrast
         return np.where(ppFact>1.0, 1.0, ppFact)
 
-    def load_json(self, json_file):
-        """
-        Load the JSON input file, which contains reference EXOSIMS parameters
-        as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter
-        dictionary to `self.input_dict`.
-        """
-        with open(os.path.join(self.input_dir, json_file)) as input_json:
-            input_dict = js.load(input_json)
-        self.exosims_pars_dict = input_dict
+#    def load_json(self, json_file):
+#        """
+#        Load the JSON input file, which contains reference EXOSIMS parameters
+#        as well as WFE, sensitivity, and WFS&C parameters.  Assign parameter
+#        dictionary to `self.input_dict`.
+#        """
+#        with open(os.path.join(self.input_dir, json_file)) as input_json:
+#            input_dict = js.load(input_json)
+#        self.exosims_pars_dict = input_dict
 
     def load_csv_contrast(self):
         """
@@ -318,50 +318,50 @@ class ErrorBudget(ExosimsWrapper):
         self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
 
-    def update_dict(self, throughput_path, contrast_path, wfe, wfsc, sensitivity):
-        """Updates self.exosims_pars_dict with the appropriate values from the input CSV files.
+#    def update_dict(self, throughput_path, contrast_path, wfe, wfsc, sensitivity):
+#        """Updates self.exosims_pars_dict with the appropriate values from the input CSV files.
+#
+#        Parameters
+#        ----------
+#        throughput_path: str
+#            fully qualified file path to the throughput CSV.
+#        contrast_path: str
+#            fully qualified file path to the contrast CSV.
+#        wfe: list or numpy array
+#            wavefront error values.
+#        wfsc: list or numpy array
+#            wavefront sensing and control values.
+#        sensitivity: list or numpy array
+#            sensitivity values.
+#        """
+#
+#        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
+#        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
+#
+#        self.exosims_pars_dict['wfe'] = wfe.tolist()
+#        self.exosims_pars_dict['wfsc_factor'] = wfsc.tolist()
+#        self.exosims_pars_dict['sensitivity'] = sensitivity.tolist()
 
-        Parameters
-        ----------
-        throughput_path: str
-            fully qualified file path to the throughput CSV.
-        contrast_path: str
-            fully qualified file path to the contrast CSV.
-        wfe: list or numpy array
-            wavefront error values.
-        wfsc: list or numpy array
-            wavefront sensing and control values.
-        sensitivity: list or numpy array
-            sensitivity values.
-        """
-
-        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
-        self.exosims_pars_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
-
-        self.exosims_pars_dict['wfe'] = wfe.tolist()
-        self.exosims_pars_dict['wfsc_factor'] = wfsc.tolist()
-        self.exosims_pars_dict['sensitivity'] = sensitivity.tolist()
-
-    def write_temp_json(self, filename='temp.json'):
-        """Writes a temporary JSON file with the current values in self.exosims_pars_dict.
-
-        Intended to be the input JSON for running EXOSIMS.
-
-        Parameters
-        ----------
-        filename: str
-            name of the temporary JSON file
-
-        Returns
-        -------
-        path: str
-            fully qualified path to the temporary JSON file.
-        """
-        self.exosims_pars_dict["ppFact"] = self.ppFact_filename
-        path = os.path.join(self.temp_dir, filename)
-        with open(path, 'w') as f:
-            js.dump(self.exosims_pars_dict, f)
-        return path
+#    def write_temp_json(self, filename='temp.json'):
+#        """Writes a temporary JSON file with the current values in self.exosims_pars_dict.
+#
+#        Intended to be the input JSON for running EXOSIMS.
+#
+#        Parameters
+#        ----------
+#        filename: str
+#            name of the temporary JSON file
+#
+#        Returns
+#        -------
+#        path: str
+#            fully qualified path to the temporary JSON file.
+#        """
+#        self.exosims_pars_dict["ppFact"] = self.ppFact_filename
+#        path = os.path.join(self.temp_dir, filename)
+#        with open(path, 'w') as f:
+#            js.dump(self.exosims_pars_dict, f)
+#        return path
 
     def write_ppFact_fits(self, trash=False):
         """Writes the post-processing factor to a FITS file to be saved in self.temp_dir.
@@ -434,13 +434,19 @@ class ErrorBudget(ExosimsWrapper):
         self.sensitivity = read_csv(filename=os.path.join(self.input_dir, config['input_files']['sensitivity']),
                                     skiprows=1)
 
-        self.load_json(config["json_file"])
+#        self.load_json(config["json_file"])
+        self.exosims_pars_dict = config['initial_exosims']
 
-        self.update_dict(throughput_path, contrast_path, self.wfe, self.wfsc_factor, self.sensitivity)
+#        self.update_dict(throughput_path, contrast_path, self.wfe, self.wfsc_factor, self.sensitivity)
 
         self.write_ppFact_fits(trash=True)
 
         self.exosims_pars_dict['ppFact'] = self.ppFact_filename
+        self.exosims_pars_dict['cherryPickStars'] = self.target_list
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_contrast'] = contrast_path
+        self.exosims_pars_dict['starlightSuppressionSystems'][0]\
+            ['core_thruput'] = throughput_path
 
         for key in self.exosims_pars_dict['scienceInstruments'][0].keys():
             if key != 'optics' in dir(self):
@@ -589,10 +595,10 @@ class ErrorBudget(ExosimsWrapper):
 
         """
         self.update_attributes_mcmc(values)
-        run_json = self.write_temp_json()
-        self.trash_can.append(run_json)
-        int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = self.run_exosims(run_json)
-        self.clean_files()
+#        run_json = self.write_temp_json()
+#        self.trash_can.append(run_json)
+        int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = self.run_exosims()
+#        self.clean_files()
         if np.isnan(int_time.value).any():
             return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
                    , C_rn, C_star
@@ -627,11 +633,11 @@ class ErrorBudget(ExosimsWrapper):
         self.initialize_for_exosims()
         self.update_attributes(subsystem=subsystem, name=name, value=value)
 
-        run_json = self.write_temp_json()
+#        run_json = self.write_temp_json()
 
-        self.run_exosims(run_json)
+        self.run_exosims()
 
-        self.trash_can.append(run_json)
+#        self.trash_can.append(run_json)
 
         if clean_files:
             self.clean_files()
