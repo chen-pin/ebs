@@ -10,7 +10,65 @@ input_files:
   wfsc: mcmc_wfsc.csv
   sensitivity: mcmc_sensitivity.csv
 
-json_file: test_ref.json  # An input specifying the 'unaberrated' observatory
+# Basic EXOSIMS Parameters
+initial_exosims:
+    cachedir: /home/pinchen/exosims_cache
+    skipSaturationCalcs: true
+    filterBinaries: false
+    keepStarCatalog: true
+    minComp: 0
+    modules:
+      BackgroundSources: ' '
+      Completeness: ' '
+      Observatory: ' '
+      OpticalSystem: Nemati
+      PlanetPhysicalModel: ' '
+      PlanetPopulation: ' '
+      PostProcessing: ' '
+      SimulatedUniverse: ' '
+      StarCatalog: HWOMissionStars
+      SurveyEnsemble: ' '
+      SurveySimulation: ' '
+      TargetList: ' '
+      TimeKeeping: ' '
+      ZodiacalLight: ' '
+    obscurFac: 0.01
+    observingModes:
+    - SNR: 5.0
+      detectionMode: true
+      instName: CONS_NF_Imager
+      systName: coronagraph-550
+      timeMultiplier: 1.0
+#    ppFact: 0.01
+    pupilDiam: 6.52  # USORT enscribed diameter
+    scienceInstruments:
+    - CIC: 0.0021  # Ref Roman_Coronagraph_ETC
+      ENF: 1.0  # Parameter specific to EMCCDs
+      FoV: 4.75  
+      QE: 0.835  # ibid
+      idark: 3.0e-05  # ibid
+      name: CONS_NF_Imager
+      optics: 0.85
+      pixelNumber: 1024
+      pixelScale: 0.00928 # derived from FoV and pixelNumber
+      pixelSize: 1.3e-05  # ibid
+      sread: 1.7e-06  # ibid
+      texp: 3  # ibid
+#      Rs: 140  # parameter specific to spectrometers
+#      lensSamp: 4  # parameter specific to spectrometers
+    starlightSuppressionSystems:
+    - BW: 0.2
+      IWA: 0.04
+      OWA: 0.5
+      core_area: 0.000552
+#      core_contrast: ./test/test_contrast.csv
+#      core_thruput: ./test/test_throughput.csv
+      lam: 550.0
+      name: coronagraph-550
+      occ_trans: 0.4  # Rough estimate from Roman Coronagraph ETC
+      occulter: false
+      optics: 0.39  # 2 reflections @ 0.92, 13 reflections @ 0.98, 0.60 
+                    # in-band transmission at the photometric filter (EXO-C)
 
 # iter_values: [1.0e-10, 5.0e-5]
 iter_values: [0.8, 0.9]
