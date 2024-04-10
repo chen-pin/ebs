@@ -74,7 +74,8 @@ class ExosimsWrapper:
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
         
-        # identify targets of interest
+        print(f"TARGET_LIST:  {target_list}")
+        print(f"TARGETLIST NAME: {sim.TargetList.Name}")
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in target_list])
         
@@ -127,15 +128,15 @@ class ExosimsWrapper:
 #            self.C_dc.append(counts[3]["C_dc"])
 #            self.C_rn.append(counts[3]["C_rn"])
 #            self.C_star.append(counts[3]["C_star"])
-            self.C_p[j] = counts[0]
-            self.C_b[j] = counts[1]
-            self.C_sp[j] = counts[2]
-            self.C_sr[j] = counts[3]["C_sr"]
-            self.C_z = counts[3]["C_z"]
-            self.C_ez = counts[3]["C_ez"]
-            self.C_dc= counts[3]["C_dc"]
-            self.C_rn = counts[3]["C_rn"]
-            self.C_star = counts[3]["C_star"]
+            self.C_p[j] = counts[0].value
+            self.C_b[j] = counts[1].value
+            self.C_sp[j] = counts[2].value
+            self.C_sr[j] = counts[3]["C_sr"].value
+            self.C_z = counts[3]["C_z"].value
+            self.C_ez = counts[3]["C_ez"].value
+            self.C_dc= counts[3]["C_dc"].value
+            self.C_rn = counts[3]["C_rn"].value
+            self.C_star = counts[3]["C_star"].value
         if file_cleanup:
             self.clean_files()
         return self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn, self.C_star

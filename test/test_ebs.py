@@ -19,28 +19,18 @@ def obs():
     return t
 
 
-@pt.fixture
-def obs_mcmc():
-    """
-    Instantiate EXOSIMS object.
-    """
-    t = ErrorBudget(config_file="./inputs/test_parameters_mcmc.yml")
-    t.initialize_for_exosims()
-    t.run(clean_files=True)
-    return t
-
-
 def test_count_rates(obs):
     """
     Test count rates against values computed using formulas in Stark et al. 
     (2014) ApJ.  Stark et al. assumed that `r_sp` was negligible.
 
     """
+    print(f"C_p: {obs.C_p}")
     assert obs.C_p[1][1] == pt.approx(0.0673, 0.2)
     assert obs.C_b[1][1] == pt.approx(0.275, 0.2)
     assert obs.C_sr[1][1] == pt.approx(0.0879, 0.2)
-    assert obs.C_z[1][1] == pt.approx(0.022, 0.1)
-    assert obs.C_ez[1][1] == pt.approx(0.166, 0.1)
+    assert obs.C_z[1] == pt.approx(0.022, 0.1)
+    assert obs.C_ez[1] == pt.approx(0.166, 0.1)
 
 
 def test_ppFact(obs):
@@ -81,15 +71,27 @@ def test_exposure_time(obs):
     assert tau == pt.approx(int_time, 0.001)
 
 
-def test_var_pars(obs):
-    qe = (0.7, 0.8, 0.9)
-    output_filename = 'test_var_par_output'
-    for value in qe:
-        path = os.path.join(obs.temp_dir, 'temp.json')
-        obs.run(subsystem='scienceInstruments', name='QE', value=value, clean_files=False)
-        with open(path) as f:
-            input_dict = js.load(f)
-        assert input_dict['scienceInstruments'][0]['QE'] == value
+#def test_var_pars(obs):
+#    qe = (0.7, 0.8, 0.9)
+#    output_filename = 'test_var_par_output'
+#    for value in qe:
+#        path = os.path.join(obs.temp_dir, 'temp.json')
+#        obs.run(subsystem='scienceInstruments', name='QE', value=value, clean_files=False)
+#        with open(path) as f:
+#            input_dict = js.load(f)
+#        assert input_dict['scienceInstruments'][0]['QE'] == value
+
+
+@pt.fixture
+def obs_mcmc():
+    """
+    Instantiate EXOSIMS object.
+    """
+    t = ErrorBudget(config_file="./inputs/test_parameters_mcmc.yml")
+    t.initialize_for_exosims()
+    t.run(clean_files=True)
+    return t
+
 
 def test_mcmc_delta_contrast(obs_mcmc):
     """

@@ -12,8 +12,8 @@ input_files:
 
 # Basic EXOSIMS Parameters
 initial_exosims:
-    cachedir: /home/pinchen/exosims_cache
-    skipSaturationCalcs: true
+#    cachedir: /home/pinchen/exosims_cache
+#    skipSaturationCalcs: true
     ppFact: 1.0
     minComp: 0
     filterBinaries: false
@@ -79,7 +79,7 @@ working_angles:  # In units of EEID (which is target dependent).
 
 targets:
   star1:
-    HIP: 57443
+    HIP: 57443 A
     spec_type: G2V
     eeid: 0.09858
     eepsr: 1.37e-10
@@ -91,7 +91,7 @@ targets:
     eepsr: 1.35e-10
     exo_zodi: 3.0
   star3:
-    HIP: 72659
+    HIP: 72659 A
     spec_type: G7Ve
     eeid: 0.11012
     eepsr: 2.09e-10
