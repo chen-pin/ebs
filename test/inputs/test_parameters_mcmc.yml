@@ -12,7 +12,7 @@ input_files:
 
 # Basic EXOSIMS Parameters
 initial_exosims:
-    cachedir: /home/pinchen/exosims_cache
+    #cachedir: /home/pinchen/exosims_cache
     skipSaturationCalcs: true
     filterBinaries: false
     keepStarCatalog: true
