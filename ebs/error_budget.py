@@ -276,7 +276,7 @@ class ErrorBudget(ExosimsWrapper):
         self.contrast = read_csv(filename=contrast_path, skiprows=1)[:, 1]
         self.throughput = read_csv(filename=throughput_path, skiprows=1)[:, 1]
         self.wfe = read_csv(filename=os.path.join(self.input_dir, config['input_files']['wfe']), skiprows=1)
-        self.wfsc_factor = read_csv(filename=os.path.join(self.input_dir, config['input_files']['wfsc']), skiprows=1)
+        self.wfsc_factor = read_csv(filename=os.path.join(self.input_dir, config['input_files']['wfsc_factor']), skiprows=1)
         self.sensitivity = read_csv(filename=os.path.join(self.input_dir, config['input_files']['sensitivity']),
                                     skiprows=1)
 
