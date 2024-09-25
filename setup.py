@@ -14,8 +14,6 @@ setup(
     packages=find_packages(),
     install_requires=[],
     entry_points={
-        "console_scripts": [
-            "run_ebs=ebs.cli_interface:main"
-        ],
+        "console_scripts": ["run_ebs=ebs.cli_interface:main"],
     },
 )

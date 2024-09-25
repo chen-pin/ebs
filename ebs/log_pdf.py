@@ -19,4 +19,4 @@ def chi_square(x, center, scale, lower_bound=0.0, upper_bound=None):
     if upper_bound != None:
         if x > upper_bound:
             return -np.inf
-    return -0.5*((x-center)/scale)**2
+    return -0.5 * ((x - center) / scale) ** 2

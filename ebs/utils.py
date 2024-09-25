@@ -12,15 +12,17 @@ def read_csv(filename, skiprows=0):
     :param skiprows: int, number of rows to skip at the top of the csv file
     :return: numpy array, data contained in the csv file
     """
-    data = np.loadtxt(open(filename, "rb"), delimiter=',', skiprows=skiprows)
+    data = np.loadtxt(open(filename, "rb"), delimiter=",", skiprows=skiprows)
     return data
 
 
 def write_csv(savename, data, header):
-    np.savetxt(savename, data, delimiter=',', header=header)
+    np.savetxt(savename, data, delimiter=",", header=header)
 
 
-def update_json(json_file, wfe, wfsc, sensitivity, contrast_path, throughput_path):
+def update_json(
+    json_file, wfe, wfsc, sensitivity, contrast_path, throughput_path
+):
     """
     appends the wavefront error, sensitivity, and sensing and control coefficient to an existing JSON file. Also makes
     sure file paths in the JSON file are correct.
@@ -35,14 +37,18 @@ def update_json(json_file, wfe, wfsc, sensitivity, contrast_path, throughput_pat
     with open(json_file) as f:
         input_dict = js.load(f)
 
-    input_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
-    input_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
+    input_dict["starlightSuppressionSystems"][0][
+        "core_thruput"
+    ] = throughput_path
+    input_dict["starlightSuppressionSystems"][0][
+        "core_contrast"
+    ] = contrast_path
 
-    input_dict['wfe'] = wfe.tolist()
-    input_dict['wfsc_factor'] = wfsc.tolist()
-    input_dict['sensitivity'] = sensitivity.tolist()
+    input_dict["wfe"] = wfe.tolist()
+    input_dict["wfsc_factor"] = wfsc.tolist()
+    input_dict["sensitivity"] = sensitivity.tolist()
 
-    pp_json_name = json_file[:-5] + '_with_pp.json'
-    with open(pp_json_name, 'w') as f:
+    pp_json_name = json_file[:-5] + "_with_pp.json"
+    with open(pp_json_name, "w") as f:
         js.dump(input_dict, f, indent=4)
     return pp_json_name
