@@ -1,0 +1,364 @@
+./build/lib/ebs/cli_interface.py:3: [F401] 'ebs.utils.read_csv' imported but unused
+./build/lib/ebs/cli_interface.py:5: [F401] 'numpy as np' imported but unused
+./build/lib/ebs/cli_interface.py:7: [F401] 'os' imported but unused
+./build/lib/ebs/cli_interface.py:15: [E501] line too long (91 > 79 characters)
+./build/lib/ebs/cli_interface.py:17: [E501] line too long (100 > 79 characters)
+./build/lib/ebs/cli_interface.py:39: [E303] too many blank lines (2)
+./build/lib/ebs/cli_interface.py:41: [E501] line too long (113 > 79 characters)
+./build/lib/ebs/cli_interface.py:47: [E501] line too long (92 > 79 characters)
+./build/lib/ebs/cli_interface.py:50: [E501] line too long (105 > 79 characters)
+./build/lib/ebs/cli_interface.py:51: [E501] line too long (93 > 79 characters)
+./build/lib/ebs/cli_interface.py:52: [E501] line too long (119 > 79 characters)
+./build/lib/ebs/cli_interface.py:53: [E501] line too long (97 > 79 characters)
+./build/lib/ebs/error_budget.py:4: [F401] 'glob' imported but unused
+./build/lib/ebs/error_budget.py:4: [E401] multiple imports on one line
+./build/lib/ebs/error_budget.py:6: [F401] 'json as js' imported but unused
+./build/lib/ebs/error_budget.py:7: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:22: [E501] line too long (94 > 79 characters)
+./build/lib/ebs/error_budget.py:23: [E501] line too long (102 > 79 characters)
+./build/lib/ebs/error_budget.py:24: [E501] line too long (115 > 79 characters)
+./build/lib/ebs/error_budget.py:35: [E501] line too long (89 > 79 characters)
+./build/lib/ebs/error_budget.py:37: [E501] line too long (83 > 79 characters)
+./build/lib/ebs/error_budget.py:38: [E501] line too long (85 > 79 characters)
+./build/lib/ebs/error_budget.py:39: [E501] line too long (91 > 79 characters)
+./build/lib/ebs/error_budget.py:50: [E501] line too long (81 > 79 characters)
+./build/lib/ebs/error_budget.py:51: [E501] line too long (89 > 79 characters)
+./build/lib/ebs/error_budget.py:55: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:56: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:74: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:76: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:79: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:81: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:83: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:86: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:89: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:90: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:92: [F841] local variable 'int_time' is assigned to but never used
+./build/lib/ebs/error_budget.py:104: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:105: [E131] continuation line unaligned for hanging indent
+./build/lib/ebs/error_budget.py:114: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:115: [E131] continuation line unaligned for hanging indent
+./build/lib/ebs/error_budget.py:137: [E225] missing whitespace around operator
+./build/lib/ebs/error_budget.py:142: [E501] line too long (126 > 79 characters)
+./build/lib/ebs/error_budget.py:150: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:150: [E501] line too long (95 > 79 characters)
+./build/lib/ebs/error_budget.py:155: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:157: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:159: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:161: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:163: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:165: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:167: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:169: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:171: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:173: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:178: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:179: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:180: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:181: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/error_budget.py:194: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:195: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:196: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:197: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:198: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:199: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:199: [E501] line too long (99 > 79 characters)
+./build/lib/ebs/error_budget.py:200: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:201: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:202: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:203: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:204: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:205: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:206: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:207: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:208: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:209: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:210: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:211: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:212: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:213: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:214: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:215: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:216: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:217: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:218: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:219: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:220: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:221: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:222: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:223: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:224: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:225: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:226: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:227: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:228: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:229: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:231: [E501] line too long (117 > 79 characters)
+./build/lib/ebs/error_budget.py:232: [E116] unexpected indentation (comment)
+./build/lib/ebs/error_budget.py:238: [E501] line too long (99 > 79 characters)
+./build/lib/ebs/error_budget.py:270: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:283: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/error_budget.py:290: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:291: [E129] visually indented line with same indent as next logical line
+./build/lib/ebs/error_budget.py:295: [E501] line too long (108 > 79 characters)
+./build/lib/ebs/error_budget.py:297: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:298: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:299: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:303: [E501] line too long (84 > 79 characters)
+./build/lib/ebs/error_budget.py:311: [E225] missing whitespace around operator
+./build/lib/ebs/error_budget.py:332: [E501] line too long (83 > 79 characters)
+./build/lib/ebs/error_budget.py:333: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/error_budget.py:349: [E501] line too long (99 > 79 characters)
+./build/lib/ebs/error_budget.py:350: [E501] line too long (98 > 79 characters)
+./build/lib/ebs/error_budget.py:357: [E501] line too long (91 > 79 characters)
+./build/lib/ebs/error_budget.py:378: [E501] line too long (89 > 79 characters)
+./build/lib/ebs/error_budget.py:400: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:402: [W293] blank line contains whitespace
+./build/lib/ebs/error_budget.py:406: [E501] line too long (85 > 79 characters)
+./build/lib/ebs/error_budget.py:421: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:426: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:429: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:433: [E501] line too long (101 > 79 characters)
+./build/lib/ebs/error_budget.py:438: [E501] line too long (80 > 79 characters)
+./build/lib/ebs/error_budget.py:443: [E501] line too long (108 > 79 characters)
+./build/lib/ebs/error_budget.py:444: [E501] line too long (117 > 79 characters)
+./build/lib/ebs/error_budget.py:445: [E501] line too long (112 > 79 characters)
+./build/lib/ebs/error_budget.py:451: [E501] line too long (103 > 79 characters)
+./build/lib/ebs/error_budget.py:457: [E211] whitespace before '['
+./build/lib/ebs/error_budget.py:459: [E211] whitespace before '['
+./build/lib/ebs/error_budget.py:464: [E501] line too long (88 > 79 characters)
+./build/lib/ebs/error_budget.py:465: [E501] line too long (83 > 79 characters)
+./build/lib/ebs/error_budget.py:467: [E501] line too long (97 > 79 characters)
+./build/lib/ebs/error_budget.py:477: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:478: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:479: [E501] line too long (85 > 79 characters)
+./build/lib/ebs/error_budget.py:483: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:484: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:488: [E225] missing whitespace around operator
+./build/lib/ebs/error_budget.py:491: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:496: [E501] line too long (88 > 79 characters)
+./build/lib/ebs/error_budget.py:499: [E501] line too long (81 > 79 characters)
+./build/lib/ebs/error_budget.py:530: [E721] do not compare types, for exact checks use `is` / `is not`, for instance checks use `isinstance()`
+./build/lib/ebs/error_budget.py:538: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:543: [E211] whitespace before '['
+./build/lib/ebs/error_budget.py:545: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:549: [E211] whitespace before '['
+./build/lib/ebs/error_budget.py:550: [E127] continuation line over-indented for visual indent
+./build/lib/ebs/error_budget.py:555: [E211] whitespace before '['
+./build/lib/ebs/error_budget.py:556: [E127] continuation line over-indented for visual indent
+./build/lib/ebs/error_budget.py:577: [E225] missing whitespace around operator
+./build/lib/ebs/error_budget.py:578: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:579: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:593: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:595: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:611: [E501] line too long (90 > 79 characters)
+./build/lib/ebs/error_budget.py:614: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:618: [E502] the backslash is redundant between brackets
+./build/lib/ebs/error_budget.py:621: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:623: [E127] continuation line over-indented for visual indent
+./build/lib/ebs/error_budget.py:623: [W291] trailing whitespace
+./build/lib/ebs/error_budget.py:628: [E501] line too long (90 > 79 characters)
+./build/lib/ebs/error_budget.py:629: [E501] line too long (94 > 79 characters)
+./build/lib/ebs/error_budget.py:630: [E501] line too long (105 > 79 characters)
+./build/lib/ebs/error_budget.py:642: [E501] line too long (81 > 79 characters)
+./build/lib/ebs/error_budget.py:668: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:669: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:669: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:670: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:670: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:671: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:671: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:672: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:672: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:673: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:673: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:674: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:674: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:675: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:675: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:676: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:676: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:677: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:677: [E202] whitespace before ']'
+./build/lib/ebs/error_budget.py:679: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:683: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:686: [E712] comparison to False should be 'if cond is False:' or 'if not cond:'
+./build/lib/ebs/error_budget.py:693: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:701: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:702: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:702: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:703: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:706: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:707: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:707: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:708: [E128] continuation line under-indented for visual indent
+./build/lib/ebs/error_budget.py:733: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:736: [E127] continuation line over-indented for visual indent
+./build/lib/ebs/error_budget.py:738: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:741: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:742: [E127] continuation line over-indented for visual indent
+./build/lib/ebs/error_budget.py:758: [E501] line too long (106 > 79 characters)
+./build/lib/ebs/error_budget.py:783: [E501] line too long (92 > 79 characters)
+./build/lib/ebs/error_budget.py:784: [E501] line too long (85 > 79 characters)
+./build/lib/ebs/error_budget.py:802: [E501] line too long (91 > 79 characters)
+./build/lib/ebs/error_budget.py:806: [E501] line too long (94 > 79 characters)
+./build/lib/ebs/error_budget.py:829: [E501] line too long (125 > 79 characters)
+./build/lib/ebs/error_budget.py:829: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:830: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:835: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:836: [E501] line too long (94 > 79 characters)
+./build/lib/ebs/error_budget.py:836: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:837: [E203] whitespace before ','
+./build/lib/ebs/error_budget.py:841: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/error_budget.py:850: [E501] line too long (94 > 79 characters)
+./build/lib/ebs/error_budget.py:852: [E501] line too long (118 > 79 characters)
+./build/lib/ebs/error_budget.py:854: [E501] line too long (98 > 79 characters)
+./build/lib/ebs/log_pdf.py:19: [E711] comparison to None should be 'if cond is not None:'
+./build/lib/ebs/utils.py:1: [F401] 'csv' imported but unused
+./build/lib/ebs/utils.py:3: [F401] 'os' imported but unused
+./build/lib/ebs/utils.py:23: [E501] line too long (83 > 79 characters)
+./build/lib/ebs/utils.py:25: [E501] line too long (118 > 79 characters)
+./build/lib/ebs/utils.py:38: [E501] line too long (82 > 79 characters)
+./build/lib/ebs/utils.py:39: [E501] line too long (81 > 79 characters)
+./build/lib/ebs/visualization.py:25: [E501] line too long (115 > 79 characters)
+./build/lib/ebs/visualization.py:26: [E501] line too long (82 > 79 characters)
+./build/lib/ebs/visualization.py:27: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/visualization.py:29: [E501] line too long (111 > 79 characters)
+./build/lib/ebs/visualization.py:30: [E501] line too long (118 > 79 characters)
+./build/lib/ebs/visualization.py:31: [E501] line too long (95 > 79 characters)
+./build/lib/ebs/visualization.py:46: [E501] line too long (98 > 79 characters)
+./build/lib/ebs/visualization.py:48: [E501] line too long (103 > 79 characters)
+./build/lib/ebs/visualization.py:50: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/visualization.py:78: [E501] line too long (80 > 79 characters)
+./build/lib/ebs/visualization.py:79: [E501] line too long (106 > 79 characters)
+./build/lib/ebs/visualization.py:80: [E501] line too long (84 > 79 characters)
+./build/lib/ebs/visualization.py:82: [E501] line too long (102 > 79 characters)
+./build/lib/ebs/visualization.py:85: [E501] line too long (121 > 79 characters)
+./build/lib/ebs/visualization.py:96: [E501] line too long (115 > 79 characters)
+./build/lib/ebs/visualization.py:97: [E501] line too long (105 > 79 characters)
+./build/lib/ebs/visualization.py:98: [E501] line too long (96 > 79 characters)
+./build/lib/ebs/visualization.py:100: [E501] line too long (111 > 79 characters)
+./build/lib/ebs/visualization.py:101: [E501] line too long (118 > 79 characters)
+./build/lib/ebs/visualization.py:102: [E501] line too long (95 > 79 characters)
+./build/lib/ebs/visualization.py:119: [E501] line too long (98 > 79 characters)
+./build/lib/ebs/visualization.py:121: [E501] line too long (103 > 79 characters)
+./build/lib/ebs/visualization.py:125: [E501] line too long (107 > 79 characters)
+./build/lib/ebs/visualization.py:135: [E501] line too long (102 > 79 characters)
+./build/lib/ebs/visualization.py:152: [E501] line too long (87 > 79 characters)
+./build/lib/ebs/visualization.py:160: [E501] line too long (89 > 79 characters)
+./build/lib/ebs/visualization.py:162: [E501] line too long (95 > 79 characters)
+./build/lib/ebs/visualization.py:163: [E501] line too long (95 > 79 characters)
+./build/lib/ebs/visualization.py:172: [E501] line too long (99 > 79 characters)
+./build/lib/ebs/visualization.py:173: [E501] line too long (99 > 79 characters)
+./build/lib/ebs/visualization.py:178: [E501] line too long (118 > 79 characters)
+./build/lib/ebs/visualization.py:179: [E501] line too long (139 > 79 characters)
+./build/lib/ebs/visualization.py:181: [E501] line too long (120 > 79 characters)
+./build/lib/ebs/visualization.py:182: [E501] line too long (141 > 79 characters)
+./build/lib/ebs/visualization.py:184: [E501] line too long (120 > 79 characters)
+./build/lib/ebs/visualization.py:185: [E501] line too long (141 > 79 characters)
+./build/lib/ebs/visualization.py:187: [E501] line too long (116 > 79 characters)
+./build/lib/ebs/visualization.py:188: [E501] line too long (137 > 79 characters)
+./build/lib/ebs/visualization.py:195: [E501] line too long (103 > 79 characters)
+./build/lib/ebs/visualization.py:201: [E501] line too long (102 > 79 characters)
+./build/lib/ebs/visualization.py:210: [E501] line too long (105 > 79 characters)
+./build/lib/ebs/visualization.py:211: [E501] line too long (113 > 79 characters)
+./build/lib/test/test_ebs.py:1: [F401] 'os' imported but unused
+./build/lib/test/test_ebs.py:3: [F401] 'json as js' imported but unused
+./build/lib/test/test_ebs.py:6: [F401] 'astropy.units as u' imported but unused
+./build/lib/test/test_ebs.py:24: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:41: [F841] local variable 'num_temporal_modes' is assigned to but never used
+./build/lib/test/test_ebs.py:48: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:52: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:54: [E501] line too long (109 > 79 characters)
+./build/lib/test/test_ebs.py:59: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:60: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:68: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:74: [E265] block comment should start with '# '
+./build/lib/test/test_ebs.py:79: [E501] line too long (91 > 79 characters)
+./build/lib/test/test_ebs.py:104: [F841] local variable 'num_temporal_modes' is assigned to but never used
+./build/lib/test/test_ebs.py:111: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:115: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:116: [E128] continuation line under-indented for visual indent
+./build/lib/test/test_ebs.py:116: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:125: [F841] local variable 'num_temporal_modes' is assigned to but never used
+./build/lib/test/test_ebs.py:132: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:136: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:137: [E128] continuation line under-indented for visual indent
+./build/lib/test/test_ebs.py:137: [E231] missing whitespace after ','
+./build/lib/test/test_ebs.py:152: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:153: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:154: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:155: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:156: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:157: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:158: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:159: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:170: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:188: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:189: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:189: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:190: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:191: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:192: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:192: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:193: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:194: [E203] whitespace before ','
+./build/lib/test/test_ebs.py:195: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:195: [W291] trailing whitespace
+./build/lib/test/test_ebs.py:196: [E127] continuation line over-indented for visual indent
+./build/lib/test/test_ebs.py:219: [E221] multiple spaces before operator
+./build/lib/test/test_ebs.py:220: [E221] multiple spaces before operator
+./build/lib/test/test_ebs.py:224: [W391] blank line at end of file
+./ebs/cli_interface.py:3: [F401] 'ebs.utils.read_csv' imported but unused
+./ebs/cli_interface.py:5: [F401] 'numpy as np' imported but unused
+./ebs/cli_interface.py:7: [F401] 'os' imported but unused
+./ebs/error_budget.py:5: [E401] multiple imports on one line
+./ebs/error_budget.py:22: [E501] line too long (94 > 79 characters)
+./ebs/error_budget.py:23: [E501] line too long (102 > 79 characters)
+./ebs/error_budget.py:24: [E501] line too long (115 > 79 characters)
+./ebs/error_budget.py:99: [F841] local variable 'int_time' is assigned to but never used
+./ebs/error_budget.py:160: [E501] line too long (99 > 79 characters)
+./ebs/error_budget.py:206: [E501] line too long (96 > 79 characters)
+./ebs/error_budget.py:237: [E501] line too long (84 > 79 characters)
+./ebs/error_budget.py:257: [E501] line too long (89 > 79 characters)
+./ebs/error_budget.py:285: [E501] line too long (85 > 79 characters)
+./ebs/error_budget.py:322: [E501] line too long (82 > 79 characters)
+./ebs/error_budget.py:420: [E501] line too long (88 > 79 characters)
+./ebs/error_budget.py:423: [E501] line too long (81 > 79 characters)
+./ebs/error_budget.py:457: [E721] do not compare types, for exact checks use `is` / `is not`, for instance checks use `isinstance()`
+./ebs/error_budget.py:596: [E501] line too long (90 > 79 characters)
+./ebs/error_budget.py:597: [E501] line too long (94 > 79 characters)
+./ebs/error_budget.py:598: [E501] line too long (105 > 79 characters)
+./ebs/error_budget.py:610: [E501] line too long (81 > 79 characters)
+./ebs/error_budget.py:654: [E712] comparison to False should be 'if cond is False:' or 'if not cond:'
+./ebs/error_budget.py:784: [E501] line too long (106 > 79 characters)
+./ebs/error_budget.py:812: [E501] line too long (85 > 79 characters)
+./ebs/error_budget.py:905: [E501] line too long (88 > 79 characters)
+./ebs/log_pdf.py:19: [E711] comparison to None should be 'if cond is not None:'
+./ebs/utils.py:1: [F401] 'csv' imported but unused
+./ebs/utils.py:3: [F401] 'os' imported but unused
+./ebs/utils.py:27: [E501] line too long (118 > 79 characters)
+./ebs/visualization.py:38: [E501] line too long (96 > 79 characters)
+./ebs/visualization.py:40: [E501] line too long (111 > 79 characters)
+./ebs/visualization.py:41: [E501] line too long (118 > 79 characters)
+./ebs/visualization.py:42: [E501] line too long (95 > 79 characters)
+./ebs/visualization.py:57: [E501] line too long (98 > 79 characters)
+./ebs/visualization.py:59: [E501] line too long (103 > 79 characters)
+./ebs/visualization.py:61: [E501] line too long (96 > 79 characters)
+./ebs/visualization.py:116: [E501] line too long (112 > 79 characters)
+./ebs/visualization.py:141: [E501] line too long (96 > 79 characters)
+./ebs/visualization.py:143: [E501] line too long (111 > 79 characters)
+./ebs/visualization.py:144: [E501] line too long (118 > 79 characters)
+./ebs/visualization.py:145: [E501] line too long (95 > 79 characters)
+./ebs/visualization.py:162: [E501] line too long (98 > 79 characters)
+./ebs/visualization.py:164: [E501] line too long (103 > 79 characters)
+./ebs/visualization.py:168: [E501] line too long (107 > 79 characters)
+./example.py:142: [E501] line too long (81 > 79 characters)
+./setup.py:11: [E501] line too long (87 > 79 characters)
+./test/test_ebs.py:1: [F401] 'os' imported but unused
+./test/test_ebs.py:3: [F401] 'json as js' imported but unused
+./test/test_ebs.py:6: [F401] 'astropy.units as u' imported but unused
+./test/test_ebs.py:41: [F841] local variable 'num_temporal_modes' is assigned to but never used
+./test/test_ebs.py:86: [E501] line too long (91 > 79 characters)
+./test/test_ebs.py:111: [F841] local variable 'num_temporal_modes' is assigned to but never used
+./test/test_ebs.py:137: [F841] local variable 'num_temporal_modes' is assigned to but never used
