@@ -17,31 +17,35 @@ Another important property of Markov chain is that the current state depends
 on only the immediately preceding state, and is therefore independent of the
 initial state.
 
-We cast the exploration in a Bayesian formalism. The Bayes equation can be
+We cast the exploration in a Bayesian-like formalism. The Bayes equation can be
 expressed as follows:  
 
 \begin{equation}
 Pr(\mathbf{x}|\mathbf{y}) \propto L(\mathbf{y}|\mathbf{x})p(\mathbf{x})
 \end{equation}
 
-For our application, $\mathbf{x}$ is a vector of user-selected variables
-specifying the state of the observational system (e.g. throughput,
-contrast, bandwidth).  These variables consitute a subset of all variables 
+The equation contains three PDFs:  $p(\mathbf{x})$ is the (user-defined) prior
+PDF, $L(\mathbf{y}|\mathbf{x})$ is the likelihood PDF of $\mathbf{y}$ 
+conditioned on $\mathbf{x}$; and $Pr(\mathbf{x}|\mathbf{y})$ is the posterior
+PDF of $\mathbf{x}$ conditioned on $\mathbf{y}$. For our application, $\mathbf{x}$ is a vector of user-selected variables specifying the state of the observational system (e.g. throughput,
+contrast, bandwidth); these variables consitute a subset of all variables 
 that determine the integration time required to achieve a user-specified SNR
 (signal to noise ratio). The vector $\mathbf{y}$ represents required integration
-times as a function of planet-star angular separation. The equation contains three PDFs:  $p(\mathbf{x})$ is the (user-defined) prior 
-PDF, $L(\mathbf{y}|\mathbf{x})$ is the likelihood PDF of $\mathbf{y}$
-conditioned on $\mathbf{x}$; and $Pr(\mathbf{x}|\mathbf{y})$ is the posterior
-PDF of $\mathbf{x}$ conditioned on $\mathbf{y}$.   
+times as a function of planet-star angular separation.
 
-      
+The user prescribes $p(\mathbf{x})$ to specify ranges of parameter values to
+be explored in the form of a probability density function for each parameter. 
+The user prescribes the criterion for acceptable values of required
+integration times using $\mathbf{y}$. After burn-in, the Markov chain process
+produces a sample population with frequency distribution according to
+$Pr(\mathbf{x}|\mathbf{y})$.  
 
-It does so through the
-following steps:  
-1. Utilize a Markov-chain Monte Carlo (MCMC): algorithm to sample parameter
-vectors that specify coronagraph states, computes integration times associated 
+We provide an example below as a tutorial on how to use EBS's MCMC mode.
 
-## Create necessary input files
+## Example   
+In this example, we 
+
+### Create necessary input files
 
 ### Configuration YAML File
 * Create a YAML file in the <inputs> subdirectory with the recommended 
