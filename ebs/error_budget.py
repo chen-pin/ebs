@@ -141,6 +141,7 @@ class ErrorBudget(ExosimsWrapper):
         self.input_dir = self.config["paths"]["input"]
         self.temp_dir = self.config["paths"]["temporary"]
 
+        self.ref_contrast = self.config["reference_contrast"]
         self.wfe = None
         self.wfsc_factor = None
         self.sensitivity = None
@@ -197,7 +198,7 @@ class ErrorBudget(ExosimsWrapper):
         - See <Post-Processing Factor> document for mathematical description
 
         """
-        ppFact = self.delta_contrast/self.contrast
+        ppFact = self.delta_contrast/np.sqrt(self.contrast * self.ref_contrast)
         return np.where(ppFact>1.0, 1.0, ppFact)
 
     def load_csv_contrast(self):

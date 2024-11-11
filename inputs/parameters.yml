@@ -10,6 +10,7 @@ input_files:
   wfsc: baseline_wfsc.csv
   sensitivity: baseline_sensitivity.csv
 
+reference_contrast: 1.0e-10
 #json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
 
 # Basic EXOSIMS Parameters
