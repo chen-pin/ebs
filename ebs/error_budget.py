@@ -163,8 +163,10 @@ class ErrorBudget(ExosimsWrapper):
         self.SNR = None
         self.ppFact_filename = None
 
-        self.contrast_filename = self.config["input_files"]["contrast"]
-        self.throughput_filename = self.config["input_files"]["throughput"]
+        self.sensitivities_filename = self.config["input_files"]["sensitivity"]
+
+        self.throughput_filename = self.config["initial_exosims"]["starlightSuppressionSystems"][0]["core_thruput"]
+        self.contrast_filename = self.config["initial_exosims"]["starlightSuppressionSystems"][0]["core_contrast"]
 
         self.exosims_pars_dict = None
         self.trash_can = []
@@ -201,14 +203,23 @@ class ErrorBudget(ExosimsWrapper):
         ppFact = self.delta_contrast/np.sqrt(self.contrast * self.ref_contrast)
         return np.where(ppFact>1.0, 1.0, ppFact)
 
-    def load_csv_contrast(self):
+    def load_sensitivities(self):
         """
-        Load CSV file containing contrast vs. angular separation values into
-        ndarray and assign to `self.contrast' and `self.angles'.
+        Load the angles and sensitivities from the sensitivities CSV into an array.
+        """
+        path = os.path.join(self.input_dir, self.sensitivities_filename)
+        angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
+        sensitivities = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1:]
+        return angles, sensitivities
+
+    def load_contrast(self):
+        """
+        Load the angles and sensitivities from the sensitivities CSV into an array.
         """
         path = os.path.join(self.input_dir, self.contrast_filename)
-        self.angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
-        self.contrast = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
+        angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
+        contrasts = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
+        return angles, contrasts
 
     def write_ppFact_fits(self, trash=False):
         """Writes the post-processing factor to a FITS file to be saved in self.temp_dir.
