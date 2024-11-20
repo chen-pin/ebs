@@ -1,13 +1,13 @@
 paths:
   output: ./output
   input: ./inputs
-  temporary: ./temporary
+  temporary: ./temp
 
 input_files:
   contrast: test_contrast.csv
   throughput: test_throughput.csv
   wfe: test_wfe.csv
-  wfsc: test_wfsc.csv
+  wfsc_factor: test_wfsc.csv
   sensitivity: test_sensitivity.csv
 
 # Basic EXOSIMS Parameters
