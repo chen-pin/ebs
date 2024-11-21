@@ -63,8 +63,8 @@ initial_exosims:
       IWA: 0.04
       OWA: 0.5
       core_area: 0.000552
-#      core_contrast: ./test/test_contrast.csv
-#      core_thruput: ./test/test_throughput.csv
+      core_contrast: baseline_contrast.csv
+      core_thruput: baseline_throughput.csv
       lam: 550.0
       name: coronagraph-550
       occ_trans: 0.4  # Rough estimate from Roman Coronagraph ETC
