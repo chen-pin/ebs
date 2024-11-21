@@ -15,7 +15,6 @@ reference_contrast: 1.0e-10
 
 # Basic EXOSIMS Parameters
 initial_exosims:
-    cachedir: /home/pinchen/exosims_cache
     skipSaturationCalcs: true
     filterBinaries: false
     keepStarCatalog: true
