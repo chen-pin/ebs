@@ -10,11 +10,8 @@ input_files:
   wfsc: baseline_wfsc.csv
   sensitivity: baseline_sensitivity.csv
 
-#json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
-
 # Basic EXOSIMS Parameters
 initial_exosims:
-    cachedir: /home/pinchen/exosims_cache
     skipSaturationCalcs: true
     filterBinaries: false
     keepStarCatalog: true
