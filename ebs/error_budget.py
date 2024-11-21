@@ -149,19 +149,6 @@ class ErrorBudget(ExosimsWrapper):
         self.post_wfsc_wfe = None
         self.angles = None
         self.contrast = None
-        self.QE = None
-        self.sread = None
-        self.idark = None
-        self.Rs = None
-        self.lensSamp = None
-        self.pixelNumber = None
-        self.pixelSize = None
-        self.optics = None
-        self.BW = None
-        self.IWA = None
-        self.OWA = None 
-        self.throughput = None
-        self.SNR = None
         self.ppFact_filename = None
 
         self.sensitivities_filename = self.config["input_files"]["sensitivity"]
