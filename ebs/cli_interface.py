@@ -1,7 +1,8 @@
 import argparse
 import logging
 from ebs.utils import read_csv
-from ebs.error_budget import ParameterSweep, ErrorBudget
+from ebs.error_budget import ErrorBudget
+from ebs.parameter_sweep import ParameterSweep
 import numpy as np
 import yaml
 import os
