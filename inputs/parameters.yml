@@ -7,14 +7,11 @@ input_files:
   contrast: baseline_contrast.csv
   throughput: baseline_throughput.csv
   wfe: baseline_wfe.csv
-  wfsc: baseline_wfsc.csv
+  wfsc_factor: baseline_wfsc.csv
   sensitivity: baseline_sensitivity.csv
-
-#json_file: example_ref.json  # An input specifying the 'unaberrated' observatory
 
 # Basic EXOSIMS Parameters
 initial_exosims:
-    cachedir: /home/pinchen/exosims_cache
     skipSaturationCalcs: true
     filterBinaries: false
     keepStarCatalog: true
@@ -63,8 +60,8 @@ initial_exosims:
       IWA: 0.04
       OWA: 0.5
       core_area: 0.000552
-#      core_contrast: ./test/test_contrast.csv
-#      core_thruput: ./test/test_throughput.csv
+      core_contrast: baseline_contrast.csv
+      core_thruput: baseline_throughput.csv
       lam: 550.0
       name: coronagraph-550
       occ_trans: 0.4  # Rough estimate from Roman Coronagraph ETC
