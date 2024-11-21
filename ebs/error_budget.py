@@ -15,6 +15,7 @@ import ebs.log_pdf as pdf
 import matplotlib.pyplot as plt
 import pickle
 
+
 class ExosimsWrapper:
     """
     Takes in a config dict specifying desired targets and their corresponding earth equivalent
@@ -83,7 +84,7 @@ class ExosimsWrapper:
         for j, sInd in enumerate(sInds):
             # choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
-            # matters a lot when you have real performane curves
+            # matters a lot when you have real performance curves
             # target planet deltaMag (evaluate for a range):
             WA = np.array(wa_coefs)*eeid[j]
             dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
@@ -246,7 +247,8 @@ class ErrorBudget(ExosimsWrapper):
                 self.trash_can.append(path)
         else:  
             print("Need to assign angle values to write ppFact FITS file")
-    
+
+
     def write_csv(self, contrast_or_throughput):
         """Write the contrast or throughput values to a CSV file.
 
