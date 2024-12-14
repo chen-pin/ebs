@@ -7,8 +7,10 @@ input_files:
   contrast: mcmc_contrast.csv
   throughput: mcmc_throughput.csv
   wfe: mcmc_wfe.csv
-  wfsc: mcmc_wfsc.csv
+  wfsc_factor: mcmc_wfsc.csv
   sensitivity: mcmc_sensitivity.csv
+
+reference_contrast: 1.0e-10
 
 # Basic EXOSIMS Parameters
 initial_exosims:

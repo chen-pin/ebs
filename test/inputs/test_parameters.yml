@@ -7,8 +7,10 @@ input_files:
   contrast: test_contrast.csv
   throughput: test_throughput.csv
   wfe: test_wfe.csv
-  wfsc: test_wfsc.csv
+  wfsc_factor: test_wfsc.csv
   sensitivity: test_sensitivity.csv
+
+reference_contrast:  1.0e-10
 
 # Basic EXOSIMS Parameters
 initial_exosims:

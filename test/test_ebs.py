@@ -140,7 +140,8 @@ def test_mcmc_ppFact(obs_mcmc):
                 assert obs_mcmc.ppFact[i] == 1.0
             else:
                 assert (0.0 <= obs_mcmc.ppFact[i] ==
-                        obs_mcmc.delta_contrast[i]/contrast)
+                        obs_mcmc.delta_contrast[i]/np.sqrt(obs_mcmc.contrast[i]
+                                                       *obs_mcmc.ref_contrast))
         obs_mcmc.clean_files()
 
 
