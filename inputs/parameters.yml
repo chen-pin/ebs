@@ -7,7 +7,7 @@ input_files:
   contrast: baseline_contrast.csv
   throughput: baseline_throughput.csv
   wfe: baseline_wfe.csv
-  wfsc: baseline_wfsc.csv
+  wfsc_factor: baseline_wfsc.csv
   sensitivity: baseline_sensitivity.csv
 
 reference_contrast: 1.0e-10
