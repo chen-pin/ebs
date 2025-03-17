@@ -16,18 +16,20 @@ import ebs.log_pdf as pdf
 
 class ExosimsWrapper:
     """
-    Takes in a config dict specifying desired targets and their corresponding earth equivalent
-    insolation distances (eeid), Earth-equivalent planet-star flux ratios (eepsr) and exo-zodi levels.
-    Main function is run_exosims which given an input json file returns the necessary integration times and various
-    output count rates.
+    Takes in a config dict specifying desired targets and their corresponding
+    earth equivalent insolation distances (eeid), Earth-equivalent planet-star
+    flux ratios (eepsr) and exo-zodi levels. Main function is run_exosims which
+    given an input json file returns the necessary integration times and
+    various output count rates.
 
     Parameters
     ----------
     config: dict
-        dictionary of configuration parameters.
+        Dictionary of configuration parameters.
     """
     def __init__(self, config):
         # pull relevant values from the config
+        # Pull relevant values from the config.
         self.working_angles = config["working_angles"]
         hip_numbers = [str(config['targets'][star]['HIP']) for star in config['targets']]
         self.target_list = [f"HIP {n}" for n in hip_numbers]
@@ -35,7 +37,7 @@ class ExosimsWrapper:
         self.eepsr = [config['targets'][star]['eepsr'] for star in config['targets']]
         self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
 
-        # intitialize output arrays
+        # Initialize output arrays.
         self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_b = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_sp = np.empty((len(self.target_list), len(self.working_angles)))
@@ -49,11 +51,10 @@ class ExosimsWrapper:
 
     def run_exosims(self):
         """
-        Run EXOSIMS to generate results, including exposure times 
-        required for reaching specified SNR.  
+        Run EXOSIMS to generate results, including exposure times required for
+        reaching specified SNR.
 
         """
-
         wa_coefs = self.config["working_angles"]
         n_angles = len(wa_coefs)
         target_list = self.target_list
@@ -68,23 +69,20 @@ class ExosimsWrapper:
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in target_list])
         
-        # assemble information needed for integration time calculation:
-        
-        # we have only one observing mode defined, so use that
+        # Assemble information needed for integration time calculation.
         mode = sim.OpticalSystem.observingModes[0]
         
-        # use the nominal local zodi and exozodi values
+        # Use the nominal local zodi and exozodi values.
         fZ = sim.ZodiacalLight.fZ0
         
-        # now we loop through the targets of interest and compute integration 
-        # times for each:
-        int_time = np.empty((len(target_list), n_angles))*u.d
+        # Loop through the targets of interest and compute integration
+        # times for each.
         for j, sInd in enumerate(sInds):
-            # choose angular separation for coronagraph performance
+            # Choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
-            # matters a lot when you have real performance curves
-            # target planet deltaMag (evaluate for a range):
+            # matters a lot when you have real performance curves.
             WA = np.array(wa_coefs)*eeid[j]
+            # Target planet deltaMag (evaluate for a range).
             dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
             self.int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
@@ -124,7 +122,8 @@ class ExosimsWrapper:
 class ErrorBudget(ExosimsWrapper):
     """
     Exposure time calculator incorporating dynamical wavefront errors and
-    WFS&C. Can also implement the Markov-chain-Monte-Carlo exploration of coronagraphic parameters.
+    WFS&C. Can also implement the Markov-chain-Monte-Carlo exploration of
+    coronagraphic parameters.
 
     Parameters
     ----------
@@ -159,7 +158,9 @@ class ErrorBudget(ExosimsWrapper):
 
     @property
     def delta_contrast(self):
-        """Compute change in contrast due to residual WFE and assign the array to `self.ppFact`.
+        """Compute change in contrast due to residual WFE.
+
+        Assigns the value to the `ppFact` file.
 
         Reference
         ---------
@@ -179,7 +180,7 @@ class ErrorBudget(ExosimsWrapper):
 
     @property
     def ppFact(self):
-        """Compute the post-processing factor and assign the array to `self.ppFact`.
+        """Compute the post-processing factor.
 
         Reference
         ---------
@@ -207,8 +208,10 @@ class ErrorBudget(ExosimsWrapper):
         contrasts = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
         return angles, contrasts
 
-    def write_ppFact_fits(self, trash=False):
-        """Writes the post-processing factor to a FITS file to be saved in self.temp_dir.
+    def write_ppFact_fits(self, trash=True):
+        """Writes the post-processing factor to a FITS file.
+
+        File is saved in self.temp_dir
 
         Parameters
         ----------
@@ -233,11 +236,11 @@ class ErrorBudget(ExosimsWrapper):
         else:  
             print("Need to assign angle values to write ppFact FITS file")
 
-
     def write_csv(self, contrast_or_throughput):
         """Write the contrast or throughput values to a CSV file.
 
-        This then allows these files to be saved for future reference or application.
+        This then allows these files to be saved for future reference or
+        application.
 
         Parameters
         ----------
@@ -264,7 +267,7 @@ class ErrorBudget(ExosimsWrapper):
             print("Need to assign angle values to write CSV file")
 
     def initialize_for_exosims(self):
-        """Intitializes the EXOSIMS parameter dict with values from the config."""
+        """Initializes the EXOSIMS parameter dict with the config."""
 
         config = self.config
 
@@ -455,10 +458,10 @@ class ErrorBudget(ExosimsWrapper):
     def run(self, subsystem=None, name=None, value=None, clean_files=True):
         """Main method for running EBS not in MCMC mode.
 
-        Updates the variable defined by the subsystem and name with the given value before
-        generating all the necessary files to run EXOSIMS as specified by the config and input
-        CSV files. If no subsystem or name is given then EXOSIMS is just run with the input CSV files and
-        config.
+        Updates the variable defined by the subsystem and name with the given
+        value before generating all the necessary files to run EXOSIMS as
+        specified by the config and input CSV files. If no subsystem or name
+        is given then EXOSIMS is just run with the input CSV files and config.
 
         Parameters
         ----------
@@ -481,6 +484,7 @@ class ErrorBudget(ExosimsWrapper):
 
     def run_mcmc(self):
         """Main method for running EBS in MCMC mode.
+
         Returns
         -------
         sampler: emcee.EnsembleSampler
