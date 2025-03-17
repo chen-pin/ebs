@@ -1,7 +1,7 @@
 """Exposure-time calculations based on coronagraphic input parameters
 
 """
-import os, time, shutil, datetime
+import os, time, shutil
 import numpy as np
 import yaml 
 from multiprocessing import Pool
@@ -12,8 +12,6 @@ import EXOSIMS.MissionSim as ems
 from copy import deepcopy
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
-import matplotlib.pyplot as plt
-import pickle
 
 
 class ExosimsWrapper:
