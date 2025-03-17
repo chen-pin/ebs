@@ -146,6 +146,12 @@ class ErrorBudget(ExosimsWrapper):
         self.input_dir = self.config["paths"]["input"]
         self.temp_dir = self.config["paths"]["temporary"]
 
+        self.sensitivities_filename = self.config["input_files"]["sensitivity"]
+        self.contrast_filename = self.config["input_files"]["contrast"]
+        self.throughput_filename = self.config["input_files"]["throughput"]
+        self.wfe_filename = self.config["input_files"]["wfe"]
+        self.wfsc_filename = self.config["input_files"]["wfsc_factor"]
+
         self.ref_contrast = self.config["reference_contrast"]
         self.wfe = None
         self.wfsc_factor = None
@@ -154,6 +160,8 @@ class ErrorBudget(ExosimsWrapper):
         self.angles = None
         self.contrast = None
         self.ppFact_filename = None
+
+        # Needed to store info for MCMC.
         self.QE = None
         self.sread = None
         self.idark = None
@@ -167,12 +175,6 @@ class ErrorBudget(ExosimsWrapper):
         self.OWA = None
         self.throughput = None
         self.SNR = None
-
-        self.sensitivities_filename = self.config["input_files"]["sensitivity"]
-        self.contrast_filename = self.config["input_files"]["contrast"]
-        self.throughput_filename = self.config["input_files"]["throughput"]
-        self.wfe_filename = self.config["input_files"]["wfe"]
-        self.wfsc_filename = self.config["input_files"]["wfsc_factor"]
 
         self.trash_can = []
 
