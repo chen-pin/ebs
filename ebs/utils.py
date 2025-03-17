@@ -1,7 +1,4 @@
-import csv
 import numpy as np
-import os
-import json as js
 
 
 def read_csv(filename, skiprows=0):
@@ -18,31 +15,3 @@ def read_csv(filename, skiprows=0):
 
 def write_csv(savename, data, header):
     np.savetxt(savename, data, delimiter=',', header=header)
-
-
-def update_json(json_file, wfe, wfsc, sensitivity, contrast_path, throughput_path):
-    """
-    appends the wavefront error, sensitivity, and sensing and control coefficient to an existing JSON file. Also makes
-    sure file paths in the JSON file are correct.
-
-    Overwrites the original JSON file.
-    :param json_file: str, fully qualified path to a json file
-    :param wfe: array or list, wavefront error data
-    :param wfsc: array or list, wavefront sensing and control data
-    :param sensitivity: array or list, sensitivity coefficient data
-    :return: None
-    """
-    with open(json_file) as f:
-        input_dict = js.load(f)
-
-    input_dict['starlightSuppressionSystems'][0]['core_thruput'] = throughput_path
-    input_dict['starlightSuppressionSystems'][0]['core_contrast'] = contrast_path
-
-    input_dict['wfe'] = wfe.tolist()
-    input_dict['wfsc_factor'] = wfsc.tolist()
-    input_dict['sensitivity'] = sensitivity.tolist()
-
-    pp_json_name = json_file[:-5] + '_with_pp.json'
-    with open(pp_json_name, 'w') as f:
-        js.dump(input_dict, f, indent=4)
-    return pp_json_name
