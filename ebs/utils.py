@@ -9,7 +9,7 @@ def read_csv(filename, skiprows=0):
     Parameters
     ----------
     filename: str
-        Fully qualified path to the csv file.
+        Fully qualified path to the CSV file.
     skiprows: int
          number of rows to skip at the top of the CSV file.
 
