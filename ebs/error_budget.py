@@ -331,11 +331,12 @@ class ErrorBudget(ExosimsWrapper):
                 setattr(self, key, star_supp[key])
 
     def initialize_walkers(self):
-        """
+        """Initializes the walkers for the MCMC run.
 
         Returns
         -------
-        walker_pos:
+        walker_pos: np.ndarray
+            starting positions in parameter space for the MCMC walkers.
         """
         center = []
         [center.append(np.array(val).ravel())  
@@ -357,10 +358,11 @@ class ErrorBudget(ExosimsWrapper):
         return walker_pos
 
     def update_attributes(self, subsystem=None, name=None, value=None):
-        """Updates the EXOSIMS parameter dict for the subsystem and name with the value.
+        """Updates the EXOSIMS parameter dict for subsystem,  name with value.
 
         For example if subsystem = scienceInstruments and name = QE then
-        self.exosims_pars_dict["scienceInstruments"]["QE] will take on the value.
+        self.exosims_pars_dict["scienceInstruments"]["QE] will take on the
+        value.
 
         Parameters
         ----------
@@ -378,11 +380,12 @@ class ErrorBudget(ExosimsWrapper):
                 self.exosims_pars_dict[name][0] = value
 
     def update_attributes_mcmc(self, values):
-        """
+        """Update attributes with specified values for MCMC.
 
         Parameters
         ----------
-        values
+        values: np.ndarray
+            Array of values to be updated for MCMC variables.
         """
         for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
