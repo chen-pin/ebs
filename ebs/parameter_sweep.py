@@ -1,4 +1,6 @@
-import os, time, datetime
+import os
+import time
+import datetime
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +20,8 @@ class ParameterSweep:
         values: ndarray or list
             Values to sweep over.
         error_budget: ErrorBudget
-            Initialized ErrorBudget object to use for the sweep. Only the parameter will be iterated over.
+            Initialized ErrorBudget object to use for the sweep. Only the
+             parameter will be iterated over.
         """
         self.config = config
         self.input_dir = self.config["paths"]["input"]
@@ -28,7 +31,7 @@ class ParameterSweep:
         self.values = values
         self.result_dict = {}
         self.error_budget = error_budget
-        self.error_budget.load_csv_contrast()
+        self.error_budget.initialize_for_exosims()
         self.angles = self.error_budget.angles
         self.result_dict = {
             'C_p': np.empty((len(values), len(config['targets']), 3)),
@@ -62,11 +65,13 @@ class ParameterSweep:
         """
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
-        plt.suptitle(f"Required Integration time (hr, SNR=7) vs. {parameter}", fontsize=20)
+        plt.suptitle(f"Required Integration time (hr, SNR=7) vs. "
+                     f"{parameter}", fontsize=20)
 
         for i, (k, v) in enumerate(spectral_dict.items()):
             plt.subplot(1, 5, i + 1)
-            txt = 'HIP%s\n%s, EEID=%imas' % (k, v, np.round(self.error_budget.eeid[i] * 1000))
+            txt = ('HIP%s\n%s, EEID=%imas' %
+                   (k, v, np.round(self.error_budget.eeid[i] * 1000)))
 
             plt.title(txt)
             plt.plot(values, 24 * int_times[:, i, 0], label='inner HZ')
@@ -78,30 +83,37 @@ class ParameterSweep:
         plt.show()
 
     def run_sweep(self, save_output_dict=True):
-        """Runs the single parameter sweep
+        """Runs the single parameter sweep.
 
         Parameters
         ----------
         save_output_dict: bool
             If True saves the results dictionary to a pickle file.
         """
-        # 3 contrasts, 5 stars, 3 zones
+        # 3 contrasts, 5 stars, 3 zones.
         for i, value in enumerate(self.values):
             if self.parameter == 'contrast':
                 new_file = f"contrast_{value}.csv"
-                np.savetxt(self.input_dir + "/" + new_file, np.column_stack((self.angles, value * np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_contrast')
+                np.savetxt(self.input_dir + "/" + new_file,
+                           np.column_stack((self.angles, value
+                                            * np.ones(len(self.angles))))
+                           , delimiter=","
+                           , header=('r_as,core_contrast')
                            , comments="")
                 self.error_budget.contrast_filename = new_file
             elif self.parameter == 'throughput':
                 new_file = f"throughput_{value}.csv"
                 np.savetxt(self.input_dir + "/" + new_file
-                           , np.column_stack((self.angles, value * np.ones(len(self.angles))))
-                           , delimiter=",", header=('r_as,core_thruput')
+                           , np.column_stack((self.angles, value
+                                              * np.ones(len(self.angles))))
+                           , delimiter=","
+                           , header=('r_as,core_thruput')
                            , comments="")
                 self.error_budget.throughput_filename = new_file
 
-            self.error_budget.run(subsystem=self.parameter, name=self.subparameter, value=value)
+            self.error_budget.run(subsystem=self.parameter,
+                                  name=self.subparameter,
+                                  value=value)
 
             for key in self.result_dict.keys():
                 arr = self.result_dict[key]
