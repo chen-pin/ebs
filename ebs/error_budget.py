@@ -17,7 +17,7 @@ import ebs.log_pdf as pdf
 class ExosimsWrapper:
     """
     Takes in a config dict specifying desired targets and their corresponding
-    earth equivalent insolation distances (eeid), Earth-equivalent planet-star
+    Earth-equivalent insolation distances (eeid), Earth-equivalent planet-star
     flux ratios (eepsr) and exo-zodi levels. Main function is run_exosims which
     given an input json file returns the necessary integration times and
     various output count rates.
@@ -207,7 +207,7 @@ class ErrorBudget(ExosimsWrapper):
 
     @property
     def ppFact(self):
-        """Compute the post-processing factor.
+        """Compute the post-processing factor from the delta contrast. .
 
         Reference
         ---------
