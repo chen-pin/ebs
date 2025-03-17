@@ -28,14 +28,20 @@ class ExosimsWrapper:
         Dictionary of configuration parameters.
     """
     def __init__(self, config):
-        # pull relevant values from the config
         # Pull relevant values from the config.
+        self.config = config
+        self.exosims_pars_dict = None
+
         self.working_angles = config["working_angles"]
-        hip_numbers = [str(config['targets'][star]['HIP']) for star in config['targets']]
+        hip_numbers = [str(config['targets'][star]['HIP']) for star
+                       in config['targets']]
         self.target_list = [f"HIP {n}" for n in hip_numbers]
-        self.eeid = [config['targets'][star]['eeid'] for star in config['targets']]
-        self.eepsr = [config['targets'][star]['eepsr'] for star in config['targets']]
-        self.exo_zodi = [config['targets'][star]['exo_zodi'] for star in config['targets']]
+        self.eeid = [config['targets'][star]['eeid'] for star
+                     in config['targets']]
+        self.eepsr = [config['targets'][star]['eepsr'] for star
+                      in config['targets']]
+        self.exo_zodi = [config['targets'][star]['exo_zodi'] for star
+                         in config['targets']]
 
         # Initialize output arrays.
         self.C_p = np.empty((len(self.target_list), len(self.working_angles)))
@@ -46,8 +52,10 @@ class ExosimsWrapper:
         self.C_ez = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_dc = np.empty((len(self.target_list), len(self.working_angles)))
         self.C_rn = np.empty((len(self.target_list), len(self.working_angles)))
-        self.C_star = np.empty((len(self.target_list), len(self.working_angles)))
-        self.int_time = np.empty((len(self.target_list), len(self.working_angles))) * u.d
+        self.C_star = np.empty((len(self.target_list),
+                                len(self.working_angles)))
+        self.int_time = np.empty((len(self.target_list),
+                                  len(self.working_angles))) * u.d
 
     def run_exosims(self):
         """
@@ -63,9 +71,7 @@ class ExosimsWrapper:
         exo_zodi = self.exo_zodi
         sim = ems.MissionSim(use_core_thruput_for_ez=False
                              , **deepcopy(self.exosims_pars_dict))
-        
-        print(f"TARGET_LIST:  {target_list}")
-        print(f"TARGETLIST NAME: {sim.TargetList.Name}")
+
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
                          in target_list])
         
@@ -116,7 +122,8 @@ class ExosimsWrapper:
             self.C_rn = counts[3]["C_rn"].value
             self.C_star = counts[3]["C_star"].value
 
-        return self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr, self.C_z, self.C_ez, self.C_dc, self.C_rn, self.C_star
+        return (self.int_time, self.C_p, self.C_b, self.C_sp, self.C_sr,
+                self.C_z, self.C_ez, self.C_dc, self.C_rn, self.C_star)
 
 
 class ErrorBudget(ExosimsWrapper):
@@ -150,10 +157,12 @@ class ErrorBudget(ExosimsWrapper):
 
         self.sensitivities_filename = self.config["input_files"]["sensitivity"]
 
-        self.throughput_filename = self.config["initial_exosims"]["starlightSuppressionSystems"][0]["core_thruput"]
-        self.contrast_filename = self.config["initial_exosims"]["starlightSuppressionSystems"][0]["core_contrast"]
+        star_supp_pars = (
+            self.config)["initial_exosims"]["starlightSuppressionSystems"][0]
 
-        self.exosims_pars_dict = None
+        self.throughput_filename = star_supp_pars["core_thruput"]
+        self.contrast_filename = star_supp_pars["core_contrast"]
+
         self.trash_can = []
 
     @property
@@ -172,7 +181,8 @@ class ErrorBudget(ExosimsWrapper):
             self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
             delta_contrast = np.empty(self.sensitivity.shape[0])
             for n in range(len(delta_contrast)):
-                delta_contrast[n] = np.sqrt((np.multiply(self.sensitivity[n], self.post_wfsc_wfe)**2).sum())
+                delta_contrast[n] = np.sqrt((np.multiply(
+                    self.sensitivity[n], self.post_wfsc_wfe)**2).sum())
             return 1E-12*delta_contrast
         else: 
             print("Need to assign wfe, wfsc_factor, sensitivity, " + 
@@ -271,21 +281,26 @@ class ErrorBudget(ExosimsWrapper):
 
         config = self.config
 
-        self.wfe = read_csv(filename=os.path.join(self.input_dir, config['input_files']['wfe']), skiprows=1)
-        self.wfsc_factor = read_csv(filename=os.path.join(self.input_dir, config['input_files']['wfsc_factor']), skiprows=1)
+        self.wfe = read_csv(filename=os.path.join(
+            self.input_dir, config['input_files']['wfe']), skiprows=1)
+        self.wfsc_factor = read_csv(filename=os.path.join(
+            self.input_dir, config['input_files']['wfsc_factor']), skiprows=1)
         self.angles, self.sensitivity = self.load_sensitivities()
         _, self.contrast = self.load_contrast()
 
         self.exosims_pars_dict = config['initial_exosims']
 
         if self.throughput_filename:
-            throughput_path = os.path.join(self.input_dir, self.throughput_filename)
-            self.throughput = read_csv(filename=throughput_path, skiprows=1)[:, 1]
+            throughput_path = os.path.join(self.input_dir,
+                                           self.throughput_filename)
+            self.throughput = read_csv(filename=throughput_path,
+                                       skiprows=1)[:, 1]
             self.exosims_pars_dict['starlightSuppressionSystems'][0] \
                 ['core_thruput'] = throughput_path
 
         if self.contrast_filename:
-            contrast_path = os.path.join(self.input_dir, self.contrast_filename)
+            contrast_path = os.path.join(self.input_dir,
+                                         self.contrast_filename)
             self.contrast = read_csv(filename=contrast_path, skiprows=1)[:, 1]
             self.exosims_pars_dict['starlightSuppressionSystems'][0] \
                 ['core_contrast'] = contrast_path
@@ -295,12 +310,15 @@ class ErrorBudget(ExosimsWrapper):
         self.exosims_pars_dict['ppFact'] = self.ppFact_filename
         self.exosims_pars_dict['cherryPickStars'] = self.target_list
 
-        for key in self.exosims_pars_dict['scienceInstruments'][0].keys():
+        sci_inst = self.exosims_pars_dict['scienceInstruments'][0]
+        star_supp = self.exosims_pars_dict['starlightSuppressionSystems'][0]
+
+        for key in sci_inst.keys():
             if key != 'optics' in dir(self):
-                setattr(self, key, self.exosims_pars_dict['scienceInstruments'][0][key])
-        for key in self.exosims_pars_dict['starlightSuppressionSystems'][0].keys():
+                setattr(self, key, sci_inst[key])
+        for key in star_supp.keys():
             if key in dir(self):
-                setattr(self, key, self.exosims_pars_dict['starlightSuppressionSystems'][0][key])
+                setattr(self, key, star_supp[key])
 
     def initialize_walkers(self):
         """
@@ -442,7 +460,8 @@ class ErrorBudget(ExosimsWrapper):
 
         """
         self.update_attributes_mcmc(values)
-        int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = self.run_exosims()
+        int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = (
+            self.run_exosims())
         if np.isnan(int_time.value).any():
             return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
                    , C_rn, C_star
