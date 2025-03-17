@@ -154,14 +154,25 @@ class ErrorBudget(ExosimsWrapper):
         self.angles = None
         self.contrast = None
         self.ppFact_filename = None
+        self.QE = None
+        self.sread = None
+        self.idark = None
+        self.Rs = None
+        self.lensSamp = None
+        self.pixelNumber = None
+        self.pixelSize = None
+        self.optics = None
+        self.BW = None
+        self.IWA = None
+        self.OWA = None
+        self.throughput = None
+        self.SNR = None
 
         self.sensitivities_filename = self.config["input_files"]["sensitivity"]
-
-        star_supp_pars = (
-            self.config)["initial_exosims"]["starlightSuppressionSystems"][0]
-
-        self.throughput_filename = star_supp_pars["core_thruput"]
-        self.contrast_filename = star_supp_pars["core_contrast"]
+        self.contrast_filename = self.config["input_files"]["contrast"]
+        self.throughput_filename = self.config["input_files"]["throughput"]
+        self.wfe_filename = self.config["input_files"]["wfe"]
+        self.wfsc_filename = self.config["input_files"]["wfsc_factor"]
 
         self.trash_can = []
 
@@ -282,9 +293,9 @@ class ErrorBudget(ExosimsWrapper):
         config = self.config
 
         self.wfe = read_csv(filename=os.path.join(
-            self.input_dir, config['input_files']['wfe']), skiprows=1)
+            self.input_dir, self.wfe_filename), skiprows=1)
         self.wfsc_factor = read_csv(filename=os.path.join(
-            self.input_dir, config['input_files']['wfsc_factor']), skiprows=1)
+            self.input_dir, self.wfsc_filename), skiprows=1)
         self.angles, self.sensitivity = self.load_sensitivities()
         _, self.contrast = self.load_contrast()
 
