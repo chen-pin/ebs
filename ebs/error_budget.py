@@ -215,20 +215,28 @@ class ErrorBudget(ExosimsWrapper):
 
         """
         ppFact = self.delta_contrast/np.sqrt(self.contrast * self.ref_contrast)
-        return np.where(ppFact>1.0, 1.0, ppFact)
+        return np.where(ppFact > 1.0, 1.0, ppFact)
 
     def load_sensitivities(self):
         """Load the angles and sensitivities from the sensitivities CSV."""
         path = os.path.join(self.input_dir, self.sensitivities_filename)
-        angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
-        sensitivities = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1:]
+        angles = np.genfromtxt(path,
+                               delimiter=',',
+                               skip_header=1)[:, 0]
+        sensitivities = np.genfromtxt(path,
+                                      delimiter=',',
+                                      skip_header=1)[:, 1:]
         return angles, sensitivities
 
     def load_contrast(self):
         """Load contrast from the contrast CSV. """
         path = os.path.join(self.input_dir, self.contrast_filename)
-        angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
-        contrasts = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
+        angles = np.genfromtxt(path,
+                               delimiter=',',
+                               skip_header=1)[:, 0]
+        contrasts = np.genfromtxt(path,
+                                  delimiter=',',
+                                  skip_header=1)[:, 1]
         return angles, contrasts
 
     def write_ppFact_fits(self, trash=True):
