@@ -71,17 +71,6 @@ def test_exposure_time(obs):
     assert tau == pt.approx(int_time, 0.001)
 
 
-#def test_var_pars(obs):
-#    qe = (0.7, 0.8, 0.9)
-#    output_filename = 'test_var_par_output'
-#    for value in qe:
-#        path = os.path.join(obs.temp_dir, 'temp.json')
-#        obs.run(subsystem='scienceInstruments', name='QE', value=value, clean_files=False)
-#        with open(path) as f:
-#            input_dict = js.load(f)
-#        assert input_dict['scienceInstruments'][0]['QE'] == value
-
-
 @pt.fixture
 def obs_mcmc():
     """

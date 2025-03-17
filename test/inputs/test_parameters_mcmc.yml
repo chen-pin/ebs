@@ -1,7 +1,7 @@
 paths:
   output: ./output
   input: ./inputs
-  temporary: ./temporary
+  temporary: ./temp
 
 input_files:
   contrast: mcmc_contrast.csv
