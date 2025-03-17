@@ -22,37 +22,48 @@ plt.rcParams.update({'xtick.labelsize': 16})
 plt.rcParams.update({'ytick.labelsize': 16})
 
 
-def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, force_linear=False, plot_stars=None,
-                    fill=False, plot_by_spectype=True, save_dir='', save_name=''):
-    """Plots the EBS parameter that was swept over as a function of calculated integration time.
+def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times,
+                    force_linear=False, plot_stars=None,
+                    fill=False, plot_by_spectype=True, save_dir='',
+                    save_name=''):
+    """Summary plot of the EBS sweep parameter as a function of integration time.
 
-    All observing scenarios are plotted on the same plot with different colors denoting the different stars and
-    different linestyles indicating the inner, mid, or outer habitable zones. The plots will automatically scale to be
-    semilog or loglog if one or both of the variables span more than three orders of magnitude.
+    All observing scenarios are plotted on the same plot with different colors
+    denoting the different stars and different linestyles indicating the inner,
+    mid, or outer habitable zones. The plots will automatically scale to be
+    semilog or loglog if one or both of the variables span more than three
+    orders of magnitude.
 
-    :param error_budget: ebs.error_budget.ErrorBudget
+    Parameters
+    ----------
+    error_budget: ErrorBudget
         Error Budget class from which results are desired to be plotted.
-    :param spectral_dict: dict
+    spectral_dict: dict
         Dictionary of HIP numbers and spectral types of stars observed.
-    :param parameter: str
+    parameter: str
         Parameter ovr which to plot.
-    :param values: list or array
+    values: list or array
         Values of the parameter that were swept over.
-    :param int_times: list or array
+    int_times: list or array
         Calculated integration times.
-    :param force_linear: bool
-        If true will force the plot to have linear scaling for both parameters.
-    :param plot_stars: arr or list
-        names of the stars to include in the plot. Must match the names used in the spectral_dict.
-    :param fill: bool
-        whether to fill in the space between the inner HZ and outer HZ exposure time values with color.
-    :param plot_by_spectype: bool
-        whether to plot each spectral type in its own panel or over-plot them on a single panel.
-    :param save_dir: str
+    force_linear: bool
+        If True will force the plot to have linear scaling for both parameters.
+    plot_stars: list or array
+        Names of the stars to include in the plot. Must match the names used
+        in the spectral_dict.
+    fill: bool
+        Whether to fill in the space between the inner HZ and outer HZ exposure
+        time values with color.
+    plot_by_spectype: bool
+        Whether to plot each spectral type in its own panel or over-plot them
+        on a single panel.
+    save_dir: str
         Path to save the output plot.
-    :param save_name: str
+    save_name: str
         Name to save the output plot under.
-    :return: None
+    Returns
+    -------
+
     """
 
     unique_types_to_plot = []
@@ -67,7 +78,10 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
     num_types = len(unique_types_to_plot)
 
     if plot_by_spectype and num_types > 1:
-        fig, axes = plt.subplots(num_types, 1, figsize=(14, 18), sharex=False)
+        fig, axes = plt.subplots(num_types,
+                                 1,
+                                 figsize=(14, 18),
+                                 sharex=False)
     else:
         fig, axes = plt.subplots(1, 1, figsize=(16, 9))
         axes = [axes]
@@ -76,14 +90,29 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
         for i, type in enumerate(unique_types_to_plot):
             use_stars = [key for key in spectral_dict.keys() if
                          spectral_dict[key].startswith(unique_types_to_plot[i])]
-            plot_panel(axes[i], error_budget, spectral_dict, values, int_times, force_linear=force_linear,
-                       plot_stars=list(set(use_stars) & set(plot_stars)), fill=fill)
+            plot_panel(axes[i],
+                       error_budget,
+                       spectral_dict,
+                       values,
+                       int_times,
+                       force_linear=force_linear,
+                       plot_stars=list(set(use_stars) & set(plot_stars)),
+                       fill=fill)
     else:
-        plot_panel(axes[0], error_budget, spectral_dict, values, int_times, force_linear=force_linear,
-                   plot_stars=plot_stars, fill=fill)
+        plot_panel(axes[0],
+                   error_budget,
+                   spectral_dict,
+                   values,
+                   int_times,
+                   force_linear=force_linear,
+                   plot_stars=plot_stars,
+                   fill=fill)
 
-    plt.suptitle(f"Required Integration Time (hr, SNR={error_budget.exosims_pars_dict['observingModes'][0]['SNR']}) vs. "
-                 f"{parameter.capitalize()}", fontsize=24)
+    plt.suptitle(
+        f"Required Integration Time (hr, "
+        f"SNR={error_budget.exosims_pars_dict['observingModes'][0]['SNR']}) "
+        f"vs. {parameter.capitalize()}",
+        fontsize=24)
 
     fig.supxlabel(f'{parameter.capitalize()}', fontsize=20)
     fig.supylabel('Integration Time (hours)', fontsize=20)
@@ -93,46 +122,62 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times, f
     plt.show()
 
 
-def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=False, plot_stars=None, fill=False,
-               plot_text=None, colors=np.array(['#01a075', '#00cc9e', '#6403fa', '#ff9400', '#cf5f00'])):
-    """Plots the EBS parameter that was swept over as a function of calculated integration time.
+def plot_panel(ax, error_budget, spectral_dict, values, int_times,
+               force_linear=False, plot_stars=None, fill=False,
+               plot_text=None,
+               colors=np.array(['#01a075', '#00cc9e', '#6403fa', '#ff9400',
+                                '#cf5f00'])):
+    """Plots the EBS sweep parameter as a function of integration time.
 
-    All observing scenarios are plotted on the same plot with different colors denoting the different stars and
-    different linestyles indicating the inner, mid, or outer habitable zones. The plots will automatically scale to be
-    semilog or loglog if one or both of the variables span more than three orders of magnitude.
+    All observing scenarios are plotted on the same plot with different colors
+    denoting the different stars and different linestyles indicating the inner,
+    mid, or outer habitable zones. The plots will automatically scale to be
+    semilog or loglog if one or both of the variables span more than three
+    orders of magnitude.
 
-    :param: matplotlib Axes object:
-        axes on which to create the figure.
-    :param error_budget: ebs.error_budget.ErrorBudget
+    Parameters
+    ----------
+    ax: matplotlib.Axes
+        Axes on which to create the figure.
+    error_budget: ErrorBudget
         Error Budget class from which results are desired to be plotted.
-    :param spectral_dict: dict
+    spectral_dict: dict
         Dictionary of HIP numbers and spectral types of stars observed.
-    :param parameter: str
-        Parameter ovr which to plot.
-    :param values: list or array
+    values: list or array
         Values of the parameter that were swept over.
-    :param int_times: list or array
+    int_times: list or array
         Calculated integration times.
-    :param force_linear: bool
-        If true will force the plot to have linear scaling for both parameters.
-    :param plot_stars: arr or list
-        names of the stars to include in the plot. Must match the names used in the spectral_dict.
-    :param fill: bool
-        whether to fill in the space between the inner HZ and outer HZ exposure time values with color.
-    :param plot_text: str
-        text to include as an inset on the plot.
-    :param colors: arr or list
-        hex colors or list of tuples of RGB values to use for each star. Defaults are color-blind friendly.
-    :return: None
+    force_linear: bool
+        If True will force the plot to have linear scaling for both parameters.
+    plot_stars: list or array
+        Names of the stars to include in the plot. Must match the names used
+        in the spectral_dict.
+    fill: bool
+        Whether to fill in the space between the inner HZ and outer HZ exposure
+         time values with color.
+    plot_text: str
+        Text to include as an inset on the plot.
+    colors: list or array
+        Hex colors or list of tuples of RGB values to use for each star.
+        Defaults are color-blind friendly.
+
+    Returns
+    -------
+    None
+
     """
     int_times_for_calc = np.copy(int_times)
 
     semilog_x, semilog_y, loglog = False, False, False
 
-    if np.abs(np.nanmax(values)/np.nanmin(values)) > 100 and not force_linear:
+    semilogx_cond = np.abs(np.nanmax(values)/np.nanmin(values)) > 100
+    semilogy_cond = np.abs(np.nanmax(int_times_for_calc)/
+                           np.nanmin(int_times_for_calc)) > 100
+
+    if semilogx_cond and not force_linear:
         semilog_x = True
 
-    if np.abs(np.nanmax(int_times_for_calc)/np.nanmin(int_times_for_calc)) > 100 and not force_linear:
+    if semilogy_cond and not force_linear:
         semilog_y = True
 
     if semilog_x and semilog_y:
@@ -149,7 +194,8 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=
     max = np.nanmax(int_times_for_calc)
 
     if semilog_y or loglog:
-        y_lim = 24 * np.nanmin(int_times_for_calc) * 0.5, np.min([24 * max * 10, 1000])
+        y_lim = (24 * np.nanmin(int_times_for_calc) * 0.5,
+                 np.min([24 * max * 10, 1000]))
         int_times_for_calc[np.isnan(int_times_for_calc)] = 24 * max * 100
     else:
         y_lim = 0, np.min([24 * max * 1.5, 1000])
@@ -157,10 +203,17 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=
 
     for i, (k, v) in enumerate(spectral_dict.items()):
         if i in use_idxs:
-            txt = 'HIP%s\n%s, EEID=%imas' % (k, v, np.round(error_budget.eeid[i] * 1000))
+            txt = ('HIP%s\n%s, EEID=%imas' %
+                   (k, v, np.round(error_budget.eeid[i] * 1000)))
 
-            ax.scatter(values, 24 * int_times_for_calc[:, i, 0], c=colors[i], marker='o', s=70)
-            ax.scatter(values, 24 * int_times_for_calc[:, i, 2], c=colors[i], marker='s', s=70)
+            ax.scatter(values, 24 * int_times_for_calc[:, i, 0],
+                       c=colors[i],
+                       marker='o',
+                       s=70)
+            ax.scatter(values, 24 * int_times_for_calc[:, i, 2],
+                       c=colors[i],
+                       marker='s',
+                       s=70)
 
             if fill:
                 if np.all(np.isnan(int_times[:, i, 0])):
@@ -169,36 +222,74 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=
                     upper_vals = []
                     lower_vals = []
                     for j, time in enumerate(int_times_for_calc[:, i, 0]):
-                        upper_vals.append(np.max([24 * time, 24 * int_times_for_calc[:, i, 2][j]]))
-                        lower_vals.append(np.min([24 * time, 24 * int_times_for_calc[:, i, 2][j]]))
+                        upper_vals.append(
+                            np.max([24 * time,
+                                    24 * int_times_for_calc[:, i, 2][j]]))
+                        lower_vals.append(
+                            np.min([24 * time,
+                                    24 * int_times_for_calc[:, i, 2][j]]))
                     ax.fill_between(values, lower_vals, upper_vals,
                                     color=colors[i], alpha=0.2)
 
             if loglog:
-                ax.loglog(values, 24 * int_times_for_calc[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
-                ax.loglog(values, 24 * int_times_for_calc[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+                ax.loglog(values, 24 * int_times_for_calc[:, i, 0],
+                          label=txt + 'inner',
+                          color=colors[i],
+                          linewidth=3)
+                ax.loglog(values, 24 * int_times_for_calc[:, i, 2],
+                          linestyle='dashdot',
+                          label=txt + 'outer',
+                          color=colors[i],
+                          linewidth=3)
             elif semilog_x:
-                ax.semilogx(values, 24 * int_times_for_calc[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
-                ax.semilogx(values, 24 * int_times_for_calc[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+                ax.semilogx(values, 24 * int_times_for_calc[:, i, 0],
+                            label=txt + 'inner', color=colors[i],
+                            linewidth=3)
+                ax.semilogx(values, 24 * int_times_for_calc[:, i, 2],
+                            linestyle='dashdot',
+                            label=txt + 'outer',
+                            color=colors[i],
+                            linewidth=3)
             elif semilog_y:
-                ax.semilogy(values, 24 * int_times_for_calc[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
-                ax.semilogy(values, 24 * int_times_for_calc[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+                ax.semilogy(values, 24 * int_times_for_calc[:, i, 0],
+                            label=txt + 'inner',
+                            color=colors[i],
+                            linewidth=3)
+                ax.semilogy(values, 24 * int_times_for_calc[:, i, 2],
+                            linestyle='dashdot',
+                            label=txt + 'outer',
+                            color=colors[i],
+                            linewidth=3)
             else:
-                ax.plot(values, 24 * int_times_for_calc[:, i, 0], label=txt + 'inner', color=colors[i], linewidth=3)
-                ax.plot(values, 24 * int_times_for_calc[:, i, 2], linestyle='dashdot', label=txt + 'outer', color=colors[i], linewidth=3)
+                ax.plot(values, 24 * int_times_for_calc[:, i, 0],
+                        label=txt + 'inner',
+                        color=colors[i],
+                        linewidth=3)
+                ax.plot(values, 24 * int_times_for_calc[:, i, 2],
+                        linestyle='dashdot',
+                        label=txt + 'outer',
+                        color=colors[i],
+                        linewidth=3)
         else:
             pass
 
     # place a text box in upper left in axes coords
     if plot_text:
         props = dict(boxstyle='round', facecolor='white', alpha=0.5)
-        ax.text(0.23, 0.08, plot_text, transform=ax.transAxes, fontsize=20, verticalalignment='bottom',
-                horizontalalignment='center', bbox=props)
+        ax.text(0.23, 0.08, plot_text,
+                transform=ax.transAxes,
+                fontsize=20,
+                verticalalignment='bottom',
+                horizontalalignment='center',
+                bbox=props)
 
     legend_elements = []
     for i, (k, v) in enumerate(spectral_dict.items()):
         if i in use_idxs:
-            legend_elements.append((Line2D([0], [0], color=colors[i], lw=2, label=f'HIP {k}, {v}'), ))
+            legend_elements.append((Line2D([0], [0],
+                                           color=colors[i],
+                                           lw=2,
+                                           label=f'HIP {k}, {v}'), ))
         else:
             pass
 
@@ -207,8 +298,15 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times, force_linear=
     marker_styles = ['o', 's']
 
     for i in range(2):
-        legend_elements.append((Line2D([], [], color='black', linestyle='None', marker=marker_styles[i]),
-                                Line2D([0], [0], color='black', linestyle=linestyles[i], lw=2, label=labels[i])))
+        legend_elements.append((Line2D([], [],
+                                       color='black',
+                                       linestyle='None',
+                                       marker=marker_styles[i]),
+                                Line2D([0], [0],
+                                       color='black',
+                                       linestyle=linestyles[i],
+                                       lw=2,
+                                       label=labels[i])))
 
     labels = []
 
