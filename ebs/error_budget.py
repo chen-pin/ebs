@@ -189,12 +189,16 @@ class ErrorBudget(ExosimsWrapper):
         """
         if (self.wfe is not None and self.wfsc_factor is not None 
             and self.sensitivity is not None and self.contrast is not None):
+
             self.post_wfsc_wfe = np.multiply(self.wfe, self.wfsc_factor)
             delta_contrast = np.empty(self.sensitivity.shape[0])
+
             for n in range(len(delta_contrast)):
                 delta_contrast[n] = np.sqrt((np.multiply(
                     self.sensitivity[n], self.post_wfsc_wfe)**2).sum())
+
             return 1E-12*delta_contrast
+
         else: 
             print("Need to assign wfe, wfsc_factor, sensitivity, " + 
                   "and contrast values before determining delta_contrast") 
@@ -212,18 +216,14 @@ class ErrorBudget(ExosimsWrapper):
         return np.where(ppFact>1.0, 1.0, ppFact)
 
     def load_sensitivities(self):
-        """
-        Load the angles and sensitivities from the sensitivities CSV into an array.
-        """
+        """Load the angles and sensitivities from the sensitivities CSV."""
         path = os.path.join(self.input_dir, self.sensitivities_filename)
         angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         sensitivities = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1:]
         return angles, sensitivities
 
     def load_contrast(self):
-        """
-        Load the angles and sensitivities from the sensitivities CSV into an array.
-        """
+        """Load contrast from the contrast CSV. """
         path = os.path.join(self.input_dir, self.contrast_filename)
         angles = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 0]
         contrasts = np.genfromtxt(path, delimiter=',', skip_header=1)[:, 1]
@@ -289,9 +289,6 @@ class ErrorBudget(ExosimsWrapper):
 
     def initialize_for_exosims(self):
         """Initializes the EXOSIMS parameter dict with the config."""
-
-        config = self.config
-
         self.wfe = read_csv(filename=os.path.join(
             self.input_dir, self.wfe_filename), skiprows=1)
         self.wfsc_factor = read_csv(filename=os.path.join(
@@ -299,7 +296,7 @@ class ErrorBudget(ExosimsWrapper):
         self.angles, self.sensitivity = self.load_sensitivities()
         _, self.contrast = self.load_contrast()
 
-        self.exosims_pars_dict = config['initial_exosims']
+        self.exosims_pars_dict = self.config['initial_exosims']
 
         if self.throughput_filename:
             throughput_path = os.path.join(self.input_dir,
