@@ -27,7 +27,6 @@ def parse():
 
 def main():
     # Command line arguments will overwrite the values from the config.
-    log = logging.getLogger()
     args = parse()
     config = args.config
     with open(config, 'r') as config:
@@ -35,7 +34,7 @@ def main():
 
     output_path = config['paths']['output']
 
-    log.info(f'Running parameter sweep over {args.param}')
+    logger.info(f'Running parameter sweep over {args.param}')
 
     parameter = args.param
     subparameter = args.sub_param
