@@ -1,5 +1,5 @@
 import argparse
-import logging
+from ebs.logger import logger
 from ebs.error_budget import ErrorBudget
 from ebs.parameter_sweep import ParameterSweep
 import yaml

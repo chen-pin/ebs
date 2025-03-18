@@ -12,6 +12,7 @@ import EXOSIMS.MissionSim as ems
 from copy import deepcopy
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
+from ebs.logger import logger
 
 
 class ExosimsWrapper:
