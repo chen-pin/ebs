@@ -12,6 +12,7 @@ import EXOSIMS.MissionSim as ems
 from copy import deepcopy
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
+from ebs.logger import logger
 
 
 class ExosimsWrapper:
@@ -83,6 +84,8 @@ class ExosimsWrapper:
         
         # Loop through the targets of interest and compute integration
         # times for each.
+        logger.info("Running EXOSIMS to calculate integration times.")
+
         for j, sInd in enumerate(sInds):
             # Choose angular separation for coronagraph performance
             # this doesn't matter for a flat contrast/throughput, but
@@ -299,6 +302,8 @@ class ErrorBudget(ExosimsWrapper):
 
     def initialize_for_exosims(self):
         """Initializes the EXOSIMS parameter dict with the config."""
+        logger.info("Initializing parameters for EXOSIMS")
+
         self.wfe = read_csv(filename=os.path.join(
             self.input_dir, self.wfe_filename), skiprows=1)
         self.wfsc_factor = read_csv(filename=os.path.join(
@@ -309,6 +314,7 @@ class ErrorBudget(ExosimsWrapper):
         self.exosims_pars_dict = self.config['initial_exosims']
 
         if self.throughput_filename:
+            logger.debug(f"Using throughput at {self.throughput_filename}")
             throughput_path = os.path.join(self.input_dir,
                                            self.throughput_filename)
             self.throughput = read_csv(filename=throughput_path,
@@ -317,6 +323,7 @@ class ErrorBudget(ExosimsWrapper):
                 ['core_thruput'] = throughput_path
 
         if self.contrast_filename:
+            logger.debug(f"Using contrast at {self.contrast_filename}")
             contrast_path = os.path.join(self.input_dir,
                                          self.contrast_filename)
             self.contrast = read_csv(filename=contrast_path, skiprows=1)[:, 1]
@@ -346,6 +353,8 @@ class ErrorBudget(ExosimsWrapper):
         walker_pos: np.ndarray
             starting positions in parameter space for the MCMC walkers.
         """
+        logger.info("Initializing walkers for MCMC")
+
         center = []
         [center.append(np.array(val).ravel())  
          for var_name in self.config['mcmc']['variables'] 

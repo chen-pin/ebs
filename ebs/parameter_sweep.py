@@ -5,6 +5,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from ebs.error_budget import ErrorBudget
+from ebs.logger import logger
 
 
 class ParameterSweep:
@@ -63,6 +64,8 @@ class ParameterSweep:
         save_name: str
             Name of the final plot save file.
         """
+        logger.info("Plotting sweep output")
+
         plt.figure(figsize=(16, 9))
         plt.rcParams.update({'font.size': 12})
         plt.suptitle(f"Required Integration time (hr, SNR=7) vs. "
@@ -90,6 +93,8 @@ class ParameterSweep:
         save_output_dict: bool
             If True saves the results dictionary to a pickle file.
         """
+        logger.info(f"Running sweep on {self.parameter}")
+
         # 3 contrasts, 5 stars, 3 zones.
         for i, value in enumerate(self.values):
             if self.parameter == 'contrast':
