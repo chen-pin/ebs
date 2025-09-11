@@ -19,7 +19,7 @@ you should now have access to all of the dependencies necessary to run the EBS p
 ### Installing EBS
 From the command line in the root directory run
 
-`python setup.py install`
+`pip install -e .`
 
 ### Running EBS from the command line 
 
