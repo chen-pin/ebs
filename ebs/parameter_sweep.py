@@ -28,6 +28,9 @@ class ParameterSweep:
         self.input_dir = self.config["paths"]["input"]
         self.output_dir = self.config["paths"]["output"]
 
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+
         self.parameter, self.subparameter = parameter
         self.values = values
         self.result_dict = {}

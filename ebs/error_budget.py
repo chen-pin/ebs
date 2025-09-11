@@ -149,6 +149,9 @@ class ErrorBudget(ExosimsWrapper):
         self.input_dir = self.config["paths"]["input"]
         self.temp_dir = self.config["paths"]["temporary"]
 
+        if not os.path.exists(self.temp_dir):
+            os.makedirs(self.temp_dir)
+
         self.sensitivities_filename = self.config["input_files"]["sensitivity"]
         self.contrast_filename = self.config["input_files"]["contrast"]
         self.throughput_filename = self.config["input_files"]["throughput"]
