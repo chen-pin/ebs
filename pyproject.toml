@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ebs"
+authors = [
+  { name = "Sarah Steiger", email = "ssteiger@stsci.edu" },
+  { name = "Pin Chen", email = "pin.chen@jpl.nasa.gov" },
+]
+description = "Software for running error budget calculations for HWO using EXOSIMS."
+dependencies = [
+  "matplotlib",
+  "astropy",
+  "EXOSIMS",
+  "emcee",
+  "matplotlib",
+  "numpy",
+]
+license = { file = "LICENSE" }
+dynamic = ['readme', 'version']
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Astronomy",
+]
+
+[project.urls]
+Homepage = "https://github.com/chen-pin/ebs"
+Issues = "https://github.com/chen-pin/ebs/issues"
+
+[project.scripts]
+run_ebs = "ebs.cli_interface:main"
+
+[tool.hatch.version]
+source = "vcs"
