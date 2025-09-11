@@ -237,11 +237,11 @@ class ErrorBudget(ExosimsWrapper):
 
     def load_contrast(self):
         """Load contrast from the contrast CSV. """
-        path = os.path.join(self.input_dir, self.contrast_filename)
-        angles = np.genfromtxt(path,
+        contrast_path = os.path.join(self.input_dir, self.contrast_filename)
+        angles = np.genfromtxt(contrast_path,
                                delimiter=',',
                                skip_header=1)[:, 0]
-        contrasts = np.genfromtxt(path,
+        contrasts = np.genfromtxt(contrast_path,
                                   delimiter=',',
                                   skip_header=1)[:, 1]
         return angles, contrasts
