@@ -5,9 +5,10 @@ import numpy as np
 from ebs.logger import logger
 
 # Update rcParams for all visualizations
-plt.rcParams.update({'font.size': 12})
+plt.rcParams.update({'font.size': 20})
 plt.rcParams.update({'lines.linewidth': 2})
 plt.rcParams.update({'axes.linewidth': 2})
+plt.rcParams.update({'axes.labelsize': 24})
 
 plt.rcParams.update({'ytick.major.size': 8})
 plt.rcParams.update({'ytick.major.width': 3})
@@ -19,8 +20,9 @@ plt.rcParams.update({'xtick.major.width': 3})
 plt.rcParams.update({'xtick.minor.width': 2})
 plt.rcParams.update({'xtick.minor.size': 4})
 
-plt.rcParams.update({'xtick.labelsize': 16})
-plt.rcParams.update({'ytick.labelsize': 16})
+plt.rcParams.update({'xtick.labelsize': 20})
+plt.rcParams.update({'ytick.labelsize': 20})
+
 
 
 def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times,
@@ -75,7 +77,7 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times,
         if key in plot_stars:
             unique_types_to_plot.append(spectral_dict[key][0])
 
-    unique_types_to_plot = np.array(list(set(unique_types_to_plot)))
+    unique_types_to_plot = np.sort(np.array(list(set(unique_types_to_plot))))
     num_types = len(unique_types_to_plot)
 
     if plot_by_spectype and num_types > 1:
@@ -113,10 +115,10 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times,
         f"Required Integration Time (hr, "
         f"SNR={error_budget.exosims_pars_dict['observingModes'][0]['SNR']}) "
         f"vs. {parameter.capitalize()}",
-        fontsize=24)
+        fontsize=30)
 
-    fig.supxlabel(f'{parameter.capitalize()}', fontsize=20)
-    fig.supylabel('Integration Time (hours)', fontsize=20)
+    fig.supxlabel(f'{parameter.capitalize()}', fontsize=30)
+    fig.supylabel('Integration Time (hours)', fontsize=30)
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, save_name))
@@ -277,9 +279,9 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times,
     # place a text box in upper left in axes coords
     if plot_text:
         props = dict(boxstyle='round', facecolor='white', alpha=0.5)
-        ax.text(0.23, 0.08, plot_text,
+        ax.text(0.83, 0.15, plot_text,
                 transform=ax.transAxes,
-                fontsize=20,
+                fontsize=30,
                 verticalalignment='bottom',
                 horizontalalignment='center',
                 bbox=props)
@@ -319,5 +321,7 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times,
             pass
 
     labels = [i for i in labels if i]
-    ax.legend(handles=legend_elements, labels=labels, loc='upper left')
+   #ax.legend(handles=legend_elements, labels=labels, loc='upper left', fontsize=25)
+    plt.xticks(fontsize=30)
+    plt.yticks(fontsize=30)
     ax.set_ylim(y_lim)
