@@ -207,9 +207,10 @@ class ErrorBudget(ExosimsWrapper):
 
             return 1E-12*delta_contrast
 
-        else: 
-            print("Need to assign wfe, wfsc_factor, sensitivity, " + 
-                  "and contrast values before determining delta_contrast") 
+        else:
+            raise ValueError("Need to assign wfe, wfsc_factor, sensitivity, "
+                             "and contrast values before determining "
+                             "delta_contrast")
 
     @property
     def ppFact(self):
