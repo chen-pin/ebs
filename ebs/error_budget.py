@@ -450,15 +450,17 @@ class ErrorBudget(ExosimsWrapper):
                 raise AttributeError(f"{var_name} not found in attributes list")
 
     def log_prior(self, values):
-        """
+        """Calculates the joint log-prior probability of the given values.
 
         Parameters
         ----------
-        values
-
+        values: np.ndarray
+            Array of values to be updated for MCMC variables.
         Returns
         -------
-        joint_prob:
+        joint_prob: float
+            joint log-prior probability of the given values.
+
         """
 
         joint_prob = 0.0
@@ -612,13 +614,12 @@ def log_probability(values, error_budget):
 
     Parameters
     ----------
-    values:
-    error_budget:
-
-    Returns
-    -------
-
+    values: np.ndarray
+        Array of values for which the log_prior and log_merit are evaluated.
+    error_budget: ErrorBudget
+        ErrorBudget for which the log_probability is being calculated.
     """
+
     log_prior = error_budget.log_prior(values)
     if np.isinf(log_prior):
         return -np.inf, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0\
