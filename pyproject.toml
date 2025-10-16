@@ -14,7 +14,6 @@ dependencies = [
   "astropy",
   "EXOSIMS",
   "emcee",
-  "matplotlib",
   "numpy",
 ]
 license = { file = "LICENSE" }
