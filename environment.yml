@@ -9,6 +9,9 @@ dependencies:
   - pip
   - pandas
   - pytest
+  - jupyter
   - pip:
       - emcee
       - exosims
+      - corner
+      - dynesty
