@@ -590,7 +590,7 @@ class ErrorBudget(ExosimsWrapper):
         return sampler
 
     def clean_files(self):
-        """Deletes all files in the trash_can"""
+        """Deletes all files self.trash_can"""
         for path in self.trash_can:
             if os.path.isfile(path):
                 os.remove(path)
