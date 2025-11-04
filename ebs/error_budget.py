@@ -617,7 +617,7 @@ def log_probability(values, error_budget):
     values: np.ndarray
         Array of values for which the log_prior and log_merit are evaluated.
     error_budget: ErrorBudget
-        ErrorBudget for which the log_probability is being calculated.
+        ErrorBudget for which the log_probability is calculated.
     """
 
     log_prior = error_budget.log_prior(values)
