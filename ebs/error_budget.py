@@ -360,7 +360,7 @@ class ErrorBudget(ExosimsWrapper):
         [center.append(np.array(val).ravel())  
          for var_name in self.config['mcmc']['variables'] 
          for val in self.config['mcmc']['variables'][var_name]['ini_pars']['center']]
-        center = np.concatenate(center)
+        center = np.array(np.concatenate(center))
         center = center[np.where(np.isfinite(center))]
         spread = []
         [spread.append(np.array(val).ravel())  
@@ -373,7 +373,8 @@ class ErrorBudget(ExosimsWrapper):
         nwalkers = self.config['mcmc']['nwalkers']
         walker_pos = center + np.random.uniform(-spread/2.0, spread/2.0
                                                 , (nwalkers, ndim))
-        return walker_pos
+        final_wp = np.array([np.array(p) for p in walker_pos])
+        return final_wp
 
     def update_attributes(self, subsystem=None, name=None, value=None):
         """Updates the EXOSIMS parameter dict for subsystem,  name with value.
@@ -412,7 +413,7 @@ class ErrorBudget(ExosimsWrapper):
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
                 attr_val = getattr(self, var_name)
-                if type(attr_val) == float or type(attr_val) == np.float64:
+                if type(attr_val) == float or type(attr_val) == np.float64 or type(attr_val) == str:
                     attr_val = use_values[0]
                 else:
                     attr_val[indices] = use_values
@@ -544,17 +545,17 @@ class ErrorBudget(ExosimsWrapper):
         nwalkers, ndim = pos.shape
         nsteps = self.config['mcmc']['nsteps']
         ntargets = len(self.config['targets'])
+        dtype = [('int_time', float, (ntargets, 3))
+            , ('C_p', float, (ntargets, 3))
+            , ('C_b', float, (ntargets, 3))
+            , ('C_sp', float, (ntargets, 3))
+            , ('C_sr', float, (ntargets, 3))
+            , ('C_z', float, (ntargets, 3))
+            , ('C_ez', float, (ntargets, 3))
+            , ('C_dc', float, (ntargets, 3))
+            , ('C_rn', float, (ntargets, 3))
+            , ('C_star', float, (ntargets, 3))]
         if self.config['mcmc']['save']:
-            dtype = [('int_time', float, (ntargets, 3))
-                    , ('C_p', float, (ntargets, 3))
-                    , ('C_b', float, (ntargets, 3))
-                    , ('C_sp', float, (ntargets, 3))
-                    , ('C_sr', float, (ntargets, 3))
-                    , ('C_z', float, (ntargets, 3))
-                    , ('C_ez', float, (ntargets, 3))
-                    , ('C_dc', float, (ntargets, 3))
-                    , ('C_rn', float, (ntargets, 3))
-                    , ('C_star', float, (ntargets, 3)) ]
             time_stamp = time.strftime('%Y%m%dt%H%M%S')
             save_path = os.path.join(self.config['paths']['output']
                                      , 'saved_run_'+time_stamp)
@@ -574,10 +575,9 @@ class ErrorBudget(ExosimsWrapper):
                                           , filename), save_path)
         else:
             backend = None
-            dtype = None
         if self.config['mcmc']['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
-            with Pool() as pool:
+            with Pool(processes=self.config['mcmc']['ncpu']) as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
                             , log_probability, backend=backend, pool=pool
                             , args=[self], blobs_dtype=dtype)
