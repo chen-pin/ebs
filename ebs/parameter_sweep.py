@@ -11,6 +11,7 @@ from ebs.logger import logger
 class ParameterSweep:
     def __init__(self, config, parameter, values, error_budget):
         """
+        Class to perform 1D parameter sweeps.
 
         Parameters
         ----------
@@ -27,6 +28,9 @@ class ParameterSweep:
         self.config = config
         self.input_dir = self.config["paths"]["input"]
         self.output_dir = self.config["paths"]["output"]
+
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
         self.parameter, self.subparameter = parameter
         self.values = values
@@ -48,11 +52,12 @@ class ParameterSweep:
         }
 
     def plot_output(self, spectral_dict, parameter, values, int_times, save_dir, save_name):
-        """Saves and displays a results plot of intergation times vs. sweep parameter
+        """Saves and displays a results plot of integration times vs. sweep parameter.
 
         Parameters
         ----------
         spectral_dict: dict
+            Dictionary of targets stars and their spectral types.
         parameter: (str, str)
             (subsystem, name) of the parameter that was swept over.
         values: ndarray or list
@@ -64,6 +69,7 @@ class ParameterSweep:
         save_name: str
             Name of the final plot save file.
         """
+
         logger.info("Plotting sweep output")
 
         plt.figure(figsize=(16, 9))
@@ -92,7 +98,15 @@ class ParameterSweep:
         ----------
         save_output_dict: bool
             If True saves the results dictionary to a pickle file.
+
+        Returns
+        ----------
+        result_dict: dict
+            Dictionary of sweep results.
+        error_budget: ErrorBudget
+            The error budget object used for the sweep.
         """
+
         logger.info(f"Running sweep on {self.parameter}")
 
         # 3 contrasts, 5 stars, 3 zones.

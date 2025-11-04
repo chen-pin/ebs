@@ -8,7 +8,7 @@ def read_csv(filename, skiprows=0):
 
     Parameters
     ----------
-    filename: str
+    filename: str or LiteralString
         Fully qualified path to the CSV file.
     skiprows: int
          number of rows to skip at the top of the CSV file.

@@ -19,9 +19,9 @@ class ExosimsWrapper:
     """
     Takes in a config dict specifying desired targets and their corresponding
     Earth-equivalent insolation distances (eeid), Earth-equivalent planet-star
-    flux ratios (eepsr) and exo-zodi levels. Main function is run_exosims which
-    given an input json file returns the necessary integration times and
-    various output count rates.
+    flux ratios (eepsr) and exo-zodi levels as well as all instrument and
+    observatory parameters. The main function is run_exosims which returns the
+    necessary integration times and various output count rates.
 
     Parameters
     ----------
@@ -61,7 +61,7 @@ class ExosimsWrapper:
     def run_exosims(self):
         """
         Run EXOSIMS to generate results, including exposure times required for
-        reaching specified SNR.
+        reaching specified SNR and various final count rates.
 
         """
         wa_coefs = self.config["working_angles"]
@@ -150,6 +150,9 @@ class ErrorBudget(ExosimsWrapper):
         self.input_dir = self.config["paths"]["input"]
         self.temp_dir = self.config["paths"]["temporary"]
 
+        if not os.path.exists(self.temp_dir):
+            os.makedirs(self.temp_dir)
+
         self.sensitivities_filename = self.config["input_files"]["sensitivity"]
         self.contrast_filename = self.config["input_files"]["contrast"]
         self.throughput_filename = self.config["input_files"]["throughput"]
@@ -186,13 +189,11 @@ class ErrorBudget(ExosimsWrapper):
     def delta_contrast(self):
         """Compute change in contrast due to residual WFE.
 
-        Assigns the value to the `ppFact` file.
-
         Reference
         ---------
         - See <Post-Processing Factor> document for mathematical description
-
         """
+
         if (self.wfe is not None and self.wfsc_factor is not None 
             and self.sensitivity is not None and self.contrast is not None):
 
@@ -205,13 +206,14 @@ class ErrorBudget(ExosimsWrapper):
 
             return 1E-12*delta_contrast
 
-        else: 
-            print("Need to assign wfe, wfsc_factor, sensitivity, " + 
-                  "and contrast values before determining delta_contrast") 
+        else:
+            raise ValueError("Need to assign wfe, wfsc_factor, sensitivity, "
+                             "and contrast values before determining "
+                             "delta_contrast")
 
     @property
     def ppFact(self):
-        """Compute the post-processing factor from the delta contrast. .
+        """Compute the post-processing factor from the delta contrast.
 
         Reference
         ---------
@@ -234,11 +236,12 @@ class ErrorBudget(ExosimsWrapper):
 
     def load_contrast(self):
         """Load contrast from the contrast CSV. """
-        path = os.path.join(self.input_dir, self.contrast_filename)
-        angles = np.genfromtxt(path,
+
+        contrast_path = os.path.join(self.input_dir, self.contrast_filename)
+        angles = np.genfromtxt(contrast_path,
                                delimiter=',',
                                skip_header=1)[:, 0]
-        contrasts = np.genfromtxt(path,
+        contrasts = np.genfromtxt(contrast_path,
                                   delimiter=',',
                                   skip_header=1)[:, 1]
         return angles, contrasts
@@ -246,13 +249,14 @@ class ErrorBudget(ExosimsWrapper):
     def write_ppFact_fits(self, trash=True):
         """Writes the post-processing factor to a FITS file.
 
-        File is saved in self.temp_dir
+        File is saved in the temp_dir
 
         Parameters
         ----------
         trash: bool
             If True, will add the FITS file to self.trash_can to be cleaned.
         """
+
         if self.angles is not None:
 
             rng = np.random.default_rng()
@@ -299,10 +303,11 @@ class ErrorBudget(ExosimsWrapper):
                            , comments='')
             self.trash_can.append(path)
         else:  
-            print("Need to assign angle values to write CSV file")
+            raise ValueError("Need to assign angle values to write CSV file")
 
     def initialize_for_exosims(self):
         """Initializes the EXOSIMS parameter dict with the config."""
+
         logger.info("Initializing parameters for EXOSIMS")
 
         self.wfe = read_csv(filename=os.path.join(
@@ -354,6 +359,7 @@ class ErrorBudget(ExosimsWrapper):
         walker_pos: np.ndarray
             starting positions in parameter space for the MCMC walkers.
         """
+
         logger.info("Initializing walkers for MCMC")
 
         center = []
@@ -377,7 +383,7 @@ class ErrorBudget(ExosimsWrapper):
         return final_wp
 
     def update_attributes(self, subsystem=None, name=None, value=None):
-        """Updates the EXOSIMS parameter dict for subsystem,  name with value.
+        """Updates the EXOSIMS parameter dict for subsystem, name with value.
 
         For example if subsystem = scienceInstruments and name = QE then
         self.exosims_pars_dict["scienceInstruments"]["QE] will take on the
@@ -392,6 +398,7 @@ class ErrorBudget(ExosimsWrapper):
         value: float or int or str or bool
             Value to update the variable to.
         """
+
         if name is not None:
             try:
                 self.exosims_pars_dict[subsystem][0][name] = value
@@ -406,6 +413,7 @@ class ErrorBudget(ExosimsWrapper):
         values: np.ndarray
             Array of values to be updated for MCMC variables.
         """
+
         for var_name in self.config['mcmc']['variables']:
             if var_name in dir(self):
                 template = np.array(self.config['mcmc']['variables'][var_name]
@@ -441,21 +449,25 @@ class ErrorBudget(ExosimsWrapper):
                     self.exosims_pars_dict['starlightSuppressionSystems']\
                             [0]['core_thruput'] = self.throughput_filename
             else:
-                print(var_name+" not found in attributes list")
+                raise AttributeError(f"{var_name} not found in attributes list")
 
     def log_prior(self, values):
-        """
+        """Calculates the joint log-prior probability of the given values.
 
         Parameters
         ----------
-        values
-
+        values: np.ndarray
+            Array of values to be updated for MCMC variables.
         Returns
         -------
-        joint_prob:
+        joint_prob: float
+            joint log-prior probability of the given values.
+
         """
+
         joint_prob = 0.0
         counter = 0
+
         for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
             prior_ftn = np.array(
                     self.config['mcmc']['variables'][var_name]['prior_ftn']
@@ -482,15 +494,15 @@ class ErrorBudget(ExosimsWrapper):
 
     def log_merit(self, values):
         """
+        Evaluates the merit function (e.g. chi_square) based on the mean
+        calculated integration times for the given values.
 
         Parameters
         ----------
-        values
-
-        Returns
-        -------
-
+        values: np.ndarray
+            Array of values to be updated for MCMC variables.
         """
+
         self.update_attributes_mcmc(values)
         int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = (
             self.run_exosims())
@@ -598,16 +610,17 @@ class ErrorBudget(ExosimsWrapper):
 
 def log_probability(values, error_budget):
     """
+    Calculates the total log_probabilty from the ErrorBudget for the given
+    MCMC values.
 
     Parameters
     ----------
-    values
-    error_budget
-
-    Returns
-    -------
-
+    values: np.ndarray
+        Array of values for which the log_prior and log_merit are evaluated.
+    error_budget: ErrorBudget
+        ErrorBudget for which the log_probability is calculated.
     """
+
     log_prior = error_budget.log_prior(values)
     if np.isinf(log_prior):
         return -np.inf, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0\

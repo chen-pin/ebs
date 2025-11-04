@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import os
 from matplotlib.lines import Line2D
 import numpy as np
-from ebs.logger import logger
 
 # Update rcParams for all visualizations
 plt.rcParams.update({'font.size': 20})
@@ -64,9 +63,6 @@ def plot_ebs_output(error_budget, spectral_dict, parameter, values, int_times,
         Path to save the output plot.
     save_name: str
         Name to save the output plot under.
-    Returns
-    -------
-
     """
 
     unique_types_to_plot = []
@@ -163,10 +159,6 @@ def plot_panel(ax, error_budget, spectral_dict, values, int_times,
     colors: list or array
         Hex colors or list of tuples of RGB values to use for each star.
         Defaults are color-blind friendly.
-
-    Returns
-    -------
-    None
 
     """
     int_times_for_calc = np.copy(int_times)
