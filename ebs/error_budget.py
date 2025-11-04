@@ -70,7 +70,7 @@ class ExosimsWrapper:
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
-        sim = ems.MissionSim(use_core_thruput_for_ez=False
+        sim = ems.MissionSim(use_core_thruput_for_ez=False, seed=0
                              , **deepcopy(self.exosims_pars_dict))
 
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
@@ -91,14 +91,16 @@ class ExosimsWrapper:
             # this doesn't matter for a flat contrast/throughput, but
             # matters a lot when you have real performance curves.
             WA = np.array(wa_coefs)*eeid[j]
+            JEZ = [exo_zodi[j] * sim.TargetList.JEZ0[mode['hex']][sInd] *
+                   sim.TargetList.system_fbeta[sInd]]
+
             # Target planet deltaMag (evaluate for a range).
             dMags = 5.0*np.log10(np.array(wa_coefs)) - 2.5*np.log10(eepsr[j])
             self.int_time[j] = sim.OpticalSystem.calc_intTime(
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
-                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
-                    * sim.ZodiacalLight.fEZ0.unit,
+                JEZ * n_angles * JEZ[0].unit,
                 dMags,
                 WA * u.arcsec,
                 mode
@@ -107,8 +109,7 @@ class ExosimsWrapper:
                 sim.TargetList,
                 [sInd] * n_angles,
                 [fZ.value] * n_angles * fZ.unit,
-                [exo_zodi[j]*sim.ZodiacalLight.fEZ0.value] * n_angles 
-                    * sim.ZodiacalLight.fEZ0.unit,
+                JEZ * n_angles * JEZ[0].unit,
                 dMags,
                 WA * u.arcsec,
                 mode,
