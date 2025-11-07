@@ -3,7 +3,8 @@
 """
 import os, time, shutil
 import numpy as np
-import yaml 
+import yaml
+from dynesty.pool import Pool as dynPool
 from multiprocessing import Pool
 from astropy.io import fits
 import astropy.units as u
@@ -14,6 +15,8 @@ from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 from ebs.logger import logger
 
+from dynesty import NestedSampler
+from dynesty.utils import get_print_fn_args
 
 class ExosimsWrapper:
     """
