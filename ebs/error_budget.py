@@ -14,7 +14,6 @@ from copy import deepcopy
 from ebs.utils import read_csv
 import ebs.log_pdf as pdf
 from ebs.logger import logger
-
 from dynesty import NestedSampler
 from dynesty.utils import get_print_fn_args
 
@@ -73,7 +72,7 @@ class ExosimsWrapper:
         eeid = self.eeid
         eepsr = self.eepsr
         exo_zodi = self.exo_zodi
-        sim = ems.MissionSim(use_core_thruput_for_ez=False, seed=0
+        sim = ems.MissionSim(use_core_thruput_for_ez=False, seed=0, verbose=False
                              , **deepcopy(self.exosims_pars_dict))
 
         sInds = np.array([np.where(sim.TargetList.Name == t)[0][0] for t 
