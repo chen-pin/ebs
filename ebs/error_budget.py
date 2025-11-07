@@ -536,7 +536,7 @@ class ErrorBudget(ExosimsWrapper):
         if clean_files:
             self.clean_files()
 
-    def run_mcmc(self):
+    def run_mcmc(self, backend_name='', clean_files=True):
         """Main method for running EBS in MCMC mode.
 
         Returns
@@ -565,7 +565,7 @@ class ErrorBudget(ExosimsWrapper):
             os.mkdir(save_path)
             if self.config['mcmc']['new_run']:
                 backend = emcee.backends.HDFBackend(os.path.join(save_path
-                                                    , 'backend.hdf'))
+                                                    , f'{backend_name}.hdf'))
                 backend.reset(nwalkers, ndim)
             elif self.config['mcmc']['new_run'] == False:
                 pos = None
