@@ -595,7 +595,7 @@ class ErrorBudget(ExosimsWrapper):
 
         return sampler
 
-    def run_nested_sampler(self, maxiter=1):
+    def run_nested_sampler(self):
         """Main method for running EBS in nested sampling mode.
 
         Returns
@@ -635,19 +635,20 @@ class ErrorBudget(ExosimsWrapper):
             os.environ["OMP_NUM_THREADS"] = "1"
             with dynPool(self.config['mcmc']['ncpu'], log_likelihood, uniform_ptform) as pool:
                 sampler = NestedSampler(pool.loglike, pool.prior_transform,
-                                        ndim, nlive=5, logl_args=[self],
+                                        ndim, logl_args=[self],
                                         ptform_args=[np.array(lower_bounds),
                                                      np.array(upper_bounds)],
-                                        pool=pool)
+                                        pool=pool,
+                                        nlive=10)
 
-                sampler.run_nested(maxiter=maxiter, maxcall=1, print_func=print_fn_fallback)
+                sampler.run_nested(print_func=nested_sampling_log)
         else:
             sampler = NestedSampler(log_likelihood, uniform_ptform, ndim,
-                                    nlive=5, logl_args=[self],
+                                    logl_args=[self],
                                     ptform_args=[np.array(lower_bounds),
-                                                 np.array(upper_bounds)])
-            sampler.run_nested(maxiter=maxiter, maxcall=1,
-                               print_func=print_fn_fallback)
+                                                 np.array(upper_bounds)],
+                                    nlive=10)
+            sampler.run_nested(print_func=nested_sampling_log)
 
         logger.info("nested Sampler completed")
         return sampler
