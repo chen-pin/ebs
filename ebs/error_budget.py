@@ -589,7 +589,68 @@ class ErrorBudget(ExosimsWrapper):
             sampler = emcee.EnsembleSampler(nwalkers, ndim
                           , log_probability, backend=backend, args=[self]
                           , blobs_dtype=dtype)
-            sampler.run_mcmc(pos, nsteps, progress=True, store=True)
+            sampler.run_mcmc(pos, nsteps, progress=False, store=True)
+
+        if clean_files:
+            self.clean_files()
+
+        return sampler
+
+    def run_nested_sampler(self, maxiter=1):
+        """Main method for running EBS in nested sampling mode.
+
+        Returns
+        -------
+        sampler: emcee.EnsembleSampler
+        """
+        self.initialize_for_exosims()
+        pos = self.initialize_walkers()
+        nwalkers, ndim = pos.shape
+
+        lower_bounds = []
+        upper_bounds = []
+        for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
+            prior_ftn = np.array(
+                    self.config['mcmc']['variables'][var_name]['prior_ftn']
+                                )
+            index = np.where(prior_ftn!='nan')
+            all_args = [np.array(item) for item in
+                    self.config['mcmc']['variables'][var_name]['prior_args']
+                        .values()]
+            for m, row_index in enumerate(index[0]):
+                if len(index) > 1:
+                    col_index = index[1][m]
+                    ftn = getattr(pdf, prior_ftn[row_index, col_index])
+                    args = [page[row_index][col_index] for page in all_args]
+                else:
+                    ftn = getattr(pdf, prior_ftn[row_index])
+                    args = [page[row_index] for page in all_args]
+
+                lb, ub = args
+                lower_bounds.append(lb)
+                upper_bounds.append(ub)
+
+        logger.info("Running Nested Sampling")
+
+        if self.config['mcmc']['parallel']:
+            os.environ["OMP_NUM_THREADS"] = "1"
+            with dynPool(self.config['mcmc']['ncpu'], log_likelihood, uniform_ptform) as pool:
+                sampler = NestedSampler(pool.loglike, pool.prior_transform,
+                                        ndim, nlive=5, logl_args=[self],
+                                        ptform_args=[np.array(lower_bounds),
+                                                     np.array(upper_bounds)],
+                                        pool=pool)
+
+                sampler.run_nested(maxiter=maxiter, maxcall=1, print_func=print_fn_fallback)
+        else:
+            sampler = NestedSampler(log_likelihood, uniform_ptform, ndim,
+                                    nlive=5, logl_args=[self],
+                                    ptform_args=[np.array(lower_bounds),
+                                                 np.array(upper_bounds)])
+            sampler.run_nested(maxiter=maxiter, maxcall=1,
+                               print_func=print_fn_fallback)
+
+        logger.info("nested Sampler completed")
         return sampler
 
     def clean_files(self):
@@ -623,3 +684,18 @@ def log_probability(values, error_budget):
     log_probability = log_prior + log_merit
     return log_probability, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
             , C_rn, C_star
+
+def log_likelihood(values, error_budget):
+    # TODO figure out what this needs to be
+    log_merit, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
+            = error_budget.log_merit(values)
+
+    return log_merit
+
+def uniform_ptform(u_vals, lower_bounds, upper_bounds):
+    x = np.zeros_like(u_vals)
+    for i, u in enumerate(u_vals):
+        x[i] = lower_bounds[i] + u * (upper_bounds[i] - lower_bounds[i])
+
+    return x
+
