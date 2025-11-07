@@ -1,7 +1,7 @@
 """Exposure-time calculations based on coronagraphic input parameters
 
 """
-import os, time, shutil
+import os, time, shutil, sys
 import numpy as np
 import yaml
 from dynesty.pool import Pool as dynPool
@@ -699,3 +699,45 @@ def uniform_ptform(u_vals, lower_bounds, upper_bounds):
 
     return x
 
+def nested_sampling_log(results,
+                        niter,
+                        ncall,
+                        add_live_it=None,
+                        dlogz=None,
+                        stop_val=None,
+                        nbatch=None,
+                        logl_min=-np.inf,
+                        logl_max=np.inf):
+    """
+    Replaces standard console printing with EBS logger.
+    """
+    fn_args = get_print_fn_args(results,
+                                niter,
+                                ncall,
+                                add_live_it=add_live_it,
+                                dlogz=dlogz,
+                                stop_val=stop_val,
+                                nbatch=nbatch,
+                                logl_min=logl_min,
+                                logl_max=logl_max)
+    niter, short_str, mid_str, long_str = (fn_args.niter, fn_args.short_str,
+                                           fn_args.mid_str, fn_args.long_str)
+
+    long_str = ["iter: {:d}".format(niter)] + long_str
+
+    # Printing.
+    long_str = ' | '.join(long_str)
+    mid_str = ' | '.join(mid_str)
+    short_str = '|'.join(short_str)
+
+    if sys.stderr.isatty() and hasattr(shutil, 'get_terminal_size'):
+        columns = shutil.get_terminal_size(fallback=(80, 25))[0]
+    else:
+        columns = 200
+    if columns > len(long_str):
+        logger.info("\r" + long_str + ' ' * (columns - len(long_str) - 2))
+    elif columns > len(mid_str):
+        logger.info("\r" + mid_str + ' ' * (columns - len(mid_str) - 2))
+    else:
+        logger.info("\r" + short_str + ' ' *
+                         (columns - len(short_str) - 2))
