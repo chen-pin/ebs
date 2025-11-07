@@ -638,16 +638,14 @@ class ErrorBudget(ExosimsWrapper):
                                         ndim, logl_args=[self],
                                         ptform_args=[np.array(lower_bounds),
                                                      np.array(upper_bounds)],
-                                        pool=pool,
-                                        nlive=10)
+                                        pool=pool)
 
                 sampler.run_nested(print_func=nested_sampling_log)
         else:
             sampler = NestedSampler(log_likelihood, uniform_ptform, ndim,
                                     logl_args=[self],
                                     ptform_args=[np.array(lower_bounds),
-                                                 np.array(upper_bounds)],
-                                    nlive=10)
+                                                 np.array(upper_bounds)])
             sampler.run_nested(print_func=nested_sampling_log)
 
         logger.info("nested Sampler completed")
