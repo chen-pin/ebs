@@ -496,7 +496,6 @@ class ErrorBudget(ExosimsWrapper):
         self.update_attributes_mcmc(values)
         int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = (
             self.run_exosims())
-        self.clean_files()
         if np.isnan(int_time.value).any():
             return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
                    , C_rn, C_star
@@ -689,7 +688,7 @@ def log_likelihood(values, error_budget):
     # TODO figure out what this needs to be
     log_merit, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star \
             = error_budget.log_merit(values)
-
+    error_budget.clean_files()
     return log_merit
 
 def uniform_ptform(u_vals, lower_bounds, upper_bounds):
