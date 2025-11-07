@@ -496,6 +496,7 @@ class ErrorBudget(ExosimsWrapper):
         self.update_attributes_mcmc(values)
         int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc, C_rn, C_star = (
             self.run_exosims())
+        self.clean_files()
         if np.isnan(int_time.value).any():
             return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
                    , C_rn, C_star
