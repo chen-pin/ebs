@@ -562,14 +562,15 @@ class ErrorBudget(ExosimsWrapper):
             save_path = os.path.join(self.config['paths']['output']
                                      , 'saved_run_mcmc'+time_stamp)
             os.mkdir(save_path)
-            if self.config['bayesian_sampling']['new_run']:
-                backend = emcee.backends.HDFBackend(os.path.join(save_path
-                                                    , f'{backend_name}.hdf'))
-                backend.reset(nwalkers, ndim)
-            elif self.config['bayesian_sampling']['new_run'] == False:
+            if self.config['bayesian_sampling']['previous_backend_path']:
                 pos = None
                 backend = emcee.backends.HDFBackend(
                         self.config['bayesian_sampling']['previous_backend_path'])
+            else:
+                backend = emcee.backends.HDFBackend(os.path.join(save_path
+                                                    , f'{backend_name}.hdf'))
+                backend.reset(nwalkers, ndim)
+
             shutil.copy2(self.config_file, save_path)
             for key in self.config['input_files']:
                 filename = self.config['input_files'][key]
