@@ -125,7 +125,7 @@ plotting:
 
 
 # MCMC Parameters
-mcmc:
+bayesian_sampling:
   parallel: false  # True: multiprocess. False: single process
   ncpu: 8 # number of CPUS to use if parallel
   save: false  # Automatically save key I/O files for the run

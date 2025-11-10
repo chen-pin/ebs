@@ -137,7 +137,7 @@ def test_mcmc_ppFact(obs_mcmc):
 def test_mcmc_initialize_walkers(obs_mcmc):
     states = obs_mcmc.initialize_walkers()
     config = obs_mcmc.config
-    nwalkers = config['mcmc']['nwalkers']
+    nwalkers = config['bayesian_sampling']['nwalkers']
     ndim = 25
     upper_bounds = np.array([1e-5+0.5e-7, 5.05E-7, 5.05E-3, 5.05E-7, 5.05E-3
                              , 5.05E-7, 5.05E-3, 5.05E-7, 5.05E-3

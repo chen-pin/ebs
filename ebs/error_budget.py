@@ -360,19 +360,19 @@ class ErrorBudget(ExosimsWrapper):
 
         center = []
         [center.append(np.array(val).ravel())  
-         for var_name in self.config['mcmc']['variables'] 
-         for val in self.config['mcmc']['variables'][var_name]['ini_pars']['center']]
+         for var_name in self.config['bayesian_sampling']['variables']
+         for val in self.config['bayesian_sampling']['variables'][var_name]['ini_pars']['center']]
         center = np.array(np.concatenate(center))
         center = center[np.where(np.isfinite(center))]
         spread = []
         [spread.append(np.array(val).ravel())  
-         for var_name in self.config['mcmc']['variables'] 
-         for val in self.config['mcmc']['variables'][var_name]['ini_pars']
+         for var_name in self.config['bayesian_sampling']['variables']
+         for val in self.config['bayesian_sampling']['variables'][var_name]['ini_pars']
                                ['spread']]
         spread = np.concatenate(spread)
         spread= spread[np.where(np.isfinite(spread))]
         ndim = center.shape[0]
-        nwalkers = self.config['mcmc']['nwalkers']
+        nwalkers = self.config['bayesian_sampling']['nwalkers']
         walker_pos = center + np.random.uniform(-spread/2.0, spread/2.0
                                                 , (nwalkers, ndim))
         final_wp = np.array([np.array(p) for p in walker_pos])
@@ -408,9 +408,9 @@ class ErrorBudget(ExosimsWrapper):
         values: np.ndarray
             Array of values to be updated for MCMC variables.
         """
-        for var_name in self.config['mcmc']['variables']:
+        for var_name in self.config['bayesian_sampling']['variables']:
             if var_name in dir(self):
-                template = np.array(self.config['mcmc']['variables'][var_name]
+                template = np.array(self.config['bayesian_sampling']['variables'][var_name]
                                                ['ini_pars']['center'])
                 indices = np.where(np.isfinite(template))
                 use_values, values = np.split(values, [indices[0].size])
@@ -458,13 +458,13 @@ class ErrorBudget(ExosimsWrapper):
         """
         joint_prob = 0.0
         counter = 0
-        for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
+        for i, var_name in enumerate(self.config['bayesian_sampling']['variables'].keys()):
             prior_ftn = np.array(
-                    self.config['mcmc']['variables'][var_name]['prior_ftn']
+                    self.config['bayesian_sampling']['variables'][var_name]['prior_ftn']
                                 )
             index = np.where(prior_ftn!='nan')
             all_args = [np.array(item) for item in 
-                    self.config['mcmc']['variables'][var_name]['prior_args']
+                    self.config['bayesian_sampling']['variables'][var_name]['prior_args']
                         .values()]
             for m, row_index in enumerate(index[0]):
                 if len(index) > 1:
@@ -500,8 +500,8 @@ class ErrorBudget(ExosimsWrapper):
             return -np.inf, int_time, C_p, C_b, C_sp, C_sr, C_z, C_ez, C_dc\
                    , C_rn, C_star
         else:
-            ftn_name = self.config['mcmc']['merit']['ftn']
-            args = [arg for arg in self.config['mcmc']['merit']['args']\
+            ftn_name = self.config['bayesian_sampling']['merit']['ftn']
+            args = [arg for arg in self.config['bayesian_sampling']['merit']['args']\
                     .values()]
             ftn = getattr(pdf, ftn_name)
             mean_int_time = np.array(int_time.value).mean() 
@@ -535,7 +535,7 @@ class ErrorBudget(ExosimsWrapper):
         if clean_files:
             self.clean_files()
 
-    def run_mcmc(self, backend_name='', clean_files=True):
+    def run_mcmc(self, backend_name='mcmc_results', clean_files=True):
         """Main method for running EBS in MCMC mode.
 
         Returns
@@ -545,7 +545,7 @@ class ErrorBudget(ExosimsWrapper):
         self.initialize_for_exosims()
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
-        nsteps = self.config['mcmc']['nsteps']
+        nsteps = self.config['bayesian_sampling']['nsteps']
         ntargets = len(self.config['targets'])
         dtype = [('int_time', float, (ntargets, 3))
             , ('C_p', float, (ntargets, 3))
@@ -557,19 +557,19 @@ class ErrorBudget(ExosimsWrapper):
             , ('C_dc', float, (ntargets, 3))
             , ('C_rn', float, (ntargets, 3))
             , ('C_star', float, (ntargets, 3))]
-        if self.config['mcmc']['save']:
+        if self.config['bayesian_sampling']['save']:
             time_stamp = time.strftime('%Y%m%dt%H%M%S')
             save_path = os.path.join(self.config['paths']['output']
-                                     , 'saved_run_'+time_stamp)
+                                     , 'saved_run_mcmc'+time_stamp)
             os.mkdir(save_path)
-            if self.config['mcmc']['new_run']:
+            if self.config['bayesian_sampling']['new_run']:
                 backend = emcee.backends.HDFBackend(os.path.join(save_path
                                                     , f'{backend_name}.hdf'))
                 backend.reset(nwalkers, ndim)
-            elif self.config['mcmc']['new_run'] == False:
+            elif self.config['bayesian_sampling']['new_run'] == False:
                 pos = None
                 backend = emcee.backends.HDFBackend(
-                        self.config['mcmc']['previous_backend_path'])
+                        self.config['bayesian_sampling']['previous_backend_path'])
             shutil.copy2(self.config_file, save_path)
             for key in self.config['input_files']:
                 filename = self.config['input_files'][key]
@@ -577,9 +577,9 @@ class ErrorBudget(ExosimsWrapper):
                                           , filename), save_path)
         else:
             backend = None
-        if self.config['mcmc']['parallel']:
+        if self.config['bayesian_sampling']['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
-            with Pool(processes=self.config['mcmc']['ncpu']) as pool:
+            with Pool(processes=self.config['bayesian_sampling']['ncpu']) as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim
                             , log_probability, backend=backend, pool=pool
                             , args=[self], blobs_dtype=dtype)
@@ -595,7 +595,7 @@ class ErrorBudget(ExosimsWrapper):
 
         return sampler
 
-    def run_nested_sampler(self):
+    def run_nested_sampler(self, backend_name='nested_sampler_results'):
         """Main method for running EBS in nested sampling mode.
 
         Returns
@@ -606,15 +606,29 @@ class ErrorBudget(ExosimsWrapper):
         pos = self.initialize_walkers()
         nwalkers, ndim = pos.shape
 
+        if self.config['bayesian_sampling']['save'] and not self.config['bayesian_sampling']['previous_backend_path']:
+            time_stamp = time.strftime('%Y%m%dt%H%M%S')
+            save_path = os.path.join(self.config['paths']['output']
+                                     , 'saved_run_nested_sampling'+time_stamp)
+            os.mkdir(save_path)
+            checkpoint_file = os.path.join(save_path, f'{backend_name}.save')
+            logger.info(f"Saving nested sampling results at {checkpoint_file}")
+        elif self.config['bayesian_sampling']['previous_backend_path'] is not None:
+            checkpoint_file = self.config['bayesian_sampling']['previous_backend_path']
+            logger.info(f"Overwriting nested sampling results from previous save path at {checkpoint_file}")
+        else:
+            checkpoint_file = None
+            logger.warning("Not saving nested sampling results!")
+
         lower_bounds = []
         upper_bounds = []
-        for i, var_name in enumerate(self.config['mcmc']['variables'].keys()):
+        for i, var_name in enumerate(self.config['bayesian_sampling']['variables'].keys()):
             prior_ftn = np.array(
-                    self.config['mcmc']['variables'][var_name]['prior_ftn']
+                    self.config['bayesian_sampling']['variables'][var_name]['prior_ftn']
                                 )
             index = np.where(prior_ftn!='nan')
             all_args = [np.array(item) for item in
-                    self.config['mcmc']['variables'][var_name]['prior_args']
+                    self.config['bayesian_sampling']['variables'][var_name]['prior_args']
                         .values()]
             for m, row_index in enumerate(index[0]):
                 if len(index) > 1:
@@ -631,24 +645,34 @@ class ErrorBudget(ExosimsWrapper):
 
         logger.info("Running Nested Sampling")
 
-        if self.config['mcmc']['parallel']:
+        if self.config['bayesian_sampling']['parallel']:
             os.environ["OMP_NUM_THREADS"] = "1"
-            with dynPool(self.config['mcmc']['ncpu'], log_likelihood, uniform_ptform) as pool:
-                sampler = NestedSampler(pool.loglike, pool.prior_transform,
-                                        ndim, logl_args=[self],
-                                        ptform_args=[np.array(lower_bounds),
-                                                     np.array(upper_bounds)],
-                                        pool=pool)
+            with dynPool(self.config['bayesian_sampling']['ncpu'], log_likelihood, uniform_ptform) as pool:
+                if self.config['bayesian_sampling']['previous_backend_path']:
+                    logger.info(f"Continuing from previously saved run at {self.config['bayesian_sampling']['previous_backend_path']}")
+                    sampler = NestedSampler.restore(self.config['bayesian_sampling']['previous_backend_path'], pool=pool)
+                else:
+                    sampler = NestedSampler(pool.loglike, pool.prior_transform,
+                                            ndim, logl_args=[self],
+                                            ptform_args=[np.array(lower_bounds),
+                                                         np.array(upper_bounds)],
+                                            pool=pool)
 
-                sampler.run_nested(print_func=nested_sampling_log)
+                sampler.run_nested(print_func=nested_sampling_log, checkpoint_file=checkpoint_file)
         else:
-            sampler = NestedSampler(log_likelihood, uniform_ptform, ndim,
-                                    logl_args=[self],
-                                    ptform_args=[np.array(lower_bounds),
-                                                 np.array(upper_bounds)])
-            sampler.run_nested(print_func=nested_sampling_log)
+            if self.config['bayesian_sampling']['previous_backend_path']:
+                logger.info(
+                    f"Continuing from previously saved run at {self.config['bayesian_sampling']['previous_backend_path']}")
+                sampler = NestedSampler.restore(self.config['bayesian_sampling']['previous_backend_path'])
+            else:
+                sampler = NestedSampler(log_likelihood, uniform_ptform, ndim,
+                                        logl_args=[self],
+                                        ptform_args=[np.array(lower_bounds),
+                                                     np.array(upper_bounds)])
 
-        logger.info("nested Sampler completed")
+            sampler.run_nested(print_func=nested_sampling_log, checkpoint_file=checkpoint_file)
+
+        logger.info("Nested sampling exploration completed!")
         return sampler
 
     def clean_files(self):
